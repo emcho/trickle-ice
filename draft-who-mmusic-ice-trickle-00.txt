@@ -1,0 +1,504 @@
+
+
+
+Network Working Group                                        E. Rescorla
+Internet-Draft                                                RTFM, Inc.
+Intended status: Standards Track                               J. Uberti
+Expires: March 27, 2013                                           Google
+                                                                 E. Ivov
+                                                                   Jitsi
+                                                      September 23, 2012
+
+
+Trickle ICE: Incremental Provisioning of Candidates for the Interactive
+               Connectivity Establishment (ICE) Protocol
+                  draft-rescorla-mmusic-ice-trickle-00
+
+Abstract
+
+   This document describes an extension to the Interactive Connectivity
+   Establishment (ICE) protocol that allows ICE agents to send and
+   receive candidates incrementally rather than exchanging complete
+   lists.  With incremental provisioning, ICE agents can begin
+   connectivity checks while they are still gathering candidates and
+   considerably shorten the time necessary for ICE processing to
+   complete.
+
+   The above mechanism is often referred to as "trickle ICE".
+
+Status of this Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at http://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on March 27, 2013.
+
+Copyright Notice
+
+   Copyright (c) 2012 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+
+
+
+Rescorla, et al.         Expires March 27, 2013                 [Page 1]
+
+Internet-Draft                 Trickle ICE                September 2012
+
+
+   Provisions Relating to IETF Documents
+   (http://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . . . 3
+   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+   3.  Incompatibility with Standard ICE . . . . . . . . . . . . . . . 4
+   4.  Detecting Support for Trickle ICE . . . . . . . . . . . . . . . 5
+   5.  Sending the Initial Offer . . . . . . . . . . . . . . . . . . . 6
+   6.  Trickling Additional Candidates . . . . . . . . . . . . . . . . 6
+   7.  Receiving the Initial Offer . . . . . . . . . . . . . . . . . . 6
+   8.  Performing Connectivity Checks  . . . . . . . . . . . . . . . . 6
+   9.  Processing Newly Received Candidates  . . . . . . . . . . . . . 7
+   10. Ending Candidate Trickling  . . . . . . . . . . . . . . . . . . 7
+   11. Ending ICE Processing with Trickle ICE  . . . . . . . . . . . . 7
+   12. Interaction with non-Trickle ICE implementations  . . . . . . . 7
+   13. Security Considerations . . . . . . . . . . . . . . . . . . . . 7
+   14. Open Issues . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+   15. References  . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+     15.1.  Normative References . . . . . . . . . . . . . . . . . . . 8
+     15.2.  Informative References . . . . . . . . . . . . . . . . . . 8
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . . . 9
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rescorla, et al.         Expires March 27, 2013                 [Page 2]
+
+Internet-Draft                 Trickle ICE                September 2012
+
+
+1.  Introduction
+
+   The Interactive Connectivity Establishment (ICE) protocol [RFC5245]
+   describes mechanisms for gathering, candidates, prioritizing them,
+   choosing default ones, exchanging them with the remote party, and
+   pairing them and ordering them into check lists.  Once all of the
+   above have been completed, and only then, the participating agents
+   can begin a phase of connectivity checks and eventually select the
+   pair of candidates that will be used in the following session.
+
+   While the above sequence has the advantage of being relatively
+   straightforward to implement, and debug once deployed, it may also
+   prove to be rather lengthy.  Gathering candidates would often involve
+   things like querying STUN [RFC5389] servers, discovering UPnP
+   devices, and allocating relayed candidates at TURN [RFC5766] servers.
+   All of these can be delayed for a noticeable amount of time and while
+   they can be run in parallel, they still need to respect the pacing
+   requirements from [RFC5245], which is likely to delay them even
+   further.  Some or all of the above would then have to be completed by
+   the remote agent.  Both agents would then need to perform
+   connectivity checks and only then would they be ready to begin
+   streaming media.
+
+   All of the above could lead to particularly lengthy session
+   establishment times and degraded user experience.
+
+   The purpose of this document is to define an alternative mode of
+   operation for ICE implementations, also known as "trickle ICE", where
+   candidates can be exchanged incrementally.  This would allow ICE
+   agents to exchange host candidates as soon as a session has been
+   initiated.  Connectivity checks for a media stream would also start
+   as soon as the first candidates for that stream have become
+   available.
+
+   Tickle ICE allows to greatly reduce session establishment times in
+   cases where connectivity is confirmed for the first exchanged
+   candidates (e.g. where the host candidates for one of the agents is
+   directly reachable from those of the second agent).  Even when this
+   is not the case, running candidate harvesting for both agents and
+   connectivity checks all in parallel allows to considerably reduce ICE
+   processing times.
+
+   It is worth pointing out that before being introduced to the IETF,
+   trickle ICE has already been been included in specifications such as
+   XMPP Jingle [XEP-0176] and it has been deployed in use by various
+   implementations.
+
+   In addition to the basics of trickle ICE, this document also
+
+
+
+Rescorla, et al.         Expires March 27, 2013                 [Page 3]
+
+Internet-Draft                 Trickle ICE                September 2012
+
+
+   describes how, support for trickle ICE needs to be discovered, how
+   regular ICE processing needs to be modified when building and
+   updating check lists, and how trickle ICE implementations should
+   interoperate with agents that only implement [RFC5245] processing.
+
+
+2.  Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in [RFC2119].
+
+
+3.  Incompatibility with Standard ICE
+
+   The ICE protocol was designed to be fairly flexible so that it would
+   work in and a adapt to as many network environments as possible.  It
+   is hence important to point out at least some of the reasons why,
+   despite its flexibility, the specification in [RFC5245] would not
+   support trickle-ICE.
+
+   [RFC5245] describes the conditions required to update check lists and
+   timer states while an ICE agent is in the Running state.  These
+   conditions are verified upon transaction completion and one of them
+   stipulates that:
+      If there is not a pair in the valid list for each component of the
+      media stream, the state of the check list is set to Failed.
+   This could be a problem and cause ICE processing to fail prematurely
+   in a number of scenarios.  Consider the following case:
+   o  Alice and Bob are both located in different networks with Network
+      Address Translation (NAT).  Alice and Bob themselves have
+      different address but both networks use the same [RFC1918] block.
+   o  Alice sends Bob the candidate 10.0.0.10 which also happens to
+      correspond to an existing host on Bob's network.
+   o  Bob creates a check list consisting solely of 10.0.0.10 and starts
+      checks.
+   o  These checks reach the host at 10.0.0.10 in Bob's network, which
+      responds with an ICMP "port unreachable" error and per [RFC5245]
+      Bob marks the transaction as Failed.
+   At this point the check list only contains Failed candidates and the
+   valid list is empty.  This causes the media stream and potentially
+   all ICE processing to Fail.
+
+   A similar race condition would occur if the initial offer from Alice
+   only contains candidates that can be determined as unreachable (per
+   [I-D.keranen-mmusic-ice-address-selection]) from any of the
+   candidates that Bob has gathered.  This would be the case if Bob's
+   candidates only contain IPv4 addresses and the first candidate that
+
+
+
+Rescorla, et al.         Expires March 27, 2013                 [Page 4]
+
+Internet-Draft                 Trickle ICE                September 2012
+
+
+   he receives from Alice is an IPv6 one.
+
+   [emcho: I am not sure we need the following since Bob's choice to
+   start checks immediately is entirely an implemenation issue issue and
+   not a protocol one ... this would however be an issue if Alice also
+   supports trickle ICE and she sends hers server reflexive candidate in
+   the original offer. ].
+
+   Another potential problem could arise when a non-trickle ICE
+   implementation sends an offer to a trickle one.  Consider the
+   following case:
+   o  Alice's client has a non-trickle ICE implementation
+   o  Bob's client as support for trickle ICE.
+   o  Alice and Bob are behind NATs with address-dependent filtering
+      [RFC4787].
+   o  Bob has two STUN servers but one of them is currently unreachable
+   After Bob's agent receives Alice's offer it would immediately start
+   connectivity checks.  It would also start gathering candidates, which
+   would take long because of the unreachable STUN server.  By the time
+   Bob's answer is ready and sent to Alice, Bob's connectivity checks
+   may well have failed: until Alice gets Bob's answer, she won't be
+   able to start connectivity checks and punch holes in her NAT.  The
+   NAT would hence be filtering Bob's checks as originating from an
+   unknown endpoint.
+
+
+4.  Detecting Support for Trickle ICE
+
+   In order to avoid interoperability problems such as those described
+   in section Section 3, it is important that before generating an offer
+   and sending its first candidates an agent MUST first verify whether
+   its correspondent also supports trickle ICE.
+
+   The exact mechanisms that would allow for such verifications are
+   outside the scope of this document [TODO: unless we decide to handle
+   the SIP case here the way 5245 does it] and should be handled by the
+   signalling protocol that is employing ICE.
+
+   Examples of how some signalling protocols already handle service and
+   capabilities discovery include:
+   o  Service discovery [XEP-0030] and Entity capabilities [XEP-0115]
+      for XMPP
+   o  Indicating User Agent Capabilities [RFC3840] for SIP
+
+   In some cases it would be possible for an application to just "know"
+   that support would be present.  One example for this would be a
+   WebRTC application that does not need to interoperate with
+   applications from other web sites.  Such applications can just enable
+
+
+
+Rescorla, et al.         Expires March 27, 2013                 [Page 5]
+
+Internet-Draft                 Trickle ICE                September 2012
+
+
+   trickle ICE without performing any additional checks.
+
+
+5.  Sending the Initial Offer
+
+   Typically trickle ICE agents would start by sending an offer that
+   only contains host candidates.  [TODO: expand]
+
+   Trickle ICE agents can also start by sending an empty offer.  [TODO:
+   expand]
+
+   Trickle ICE Agents may also send a full offer just as regular ICE
+   agents do (e.g. for reasons of simplicity.  [TODO: expand]
+
+
+6.  Trickling Additional Candidates
+
+   [TODO: Explain rules about how to trickle.  Are there any?  Can we
+   just send any candidate at any point?]
+
+
+7.  Receiving the Initial Offer
+
+   Verifying Trickle ICE Support.  [TODO: expand]
+
+   Start gathering candidates [TODO: expand]
+
+   Send an initial answer: empty or containing readily available
+   candidates.  [TODO: expand]
+
+   Start trickling additional candidates as in Section 6.  [TODO:
+   expand]
+
+
+8.  Performing Connectivity Checks
+
+   Contrary to [RFC5245] where connectivity checks only start once all
+   check lists have been created, a trickle ICE agent would have to
+   start earlier. ekr: (a) as soon as any check list is non-empty, start
+   that media stream. juberti: seems like the best choice [TODO: expand]
+   ekr: Say I finish checks on one stream successfully.Ordinarily, I
+   would start to unfreeze other check lists, but what if those are
+   empty?  How do they get unfrozen when candidates come in? juberti:
+   same condition as when we start: we wait and we unfreeze any check
+   list that gets a candidate. martin: could fail if we start conn
+   checking a server reflexive candidate for a component where we
+   haven't yet sent hours.  [TODO: discuss, resolve and expand]
+
+
+
+
+Rescorla, et al.         Expires March 27, 2013                 [Page 6]
+
+Internet-Draft                 Trickle ICE                September 2012
+
+
+9.  Processing Newly Received Candidates
+
+   explain checklist updates upon reception of new candidates. juberti:
+   If we have a valid pair, and we get a candidate that results in
+   higher priority pairs, we need to test those pairs.  Any lower
+   priority pairs can be ignored though, which may mean the whole
+   candidate can be ignored. (ignoring hot backups) [TODO: expand]
+
+
+10.  Ending Candidate Trickling
+
+   juberti: need end-of-candidates message, or timeout emcho: probably
+   both?  [TODO: expand]
+
+
+11.  Ending ICE Processing with Trickle ICE
+
+   in case checks succeed. in case chacks fail and we have received the
+   end-of-candidates message or a timer has expired since the last
+   received candidate [TODO: expand]
+
+
+12.  Interaction with non-Trickle ICE implementations
+
+   Trickle ICE implementations MUST behave as non-trickle and follow
+   [RFC5245] unless they can confirm that the remote party supports this
+   specification.
+
+
+13.  Security Considerations
+
+   TODO
+
+
+14.  Open Issues
+
+   At the time of writing of this document the authors have no clear
+   view on how and if the following list of issues should be address
+   here:
+   1.  Should this document cover use of trickle ICE with SDP as
+       [RFC5245] does?
+   2.  Should this document cover use of trickle ICE with SIP as
+       [RFC5245] does?
+   3.  This document currently treats trickle ICE as an extra mode of
+       operation for ICE that is incompatible with RFC 5245 and should
+       only be used when support is confirmed.  Is this the right way?
+
+
+
+
+
+Rescorla, et al.         Expires March 27, 2013                 [Page 7]
+
+Internet-Draft                 Trickle ICE                September 2012
+
+
+   4.  If we do decide to handle SIP here: Using trickle ICE with SIP
+       adds additional constraints.  RFC3261 disallows reINVITE-s until
+       the INVITE transaction completes which means that candidate
+       updates need to use another mechanism.  Using UPDATE requests
+       [RFC3311] could be one option.  Requiring a hasty completion of
+       the initial transaction could be another and there are probably
+       others.
+
+
+15.  References
+
+15.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119, March 1997.
+
+   [RFC5245]  Rosenberg, J., "Interactive Connectivity Establishment
+              (ICE): A Protocol for Network Address Translator (NAT)
+              Traversal for Offer/Answer Protocols", RFC 5245,
+              April 2010.
+
+15.2.  Informative References
+
+   [I-D.keranen-mmusic-ice-address-selection]
+              Keranen, A. and J. Arkko, "Update on Candidate Address
+              Selection for Interactive Connectivity Establishment
+              (ICE)", draft-keranen-mmusic-ice-address-selection-01
+              (work in progress), July 2012.
+
+   [RFC1918]  Rekhter, Y., Moskowitz, R., Karrenberg, D., Groot, G., and
+              E. Lear, "Address Allocation for Private Internets",
+              BCP 5, RFC 1918, February 1996.
+
+   [RFC3840]  Rosenberg, J., Schulzrinne, H., and P. Kyzivat,
+              "Indicating User Agent Capabilities in the Session
+              Initiation Protocol (SIP)", RFC 3840, August 2004.
+
+   [RFC4787]  Audet, F. and C. Jennings, "Network Address Translation
+              (NAT) Behavioral Requirements for Unicast UDP", BCP 127,
+              RFC 4787, January 2007.
+
+   [RFC5389]  Rosenberg, J., Mahy, R., Matthews, P., and D. Wing,
+              "Session Traversal Utilities for NAT (STUN)", RFC 5389,
+              October 2008.
+
+   [RFC5766]  Mahy, R., Matthews, P., and J. Rosenberg, "Traversal Using
+              Relays around NAT (TURN): Relay Extensions to Session
+              Traversal Utilities for NAT (STUN)", RFC 5766, April 2010.
+
+
+
+Rescorla, et al.         Expires March 27, 2013                 [Page 8]
+
+Internet-Draft                 Trickle ICE                September 2012
+
+
+   [XEP-0030]
+              Hildebrand, J., Millard, P., Eatmon, R., and P. Saint-
+              Andre, "XEP-0030: Service Discovery", XEP XEP-0030,
+              June 2008.
+
+   [XEP-0115]
+              Hildebrand, J., Saint-Andre, P., Troncon, R., and J.
+              Konieczny, "XEP-0115: Entity Capabilities", XEP XEP-0115,
+              February 2008.
+
+   [XEP-0176]
+              Beda, J., Ludwig, S., Saint-Andre, P., Hildebrand, J.,
+              Egan, S., and R. McQueen, "XEP-0176: Jingle ICE-UDP
+              Transport Method", XEP XEP-0176, June 2009.
+
+
+Authors' Addresses
+
+   Eric Rescorla
+   RTFM, Inc.
+   2064 Edgewood Drive
+   Palo Alto, CA  94303
+   USA
+
+   Phone: +1 650 678 2350
+   Email: ekr@rtfm.com
+
+
+   Justin Uberti
+   Google
+   5 Cambridge Center
+   Cambridge, MA  02142
+   USA
+
+   Email: justin@uberti.name
+
+
+   Emil Ivov
+   Jitsi
+   Strasbourg  67000
+   France
+
+   Phone: +33 6 72 81 15 55
+   Email: emcho@jitsi.org
+
+
+
+
+
+
+
+Rescorla, et al.         Expires March 27, 2013                 [Page 9]
+
