@@ -4,10 +4,10 @@
 Network Working Group                                        E. Rescorla
 Internet-Draft                                                RTFM, Inc.
 Intended status: Standards Track                               J. Uberti
-Expires: March 27, 2013                                           Google
+Expires: March 29, 2013                                           Google
                                                                  E. Ivov
                                                                    Jitsi
-                                                      September 23, 2012
+                                                      September 25, 2012
 
 
 Trickle ICE: Incremental Provisioning of Candidates for the Interactive
@@ -41,7 +41,7 @@ Status of this Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on March 27, 2013.
+   This Internet-Draft will expire on March 29, 2013.
 
 Copyright Notice
 
@@ -52,7 +52,7 @@ Copyright Notice
 
 
 
-Rescorla, et al.         Expires March 27, 2013                 [Page 1]
+Rescorla, et al.         Expires March 29, 2013                 [Page 1]
 
 Internet-Draft                 Trickle ICE                September 2012
 
@@ -108,7 +108,7 @@ Table of Contents
 
 
 
-Rescorla, et al.         Expires March 27, 2013                 [Page 2]
+Rescorla, et al.         Expires March 29, 2013                 [Page 2]
 
 Internet-Draft                 Trickle ICE                September 2012
 
@@ -147,29 +147,28 @@ Internet-Draft                 Trickle ICE                September 2012
    as soon as the first candidates for that stream have become
    available.
 
-   Tickle ICE allows to greatly reduce session establishment times in
-   cases where connectivity is confirmed for the first exchanged
-   candidates (e.g. where the host candidates for one of the agents is
-   directly reachable from those of the second agent).  Even when this
-   is not the case, running candidate harvesting for both agents and
-   connectivity checks all in parallel allows to considerably reduce ICE
-   processing times.
+   Tickle ICE allows reducing session establishment times in cases where
+   connectivity is confirmed for the first exchanged candidates (e.g.
+   where the host candidates for one of the agents is directly reachable
+   from those of the second agent).  Even when this is not the case,
+   running candidate harvesting for both agents and connectivity checks
+   all in parallel allows to considerably reduce ICE processing times.
 
    It is worth pointing out that before being introduced to the IETF,
-   trickle ICE has already been been included in specifications such as
+   trickle ICE had already been been included in specifications such as
    XMPP Jingle [XEP-0176] and it has been deployed in use by various
    implementations.
 
    In addition to the basics of trickle ICE, this document also
+   describes how, support for trickle ICE needs to be discovered, how
 
 
 
-Rescorla, et al.         Expires March 27, 2013                 [Page 3]
+Rescorla, et al.         Expires March 29, 2013                 [Page 3]
 
 Internet-Draft                 Trickle ICE                September 2012
 
 
-   describes how, support for trickle ICE needs to be discovered, how
    regular ICE processing needs to be modified when building and
    updating check lists, and how trickle ICE implementations should
    interoperate with agents that only implement [RFC5245] processing.
@@ -217,15 +216,14 @@ Internet-Draft                 Trickle ICE                September 2012
    [I-D.keranen-mmusic-ice-address-selection]) from any of the
    candidates that Bob has gathered.  This would be the case if Bob's
    candidates only contain IPv4 addresses and the first candidate that
+   he receives from Alice is an IPv6 one.
 
 
 
-Rescorla, et al.         Expires March 27, 2013                 [Page 4]
+Rescorla, et al.         Expires March 29, 2013                 [Page 4]
 
 Internet-Draft                 Trickle ICE                September 2012
 
-
-   he receives from Alice is an IPv6 one.
 
    [emcho: I am not sure we need the following since Bob's choice to
    start checks immediately is entirely an implemenation issue issue and
@@ -273,15 +271,20 @@ Internet-Draft                 Trickle ICE                September 2012
    that support would be present.  One example for this would be a
    WebRTC application that does not need to interoperate with
    applications from other web sites.  Such applications can just enable
+   trickle ICE without performing any additional checks.
 
 
 
-Rescorla, et al.         Expires March 27, 2013                 [Page 5]
+
+Rescorla, et al.         Expires March 29, 2013                 [Page 5]
 
 Internet-Draft                 Trickle ICE                September 2012
 
 
-   trickle ICE without performing any additional checks.
+   In other cases yet, agents may choose to just send an offer that the
+   remote party reject as invalid unless it supports trickling.  One
+   such example would be an offer with no ICE candidates and an invalid
+   default address (e.g. 0.0.0.0).
 
 
 5.  Sending the Initial Offer
@@ -326,15 +329,16 @@ Internet-Draft                 Trickle ICE                September 2012
    empty?  How do they get unfrozen when candidates come in? juberti:
    same condition as when we start: we wait and we unfreeze any check
    list that gets a candidate. martin: could fail if we start conn
-   checking a server reflexive candidate for a component where we
-   haven't yet sent hours.  [TODO: discuss, resolve and expand]
 
 
 
-
-Rescorla, et al.         Expires March 27, 2013                 [Page 6]
+Rescorla, et al.         Expires March 29, 2013                 [Page 6]
 
 Internet-Draft                 Trickle ICE                September 2012
+
+
+   checking a server reflexive candidate for a component where we
+   haven't yet sent hours.  [TODO: discuss, resolve and expand]
 
 
 9.  Processing Newly Received Candidates
@@ -380,19 +384,18 @@ Internet-Draft                 Trickle ICE                September 2012
        [RFC5245] does?
    2.  Should this document cover use of trickle ICE with SIP as
        [RFC5245] does?
-   3.  This document currently treats trickle ICE as an extra mode of
-       operation for ICE that is incompatible with RFC 5245 and should
-       only be used when support is confirmed.  Is this the right way?
 
 
 
 
-
-Rescorla, et al.         Expires March 27, 2013                 [Page 7]
+Rescorla, et al.         Expires March 29, 2013                 [Page 7]
 
 Internet-Draft                 Trickle ICE                September 2012
 
 
+   3.  This document currently treats trickle ICE as an extra mode of
+       operation for ICE that is incompatible with RFC 5245 and should
+       only be used when support is confirmed.  Is this the right way?
    4.  If we do decide to handle SIP here: Using trickle ICE with SIP
        adds additional constraints.  RFC3261 disallows reINVITE-s until
        the INVITE transaction completes which means that candidate
@@ -438,16 +441,17 @@ Internet-Draft                 Trickle ICE                September 2012
               "Session Traversal Utilities for NAT (STUN)", RFC 5389,
               October 2008.
 
-   [RFC5766]  Mahy, R., Matthews, P., and J. Rosenberg, "Traversal Using
-              Relays around NAT (TURN): Relay Extensions to Session
-              Traversal Utilities for NAT (STUN)", RFC 5766, April 2010.
 
 
 
-Rescorla, et al.         Expires March 27, 2013                 [Page 8]
+Rescorla, et al.         Expires March 29, 2013                 [Page 8]
 
 Internet-Draft                 Trickle ICE                September 2012
 
+
+   [RFC5766]  Mahy, R., Matthews, P., and J. Rosenberg, "Traversal Using
+              Relays around NAT (TURN): Relay Extensions to Session
+              Traversal Utilities for NAT (STUN)", RFC 5766, April 2010.
 
    [XEP-0030]
               Hildebrand, J., Millard, P., Eatmon, R., and P. Saint-
@@ -486,6 +490,21 @@ Authors' Addresses
    Email: justin@uberti.name
 
 
+
+
+
+
+
+
+
+
+
+
+Rescorla, et al.         Expires March 29, 2013                 [Page 9]
+
+Internet-Draft                 Trickle ICE                September 2012
+
+
    Emil Ivov
    Jitsi
    Strasbourg  67000
@@ -500,5 +519,42 @@ Authors' Addresses
 
 
 
-Rescorla, et al.         Expires March 27, 2013                 [Page 9]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rescorla, et al.         Expires March 29, 2013                [Page 10]
 

@@ -118,8 +118,8 @@
         stream have become available.
       </t>
       <t>
-        Tickle ICE allows to greatly reduce session establishment times
-        in cases where connectivity is confirmed for the first exchanged
+        Tickle ICE allows reducing session establishment times in cases
+        where connectivity is confirmed for the first exchanged
         candidates (e.g. where the host candidates for one of the agents
         is directly reachable from those of the second agent). Even when
         this is not the case, running candidate harvesting for both
@@ -128,7 +128,7 @@
       </t>
       <t>
         It is worth pointing out that before being introduced to the
-        IETF, trickle ICE has already been been included in
+        IETF, trickle ICE had already been been included in
         specifications such as <xref target="XEP-0176">XMPP
         Jingle</xref> and it has been deployed in use by various
         implementations.
@@ -282,6 +282,12 @@
         be a WebRTC application that does not need to interoperate with
         applications from other web sites. Such applications can just
         enable trickle ICE without performing any additional checks.
+      </t>
+      <t>
+        In other cases yet, agents may choose to just send an offer
+        that the remote party reject as invalid unless it supports
+        trickling. One such example would be an offer with no ICE
+        candidates and an invalid default address (e.g. 0.0.0.0).
       </t>
     </section>
     <section title='Sending the Initial Offer' >
