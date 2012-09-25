@@ -293,7 +293,7 @@
     <section title='Sending the Initial Offer' >
       <t>
         Trickle ICE agents MAY include any set of candidates in their
-        initial Offer. This includes the possibility of sending an offer
+        initial offer. This includes the possibility of sending an offer
         with no candidates, or one that contains all the candidates that
         the agent is planning on using in the following session.
       </t>
@@ -305,17 +305,18 @@
         enable them to begin connectivity checks.
       </t>
       <t>
-        If the privacy implications of revealing a host's addresses are
-        a concern, agents SHOULD send an initial offer that contains no
-        candidates. [TODO emcho: justin, when you mentioned the privacy
-        concerns of using 0.0.0.0 rather than a host address, did that
-        mean that host addresses are not revealed at any point of the
-        trickling?]
-        [TODO: expand further]
+        If the privacy implications of revealing host addresses are a
+        concern, agents SHOULD send an initial offer that contains no
+        candidates. [TODO emcho: which reminds me, justin, when you
+        mentioned the privacy concerns of using 0.0.0.0 rather than a
+        host address, did that mean that host addresses are not revealed
+        at any point of the trickling?]
+        [TODO: anything else?]
       </t>
     </section>
     <section title='Trickling Additional Candidates' anchor="trickling">
       <t>
+
         [TODO: Explain rules about how to trickle. Are there any? Can
         we just send any candidate at any point?]
       </t>
