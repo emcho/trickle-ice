@@ -372,8 +372,12 @@
     </section>
     <section title="Ending Candidate Trickling" anchor="end.trickling">
       <t>
-        juberti: need end-of-candidates message, or timeout
-        emcho: probably both?
+        At any point while ICE is running any of the participating
+        agents may reach a point where it would not be able obtaining
+        any new candidates. In such cases agents SHOULD an indication to
+        the remote party, notifying them that the candidate trickling
+        has ended.
+        [TODO: should this be sent by the controlling agent only?]
         [TODO: expand]
       </t>
     </section>
