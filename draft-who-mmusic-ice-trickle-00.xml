@@ -292,18 +292,26 @@
     </section>
     <section title='Sending the Initial Offer' >
       <t>
-        Typically trickle ICE agents would start by sending an offer
-        that only contains host candidates.
-        [TODO: expand]
+        Trickle ICE agents MAY include any set of candidates in their
+        initial Offer. This includes the possibility of sending an offer
+        with no candidates, or one that contains all the candidates that
+        the agent is planning on using in the following session.
       </t>
       <t>
-        Trickle ICE agents can also start by sending an empty offer.
-        [TODO: expand]
+        In order to improve performance, however, it is RECOMMENDED that
+        an initial offer contains host candidates only. This would allow
+        both agents to start gathering server reflexive, relayed and
+        other non-host candidates simultaneously, and it would also
+        enable them to begin connectivity checks.
       </t>
       <t>
-        Trickle ICE Agents may also send a full offer just as regular
-        ICE agents do (e.g. for reasons of simplicity.
-        [TODO: expand]
+        If the privacy implications of revealing a host's addresses are
+        a concern, agents SHOULD send an initial offer that contains no
+        candidates. [TODO emcho: justin, when you mentioned the privacy
+        concerns of using 0.0.0.0 rather than a host address, did that
+        mean that host addresses are not revealed at any point of the
+        trickling?]
+        [TODO: expand further]
       </t>
     </section>
     <section title='Trickling Additional Candidates' anchor="trickling">
