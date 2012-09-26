@@ -141,6 +141,13 @@
         implementations should interoperate with agents that only
         implement <xref target="RFC5245"/> processing.
       </t>
+      <t>
+        This specification does not define usage of trickle ICE with any
+        specific signalling or media description protocol, contrary to
+        <xref target="RFC5245"/> which defined a usage for ICE wht SIP
+        and SDP.
+      </t>
+
     </section>
     <section title="Terminology">
       <t>
