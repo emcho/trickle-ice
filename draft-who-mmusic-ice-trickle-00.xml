@@ -156,6 +156,20 @@
         "OPTIONAL" in this document are to be interpreted as described
         in <xref target="RFC2119"/>.
       </t>
+      <t>
+        This specification makes use of all terminology defined by the
+        the protocol for Interactive Connectivity Establishment in
+        <xref target="RFC5245"/>.
+      </t>
+      <t>
+        This specification makes use of all terminology defined by the
+        the protocol for Interactive Connectivity Establishment in
+        <xref target="RFC5245"/>.
+      </t>
+      <t hangText="Vanilla ICE:">
+        The Interactive Connectivity Establishment protocol as defined
+        in <xref target="RFC5245"/>.
+      </t>
     </section>
     <section title='Incompatibility with Standard ICE'
              anchor='incompat'>
@@ -255,19 +269,18 @@
         filtering Bob's checks as originating from an unknown endpoint.
       </t>
     </section>
-    <section title='Detecting Support for Trickle ICE' >
+    <section title='Detecting Support for Trickle ICE' anchor="disco">
       <t>
         In order to avoid interoperability problems such as those
         described in section <xref target="incompat"/>, it is important
         that before generating an offer and sending its first candidates
-        an agent MUST first verify whether its correspondent also
+        an agent SHOULD first verify whether its correspondent also
         supports trickle ICE.
       </t>
       <t>
         The exact mechanisms that would allow for such verifications are
-        outside the scope of this document [TODO: unless we decide to
-        handle the SIP case here the way 5245 does it] and should be
-        handled by the signalling protocol that is employing ICE.
+        outside the scope of this document and should be handled by the
+        signalling protocol that is employing ICE.
       </t>
       <t>
         Examples of how some signalling protocols already handle
@@ -284,11 +297,16 @@
         </list>
       </t>
       <t>
-        In some cases it would be possible for an application to just
-        "know" that support would be present. One example for this would
-        be a WebRTC application that does not need to interoperate with
-        applications from other web sites. Such applications can just
-        enable trickle ICE without performing any additional checks.
+        Usages of trickle ICE SHOULD make use of these mechanisms where
+        they exist.
+      </t>
+      <t>
+        Also, in some cases it would be possible for an application to
+        just "know" that support would be present. One example for this
+        would be a WebRTC application that does not need to interoperate
+        with applications from other web sites. Such applications can
+        just enable trickle ICE without performing any additional
+        checks.
       </t>
       <t>
         In other cases yet, agents may choose to just send an offer
@@ -296,60 +314,108 @@
         trickling. One such example would be an offer with no ICE
         candidates and an invalid default address (e.g. 0.0.0.0).
       </t>
+      <t>
+        Usages of trickle ICE MUST define a way for offers or answers
+        transporting the initial list of ICE candidates to indicate
+        support for trickling. Note that an offer or an answer may
+        indicate lack of support for trickle ICE even if other
+        mechanisms have allowed to confirm that the remote agent does
+        support it. In such cases agents should act as if trickle ICE
+        is not supported for this particular session.
+      </t>
     </section>
     <section title='Sending the Initial Offer' >
       <t>
-        Trickle ICE agents MAY include any set of candidates in their
-        initial offer. This includes the possibility of sending an offer
-        with no candidates, or one that contains all the candidates that
-        the agent is planning on using in the following session.
+        An agent starts gathering candidates as soon as it has an
+        indication that communication is imminent (e.g. a user interface
+        cue or an explicit request to initiate a session). However,
+        contrary to vanilla ICE, implementations of trickle ICE do not
+        need to gather candidates in a blocking manner, strictly
+        preceding the generation and transmission of their initial
+        offer.
       </t>
       <t>
-        In order to improve performance, however, it is RECOMMENDED that
-        an initial offer contains host candidates only. This would allow
-        both agents to start gathering server reflexive, relayed and
-        other non-host candidates simultaneously, and it would also
-        enable them to begin connectivity checks.
+        Trickle ICE agents MAY include any set of candidates in their
+        initial offer. This includes the possibility of generating an
+        offer with no candidates, or one that contains all the
+        candidates that the agent is planning on using in the following
+        session.
+      </t>
+      <t>
+        For optimal performance, it is RECOMMENDED that an initial offer
+        contains host candidates only. This would allow both agents to
+        start gathering server reflexive, relayed and other non-host
+        candidates simultaneously, and it would also enable them to
+        begin connectivity checks.
       </t>
       <t>
         If the privacy implications of revealing host addresses are a
-        concern, agents SHOULD send an initial offer that contains no
-        candidates. [TODO emcho: which reminds me, justin, when you
-        mentioned the privacy concerns of using 0.0.0.0 rather than a
-        host address, did that mean that host addresses are not revealed
-        at any point of the trickling?]
-        [TODO: anything else?]
+        concern, agents MAY generate an initial offer that contains no
+        candidates and then only trickle candidates that do not reveal
+        host addresses (e.g. relayed candidates).
       </t>
-    </section>
-    <section title='Trickling Additional Candidates' anchor="trickling">
       <t>
-
-        [TODO: Explain rules about how to trickle. Are there any? Can
-        we just send any candidate at any point?]
+        Prior to actually sending an offer agents SHOULD verify if the
+        remote party supports trickle ICE. If absence if such support is
+        confirmed agents SHOULD fall back to using vanilla ICE or
+        abandon the entire session.
+      </t>
+      <t>
+        All trickle ICE offers MUST indicate support of this
+        specification. The exact means of providing this indication is
+        left to the usages that define how signalling protocols employ
+        trickle ICE.
+      </t>
+      <t>
+        [TODO: prioritizing and calculating foundations and such should
+        work the same way they did with 5245]
       </t>
     </section>
     <section title='Receiving the Initial Offer' >
       <t>
-        Verifying Trickle ICE Support.
-        [TODO: expand]
+        When an agent receives an initial ICE-enabled offer, it will
+        check if the offerer supports trickle ICE as explained in
+        <xref target="disco"/>. If this is not the case, the agent MUST
+        process this offer according to the <xref target="RFC5245"/>
+        procedures.
       </t>
       <t>
-        Start gathering candidates
-        [TODO: expand]
+        If, the offer does indicate support for trickle ICE, the agent
+        will start gathering and prioritizing candidates and, while
+        doing so it will also send an answer, start forming checklists
+        and begin connectivity checks.
       </t>
+      <section title="Sending an answer">
+        <t>
+          The agent can create and send an answer at any point while
+          gathering candidates. Just as with offers, answers can contain
+          no or all candidates an agent is planning on using. Again, as
+          with offers, it is RECOMMENDED that answers contain host
+          candidates so that the remote party can also start forming
+          checklists and performing connectivity checks.
+        </t>
+        <t>
+          The answer MUST indicate support for trickle ICE as specified
+          by usage specifications.
+        </t>
+      </section>
+      <section title="Forming check lists">
       <t>
-        Send an initial answer: empty or containing readily available
-        candidates.
-        [TODO: expand]
+        Forming check lists
       </t>
+      </section>
+    </section>
+    <section title="Receipt of the Initial Answer">
       <t>
-        Start trickling additional candidates as in
-        <xref target="trickling"/>.
-        [TODO: expand]
+        [TODO: create check lists]
+
       </t>
     </section>
     <section title='Performing Connectivity Checks' >
       <t>
+        Performing connectivity checks (how do we change the rules for
+        state updates).
+
         Contrary to <xref target="RFC5245"/> where connectivity checks
         only start once all check lists have been created, a trickle ICE
         agent would have to start earlier.
@@ -367,9 +433,39 @@
         [TODO: discuss, resolve and expand]
       </t>
     </section>
+    <section title='Sending Additional Local Candidates'
+             anchor="send-trickling">
+      <t>
+        After an initial offer has been sent or received, agents will
+        most likely continue discovering new local candidates as
+        responses from STUN/TURN servers, and other candidate sources
+        arrive. Whenever such new candidates are received agents can
+        handle them in one of the following ways:
+      </t>
+      <t>
+        [TODO: prioritizing and calculating foundations and such should
+        work the same way they did with 5245]
+        [TODO: when do we stop - a) when we have a nominated candidate
+           b) when all harvesters are completed ]
+        [TODO: Explain rules about how to trickle. Are there any? Can
+        we just send any candidate at any point?]
+      </t>
+    </section>
+    <section title='Receiving Additional Remote Candidates'
+             anchor="recv-trickling">
+      <t>
+        [TODO: depending on our state we either just remember the new
+        candidate or we pair it with every possible agent (including
+        peer reflexive), we prioritize it and add it to the check lists.
+        Potentially, we could ]
+      </t>
+    </section>
     <section title='Processing Newly Received Candidates' >
       <t>
+        explain state updates and when we unfreeze new lists/pairs
         explain checklist updates upon reception of new candidates.
+        we only care about pairs that end up being higher priority than
+        the valid ones.
         juberti: If we have a valid pair, and we get a
         candidate that results in higher priority pairs, we need to test
         those pairs. Any lower priority pairs can be ignored though,
@@ -381,9 +477,9 @@
     <section title="Ending Candidate Trickling" anchor="end.trickling">
       <t>
         At any point while ICE is running any of the participating
-        agents may reach a point where it would not be able obtaining
-        any new candidates. In such cases agents SHOULD an indication to
-        the remote party, notifying them that the candidate trickling
+        agents may reach a point where it would not be able obtain any
+        new candidates. In such cases agents SHOULD send an indication
+        to the remote party, notifying them that the candidate trickling
         has ended.
         [TODO: should this be sent by the controlling agent only?]
         [TODO: expand]
