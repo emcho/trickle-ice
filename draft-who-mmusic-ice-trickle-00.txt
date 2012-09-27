@@ -76,22 +76,22 @@ Table of Contents
    5.  Sending the Initial Offer  . . . . . . . . . . . . . . . . . .  6
    6.  Receiving the Initial Offer  . . . . . . . . . . . . . . . . .  7
      6.1.  Sending an answer  . . . . . . . . . . . . . . . . . . . .  7
-     6.2.  Forming check lists  . . . . . . . . . . . . . . . . . . .  8
+     6.2.  Forming check lists and beginning connectivity checks  . .  8
    7.  Receipt of the Initial Answer  . . . . . . . . . . . . . . . .  8
    8.  Performing Connectivity Checks . . . . . . . . . . . . . . . .  8
    9.  Sending Additional Local Candidates  . . . . . . . . . . . . .  8
-   10. Receiving Additional Remote Candidates . . . . . . . . . . . .  8
+   10. Receiving Additional Remote Candidates . . . . . . . . . . . .  9
    11. Processing Newly Received Candidates . . . . . . . . . . . . .  9
-   12. Ending Candidate Trickling . . . . . . . . . . . . . . . . . .  9
-   13. Ending ICE Processing with Trickle ICE . . . . . . . . . . . .  9
-   14. Interaction with non-Trickle ICE implementations . . . . . . .  9
-   15. Security Considerations  . . . . . . . . . . . . . . . . . . .  9
-   16. Open Issues  . . . . . . . . . . . . . . . . . . . . . . . . .  9
-   17. References . . . . . . . . . . . . . . . . . . . . . . . . . . 10
-     17.1. Normative References . . . . . . . . . . . . . . . . . . . 10
-     17.2. Informative References . . . . . . . . . . . . . . . . . . 10
-   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 11
-
+   12. Updating states  . . . . . . . . . . . . . . . . . . . . . . .  9
+   13. Ending Candidate Trickling . . . . . . . . . . . . . . . . . .  9
+   14. Ending ICE Processing with Trickle ICE . . . . . . . . . . . . 10
+   15. Interaction with non-Trickle ICE implementations . . . . . . . 10
+   16. Security Considerations  . . . . . . . . . . . . . . . . . . . 10
+   17. Open Issues  . . . . . . . . . . . . . . . . . . . . . . . . . 10
+   18. References . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+     18.1. Normative References . . . . . . . . . . . . . . . . . . . 10
+     18.2. Informative References . . . . . . . . . . . . . . . . . . 11
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 12
 
 
 
@@ -367,9 +367,9 @@ Internet-Draft                 Trickle ICE                September 2012
    [RFC5245] procedures.
 
    If, the offer does indicate support for trickle ICE, the agent will
-   start gathering and prioritizing candidates and, while doing so it
-   will also send an answer, start forming checklists and begin
-   connectivity checks.
+   determine its role, start gathering and prioritizing candidates and,
+   while doing so it will also send an answer, start forming checklists
+   and begin connectivity checks.
 
 6.1.  Sending an answer
 
@@ -393,14 +393,32 @@ Rescorla, et al.         Expires March 31, 2013                 [Page 7]
 Internet-Draft                 Trickle ICE                September 2012
 
 
-6.2.  Forming check lists
+6.2.  Forming check lists and beginning connectivity checks
 
-   Forming check lists
+   After sending an answer, and as soon as they have gathered any
+   candidates, agents will begin forming candidate pairs, computing
+   their priorities and creating check lists according to the vanilla
+   ICE procedures described in [RFC5245].
+
+   Trickle ICE agents will then also attempt to unfreeze the check list
+   for the first media stream (i.e. the first media stream that was
+   reported to the ICE implementation from the using application).  If
+   this checklist is still empty however, agents will continue examining
+   media streams in the order they were reported and will unfreeze the
+   first non-empty checklist.
+
+   Respecting the order in which lists have been reported to an ICE
+   implementation, or in other words, the order in which streams had
+   been described by the signalling protocol (e.g.  SDP) is necessary so
+   that checks for the same media stream would be performed
+   simultaneously by both agents.
 
 
 7.  Receipt of the Initial Answer
 
-   [TODO: create check lists]
+   When receiving an answer, agents will follow vanilla ICE procedures
+   for determine their role and they would then form check lists as
+   described in Section 6.2.
 
 
 8.  Performing Connectivity Checks
@@ -423,6 +441,14 @@ Internet-Draft                 Trickle ICE                September 2012
 9.  Sending Additional Local Candidates
 
    After an initial offer has been sent or received, agents will most
+
+
+
+Rescorla, et al.         Expires March 31, 2013                 [Page 8]
+
+Internet-Draft                 Trickle ICE                September 2012
+
+
    likely continue discovering new local candidates as responses from
    STUN/TURN servers, and other candidate sources arrive.  Whenever such
    new candidates are received agents can handle them in one of the
@@ -437,16 +463,10 @@ Internet-Draft                 Trickle ICE                September 2012
 
 10.  Receiving Additional Remote Candidates
 
-   [TODO: depending on our state we either just remember the new
-   candidate or we pair it with every possible agent (including peer
-   reflexive), we prioritize it and add it to the check lists.
-   Potentially, we could ]
-
-
-
-Rescorla, et al.         Expires March 31, 2013                 [Page 8]
-
-Internet-Draft                 Trickle ICE                September 2012
+   [TODO: use 7.2.1.3 i 7.2.1.4. for inspiration] [TODO: depending on
+   our state we either just remember the new candidate or we pair it
+   with every possible agent (including peer reflexive), we prioritize
+   it and add it to the check lists.  Potentially, we could ]
 
 
 11.  Processing Newly Received Candidates
@@ -460,7 +480,14 @@ Internet-Draft                 Trickle ICE                September 2012
    candidate can be ignored. (ignoring hot backups) [TODO: expand]
 
 
-12.  Ending Candidate Trickling
+12.  Updating states
+
+   [TODO: not sure if we need this yet, may very well be that the
+   algorithm of updating states when a transaction ends will be covered
+   by another section]
+
+
+13.  Ending Candidate Trickling
 
    At any point while ICE is running any of the participating agents may
    reach a point where it would not be able obtain any new candidates.
@@ -468,33 +495,6 @@ Internet-Draft                 Trickle ICE                September 2012
    notifying them that the candidate trickling has ended.  [TODO: should
    this be sent by the controlling agent only?]  [TODO: expand]
 
-
-13.  Ending ICE Processing with Trickle ICE
-
-   in case checks succeed. in case chacks fail and we have received the
-   end-of-candidates message or a timer has expired since the last
-   received candidate [TODO: expand]
-
-
-14.  Interaction with non-Trickle ICE implementations
-
-   Trickle ICE implementations MUST behave as non-trickle and follow
-   [RFC5245] unless they can confirm that the remote party supports this
-   specification.
-
-
-15.  Security Considerations
-
-   TODO
-
-
-16.  Open Issues
-
-   At the time of writing of this document the authors have no clear
-   view on how and if the following list of issues should be address
-   here:
-   1.  Should this document cover use of trickle ICE with SDP as
-       [RFC5245] does?
 
 
 
@@ -505,6 +505,33 @@ Rescorla, et al.         Expires March 31, 2013                 [Page 9]
 Internet-Draft                 Trickle ICE                September 2012
 
 
+14.  Ending ICE Processing with Trickle ICE
+
+   in case checks succeed. in case checks haven't succeded but we are
+   still waiting for candidate harvesters in case chacks fail and we
+   have received the end-of-candidates message or a timer has expired
+   since the last received candidate [TODO: expand]
+
+
+15.  Interaction with non-Trickle ICE implementations
+
+   Trickle ICE implementations MUST behave as non-trickle and follow
+   [RFC5245] unless they can confirm that the remote party supports this
+   specification.
+
+
+16.  Security Considerations
+
+   [TODO]
+
+
+17.  Open Issues
+
+   At the time of writing of this document the authors have no clear
+   view on how and if the following list of issues should be address
+   here:
+   1.  Should this document cover use of trickle ICE with SDP as
+       [RFC5245] does?
    2.  Should this document cover use of trickle ICE with SIP as
        [RFC5245] does?
    3.  This document currently treats trickle ICE as an extra mode of
@@ -519,19 +546,27 @@ Internet-Draft                 Trickle ICE                September 2012
        others.
 
 
-17.  References
+18.  References
 
-17.1.  Normative References
+18.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119, March 1997.
+
+
+
+
+Rescorla, et al.         Expires March 31, 2013                [Page 10]
+
+Internet-Draft                 Trickle ICE                September 2012
+
 
    [RFC5245]  Rosenberg, J., "Interactive Connectivity Establishment
               (ICE): A Protocol for Network Address Translator (NAT)
               Traversal for Offer/Answer Protocols", RFC 5245,
               April 2010.
 
-17.2.  Informative References
+18.2.  Informative References
 
    [I-D.keranen-mmusic-ice-address-selection]
               Keranen, A. and J. Arkko, "Update on Candidate Address
@@ -553,14 +588,6 @@ Internet-Draft                 Trickle ICE                September 2012
 
    [RFC5389]  Rosenberg, J., Mahy, R., Matthews, P., and D. Wing,
               "Session Traversal Utilities for NAT (STUN)", RFC 5389,
-
-
-
-Rescorla, et al.         Expires March 31, 2013                [Page 10]
-
-Internet-Draft                 Trickle ICE                September 2012
-
-
               October 2008.
 
    [RFC5766]  Mahy, R., Matthews, P., and J. Rosenberg, "Traversal Using
@@ -581,6 +608,13 @@ Internet-Draft                 Trickle ICE                September 2012
               Beda, J., Ludwig, S., Saint-Andre, P., Hildebrand, J.,
               Egan, S., and R. McQueen, "XEP-0176: Jingle ICE-UDP
               Transport Method", XEP XEP-0176, June 2009.
+
+
+
+
+Rescorla, et al.         Expires March 31, 2013                [Page 11]
+
+Internet-Draft                 Trickle ICE                September 2012
 
 
 Authors' Addresses
@@ -604,19 +638,6 @@ Authors' Addresses
    Email: justin@uberti.name
 
 
-
-
-
-
-
-
-
-
-Rescorla, et al.         Expires March 31, 2013                [Page 11]
-
-Internet-Draft                 Trickle ICE                September 2012
-
-
    Emil Ivov
    Jitsi
    Strasbourg  67000
@@ -624,27 +645,6 @@ Internet-Draft                 Trickle ICE                September 2012
 
    Phone: +33 6 72 81 15 55
    Email: emcho@jitsi.org
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

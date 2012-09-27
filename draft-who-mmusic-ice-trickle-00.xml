@@ -381,9 +381,9 @@
       </t>
       <t>
         If, the offer does indicate support for trickle ICE, the agent
-        will start gathering and prioritizing candidates and, while
-        doing so it will also send an answer, start forming checklists
-        and begin connectivity checks.
+        will determine its role, start gathering and prioritizing
+        candidates and, while doing so it will also send an answer,
+        start forming checklists and begin connectivity checks.
       </t>
       <section title="Sending an answer">
         <t>
@@ -399,15 +399,37 @@
           by usage specifications.
         </t>
       </section>
-      <section title="Forming check lists">
+      <section title="Forming check lists and beginning connectivity
+                      checks" anchor="check.lists">
       <t>
-        Forming check lists
+        After sending an answer, and as soon as they have gathered
+        any candidates, agents will begin forming candidate pairs,
+        computing their priorities and creating check lists according to
+        the vanilla ICE procedures described in
+        <xref target="RFC5245"/>.
+      </t>
+      <t>
+        Trickle ICE agents will then also attempt to unfreeze the check
+        list for the first media stream (i.e. the first media stream
+        that was reported to the ICE implementation from the using
+        application). If this checklist is still empty however, agents
+        will continue examining media streams in the order they were
+        reported and will unfreeze the first non-empty checklist.
+      </t>
+      <t>
+        Respecting the order in which lists have been reported to an ICE
+        implementation, or in other words, the order in which streams
+        had been described by the signalling protocol (e.g. SDP) is
+        necessary so that checks for the same media stream would be
+        performed simultaneously by both agents.
       </t>
       </section>
     </section>
     <section title="Receipt of the Initial Answer">
       <t>
-        [TODO: create check lists]
+        When receiving an answer, agents will follow vanilla ICE
+        procedures for determine their role and they would then
+        form check lists as described in <xref target="check.lists"/>.
 
       </t>
     </section>
@@ -454,6 +476,7 @@
     <section title='Receiving Additional Remote Candidates'
              anchor="recv-trickling">
       <t>
+        [TODO: use 7.2.1.3 i 7.2.1.4. for inspiration]
         [TODO: depending on our state we either just remember the new
         candidate or we pair it with every possible agent (including
         peer reflexive), we prioritize it and add it to the check lists.
@@ -474,6 +497,13 @@
         [TODO: expand]
       </t>
     </section>
+    <section title="Updating states" anchor="state.updates">
+      <t>
+        [TODO: not sure if we need this yet, may very well be that
+        the algorithm of updating states when a transaction ends will
+        be covered by another section]
+      </t>
+    </section>
     <section title="Ending Candidate Trickling" anchor="end.trickling">
       <t>
         At any point while ICE is running any of the participating
@@ -489,6 +519,8 @@
              anchor="end.ice">
       <t>
         in case checks succeed.
+        in case checks haven't succeded but we are still waiting for
+        candidate harvesters
         in case chacks fail and we have received the end-of-candidates
         message or a timer has expired since the last received candidate
         [TODO: expand]
@@ -503,7 +535,7 @@
     </section>
     <section title='Security Considerations'>
       <t>
-        TODO
+        [TODO]
       </t>
     </section>
     <section title='Open Issues'>
