@@ -79,19 +79,19 @@ Table of Contents
      6.2.  Forming check lists and beginning connectivity checks  . .  8
    7.  Receipt of the Initial Answer  . . . . . . . . . . . . . . . .  8
    8.  Performing Connectivity Checks . . . . . . . . . . . . . . . .  8
+     8.1.  Check List and Timer State Updates . . . . . . . . . . . .  8
    9.  Learning Sending Additional Local Candidates . . . . . . . . .  9
-   10. Receiving Additional Remote Candidates . . . . . . . . . . . .  9
-   11. Processing Newly Received Candidates . . . . . . . . . . . . .  9
-   12. Ending Candidate Trickling . . . . . . . . . . . . . . . . . . 10
-   13. Ending ICE Processing with Trickle ICE . . . . . . . . . . . . 10
-   14. Interaction with non-Trickle ICE implementations . . . . . . . 10
-   15. Security Considerations  . . . . . . . . . . . . . . . . . . . 10
-   16. Open Issues  . . . . . . . . . . . . . . . . . . . . . . . . . 10
-   17. References . . . . . . . . . . . . . . . . . . . . . . . . . . 11
-     17.1. Normative References . . . . . . . . . . . . . . . . . . . 11
-     17.2. Informative References . . . . . . . . . . . . . . . . . . 11
-   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 12
-
+   10. Receiving Additional Remote Candidates . . . . . . . . . . . . 11
+   11. Processing Newly Received Candidates . . . . . . . . . . . . . 11
+   12. Ending Candidate Trickling . . . . . . . . . . . . . . . . . . 11
+   13. Ending ICE Processing with Trickle ICE . . . . . . . . . . . . 11
+   14. Interaction with non-Trickle ICE implementations . . . . . . . 11
+   15. Security Considerations  . . . . . . . . . . . . . . . . . . . 11
+   16. Open Issues  . . . . . . . . . . . . . . . . . . . . . . . . . 12
+   17. References . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+     17.1. Normative References . . . . . . . . . . . . . . . . . . . 12
+     17.2. Informative References . . . . . . . . . . . . . . . . . . 12
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 13
 
 
 
@@ -434,13 +434,13 @@ Internet-Draft                 Trickle ICE                September 2012
    For the most part, trickle ICE agents perform connectivity checks
    following vanilla ICE procedures.  Of course, the asynchronous nature
    of candidate harvesting in trickle ICE would impose the following
-   changes: 1. maintaining a list of unfrozen foundations and add there
-   foundations for all pairs who've seen a successful check response.
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   Contrary to [RFC5245] where connectivity checks only start once all
-   check lists have been created, a trickle ICE agent would have to
-   start earlier. ekr: (a) as soon as any check list is non-empty, start
-   that media stream. juberti: seems like the best choice [TODO: expand]
+   changes:
+
+8.1.  Check List and Timer State Updates
+
+   The vanilla ICE specification requires that agents update the check
+   lists and timer states upon completing a connectivity check
+   transaction.  During such an update vanilla ICE agents would set the
 
 
 
@@ -449,22 +449,85 @@ Rescorla, et al.          Expires April 1, 2013                 [Page 8]
 Internet-Draft                 Trickle ICE                September 2012
 
 
-   ekr: Say I finish checks on one stream successfully.Ordinarily, I
-   would start to unfreeze other check lists, but what if those are
-   empty?  How do they get unfrozen when candidates come in? juberti:
-   same condition as when we start: we wait and we unfreeze any check
-   list that gets a candidate. martin: could fail if we start conn
-   checking a server reflexive candidate for a component where we
-   haven't yet sent hours.  [TODO: discuss, resolve and expand]
+   state of a check list to Failed if the following to conditions are
+   satisfied:
+   o  all of the pairs in the check list are either in the Failed or
+      Succeeded state;
+   o  if at least one of the components of the media stream has no pairs
+      in its valid list.
+
+   With trickle ICE, the above situation would often occur when
+   candidate harvesting and trickling are still in progress and it is
+   still perfectly possible that for checks will succeed.  For this
+   reason trickle ICE agents add the following conditions the above
+   list:
+   o  all candidate harvesters have completed and the agent is not
+      expecting to learn any new candidates;
+   o  the remote agent has sent an end-of-candidates message for that
+      check list as described in Section 12.
+   If
+
+   [TODO: unfreezing check lists should happen even if they are empty so
+   we should make sure that we have a check list state and not just
+   deduce it from the pairs in there] !!!!!!!!!!!  CONTINUE HERE
+   !!!!!!!!  Contrary to [RFC5245] where connectivity checks only start
+   once all check lists have been created, a trickle ICE agent would
+   have to start earlier. ekr: (a) as soon as any check list is non-
+   empty, start that media stream. juberti: seems like the best choice
+   [TODO: expand] ekr: Say I finish checks on one stream
+   successfully.Ordinarily, I would start to unfreeze other check lists,
+   but what if those are empty?  How do they get unfrozen when
+   candidates come in? juberti: same condition as when we start: we wait
+   and we unfreeze any check list that gets a candidate. martin: could
+   fail if we start conn checking a server reflexive candidate for a
+   component where we haven't yet sent hours.  [TODO: discuss, resolve
+   and expand]
 
 
 9.  Learning Sending Additional Local Candidates
 
    After an initial offer has been sent or received, agents will most
-   likely continue discovering new local candidates as responses from
-   STUN/TURN servers, and other candidate sources arrive.  Whenever such
-   new candidates are received agents can handle them in one of the
-   following ways:
+   likely continue discovering new local candidates as STUN, TURN and
+   other non-local candidate harvesting mechanisms begin to yield
+   results.  Whenever such new candidates are received agents will
+   compute their priority, type, foundation and component id according
+   to normal vanilla ICE procedures and send them to the remote agent.
+
+   Then, if no remote candidates are currently known for this same
+   stream, the new candidate is simply added to the list of local
+   candidates (unless of course it turns out to have the same transport
+   address and base as an existing local candidate in which case it will
+
+
+
+Rescorla, et al.          Expires April 1, 2013                 [Page 9]
+
+Internet-Draft                 Trickle ICE                September 2012
+
+
+   be redundant as per vanilla ICE).
+
+   Otherwise, if the agent has already learned of one or more remote
+   candidates, it will begin pairing the new candidates with them and
+   add then adding the pairs to the existing check lists according to
+   their priority.  For the most part, forming candidate pairs will work
+   the way it is described by the vanilla ICE specification although
+   trickle ICE agents must also observe the following rules: For every
+   newly added pair:
+   o  if the checklist is currently empty or only contains pairs
+      candidates in Succeeded and or Failed states, then - we add the
+      new candidates and place them in Waiting state else - if the
+      checklist contains pairs with the same foundation that are still
+      Frozen then - we add the new pair and set it to Frozen too else if
+      the same foundations exist but are either waiting, in-progress,
+      succeeded or failed - we place the new pair in the Waiting state
+      else if a pair exists with the same local and remote address
+      (after replacing the local with the base for SRV refl) * if that
+      pair is in the waiting state - we do nothing and ignore the
+      current one * else, if that pair is in-progress, we cancel the in-
+      progress transaction (where cancelling a transaction happens the
+      same way as in vanilla ICE), and place it in waiting again (or
+      maybe do a triggered check too?)
 
    [TODO: newly received pairs may have to start as frozen or not
    7.1.3.2.3.1 states when to unfreeze pairs. we should probably
@@ -480,6 +543,22 @@ Internet-Draft                 Trickle ICE                September 2012
    a nominated candidate b) when all harvesters are completed ] [TODO:
    Explain rules about how to trickle.  Are there any?  Can we just send
    any candidate at any point?]
+
+   For the most part, trickle ICE agents perform connectivity checks
+   following vanilla ICE procedures.  Of course, the asynchronous nature
+   of candidate harvesting in trickle ICE would impose the following
+   changes: 1. maintaining a list of unfrozen foundations and add there
+   foundations for all pairs who've seen a successful check response.
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+
+Rescorla, et al.          Expires April 1, 2013                [Page 10]
+
+Internet-Draft                 Trickle ICE                September 2012
 
 
 10.  Receiving Additional Remote Candidates
@@ -497,14 +576,6 @@ Internet-Draft                 Trickle ICE                September 2012
    about pairs that end up being higher priority than the valid ones.
    juberti: If we have a valid pair, and we get a candidate that results
    in higher priority pairs, we need to test those pairs.  Any lower
-
-
-
-Rescorla, et al.          Expires April 1, 2013                 [Page 9]
-
-Internet-Draft                 Trickle ICE                September 2012
-
-
    priority pairs can be ignored though, which may mean the whole
    candidate can be ignored. (ignoring hot backups) [TODO: expand]
 
@@ -515,15 +586,16 @@ Internet-Draft                 Trickle ICE                September 2012
    reach a point where it would not be able obtain any new candidates.
    In such cases agents SHOULD send an indication to the remote party,
    notifying them that the candidate trickling has ended.  [TODO: should
-   this be sent by the controlling agent only?]  [TODO: expand]
+   this be sent by the controlling agent only?]  [TODO: end of
+   candidates should be sent for every checklist]
 
 
 13.  Ending ICE Processing with Trickle ICE
 
-   in case checks succeed. in case checks haven't succeded but we are
-   still waiting for candidate harvesters in case chacks fail and we
+   In case checks succeed.  In case checks haven't succeeded but we are
+   still waiting for candidate harvesters.  In case checks fail and we
    have received the end-of-candidates message or a timer has expired
-   since the last received candidate [TODO: expand]
+   since the last received candidate
 
 
 14.  Interaction with non-Trickle ICE implementations
@@ -536,6 +608,13 @@ Internet-Draft                 Trickle ICE                September 2012
 15.  Security Considerations
 
    [TODO]
+
+
+
+
+Rescorla, et al.          Expires April 1, 2013                [Page 11]
+
+Internet-Draft                 Trickle ICE                September 2012
 
 
 16.  Open Issues
@@ -553,14 +632,6 @@ Internet-Draft                 Trickle ICE                September 2012
    4.  If we do decide to handle SIP here: Using trickle ICE with SIP
        adds additional constraints.  RFC3261 disallows reINVITE-s until
        the INVITE transaction completes which means that candidate
-
-
-
-Rescorla, et al.          Expires April 1, 2013                [Page 10]
-
-Internet-Draft                 Trickle ICE                September 2012
-
-
        updates need to use another mechanism.  Using UPDATE requests
        [RFC3311] could be one option.  Requiring a hasty completion of
        the initial transaction could be another and there are probably
@@ -595,6 +666,13 @@ Internet-Draft                 Trickle ICE                September 2012
               "Indicating User Agent Capabilities in the Session
               Initiation Protocol (SIP)", RFC 3840, August 2004.
 
+
+
+Rescorla, et al.          Expires April 1, 2013                [Page 12]
+
+Internet-Draft                 Trickle ICE                September 2012
+
+
    [RFC4787]  Audet, F. and C. Jennings, "Network Address Translation
               (NAT) Behavioral Requirements for Unicast UDP", BCP 127,
               RFC 4787, January 2007.
@@ -609,14 +687,6 @@ Internet-Draft                 Trickle ICE                September 2012
 
    [XEP-0030]
               Hildebrand, J., Millard, P., Eatmon, R., and P. Saint-
-
-
-
-Rescorla, et al.          Expires April 1, 2013                [Page 11]
-
-Internet-Draft                 Trickle ICE                September 2012
-
-
               Andre, "XEP-0030: Service Discovery", XEP XEP-0030,
               June 2008.
 
@@ -652,6 +722,13 @@ Authors' Addresses
    Email: justin@uberti.name
 
 
+
+
+Rescorla, et al.          Expires April 1, 2013                [Page 13]
+
+Internet-Draft                 Trickle ICE                September 2012
+
+
    Emil Ivov
    Jitsi
    Strasbourg  67000
@@ -668,5 +745,40 @@ Authors' Addresses
 
 
 
-Rescorla, et al.          Expires April 1, 2013                [Page 12]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rescorla, et al.          Expires April 1, 2013                [Page 14]
 
