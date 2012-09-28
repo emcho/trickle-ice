@@ -406,7 +406,11 @@
         any candidates, agents will begin forming candidate pairs,
         computing their priorities and creating check lists according to
         the vanilla ICE procedures described in
-        <xref target="RFC5245"/>.
+        <xref target="RFC5245"/>. Obviously in order for candidate
+        pairing to be possible, it would be necessary that both the
+        offer and the ensuing answer contained candidates. If this was
+        not the case agent would postpone check list creation for a
+        point where they have learned both local and remote candidates.
       </t>
       <t>
         Trickle ICE agents will then also attempt to unfreeze the check
@@ -423,20 +427,32 @@
         necessary so that checks for the same media stream would be
         performed simultaneously by both agents.
       </t>
+      <t>
+        If there are currently no checklists that contain candidate
+        pairs, the agents would postpone check list creation for stages
+        when the first remote
+      </t>
       </section>
     </section>
     <section title="Receipt of the Initial Answer">
       <t>
         When receiving an answer, agents will follow vanilla ICE
-        procedures for determine their role and they would then
-        form check lists as described in <xref target="check.lists"/>.
-
+        procedures to determine their role and they would then
+        form check lists and begin connectivity checks as described in
+        <xref target="check.lists"/>.
       </t>
     </section>
     <section title='Performing Connectivity Checks' >
       <t>
-        Performing connectivity checks (how do we change the rules for
-        state updates).
+        For the most part, trickle ICE agents perform connectivity
+        checks following vanilla ICE procedures. Of course, the
+        asynchronous nature of candidate harvesting in trickle ICE would
+        impose the following changes:
+
+        1. maintaining a list of unfrozen foundations and add there
+        foundations for all pairs who've seen a successful check
+        response.
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         Contrary to <xref target="RFC5245"/> where connectivity checks
         only start once all check lists have been created, a trickle ICE
@@ -455,7 +471,7 @@
         [TODO: discuss, resolve and expand]
       </t>
     </section>
-    <section title='Sending Additional Local Candidates'
+    <section title='Learning Sending Additional Local Candidates'
              anchor="send-trickling">
       <t>
         After an initial offer has been sent or received, agents will
@@ -465,6 +481,15 @@
         handle them in one of the following ways:
       </t>
       <t>
+        [TODO: newly received pairs may have to start as frozen or not
+        7.1.3.2.3.1 states when to unfreeze pairs. we should probably
+        maintain an "unfrozen foundations" list and check it out when
+        determining new pair states.]
+        [TODO: a newly created check list is immediately unfrozen if it
+        is the only non-empty]
+        [TODO: a newly discovered server-reflexive candidate should be
+        sent but only added to the check list if it's base is not in
+        there. if it is, and it's in-progress - cancel and place it in waiting? if it is failed - waiting. kind of as with triggered checks in 7.2.1.4t.]
         [TODO: prioritizing and calculating foundations and such should
         work the same way they did with 5245]
         [TODO: when do we stop - a) when we have a nominated candidate
@@ -476,7 +501,7 @@
     <section title='Receiving Additional Remote Candidates'
              anchor="recv-trickling">
       <t>
-        [TODO: use 7.2.1.3 i 7.2.1.4. for inspiration]
+        [TODO: use 7.2.1.3 i 7.2.1.4. 7.1.3.2.1 for inspiration]
         [TODO: depending on our state we either just remember the new
         candidate or we pair it with every possible agent (including
         peer reflexive), we prioritize it and add it to the check lists.
@@ -495,13 +520,6 @@
         which may mean the whole candidate can be ignored. (ignoring hot
         backups)
         [TODO: expand]
-      </t>
-    </section>
-    <section title="Updating states" anchor="state.updates">
-      <t>
-        [TODO: not sure if we need this yet, may very well be that
-        the algorithm of updating states when a transaction ends will
-        be covered by another section]
       </t>
     </section>
     <section title="Ending Candidate Trickling" anchor="end.trickling">
