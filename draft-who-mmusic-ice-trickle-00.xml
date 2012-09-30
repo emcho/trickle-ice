@@ -65,13 +65,13 @@
         This document describes an extension to the Interactive
         Connectivity Establishment (ICE) protocol that allows ICE agents
         to send and receive candidates incrementally rather than
-        exchanging complete lists. With incremental provisioning, ICE
-        agents can begin connectivity checks while they are still
+        exchanging complete lists. With such incremental provisioning,
+        ICE agents can begin connectivity checks while they are still
         gathering candidates and considerably shorten the time necessary
         for ICE processing to complete.
       </t>
       <t>
-        The above mechanism is often referred to as "trickle ICE".
+        The above mechanism is also referred to as "trickle ICE".
       </t>
     </abstract>
   </front>
@@ -81,30 +81,30 @@
         The Interactive Connectivity Establishment (ICE) protocol
         <xref target="RFC5245"/> describes mechanisms for gathering,
         candidates, prioritizing them, choosing default ones, exchanging
-        them with the remote party, and pairing them and ordering them
-        into check lists. Once all of the above have been completed, and
-        only then, the participating agents can begin a phase of
-        connectivity checks and eventually select the pair of candidates
-        that will be used in the following session.
+        them with the remote party, pairing them and ordering them into
+        check lists. Once all of the above have been completed, and only
+        then, the participating agents can begin a phase of connectivity
+        checks and eventually select the pair of candidates that will be
+        used in the following session.
       </t>
       <t>
         While the above sequence has the advantage of being relatively
-        straightforward to implement, and debug once deployed, it may
-        also prove to be rather lengthy. Gathering candidates would
-        often involve things like querying
+        straightforward to implement and debug once deployed, it may
+        also prove to be rather lengthy. Gathering candidates or
+        candidate harvesting would often involve things like querying
         <xref target="RFC5389">STUN</xref> servers, discovering UPnP
         devices, and allocating relayed candidates at
         <xref target="RFC5766">TURN</xref> servers. All of these can
         be delayed for a noticeable amount of time and while they can be
         run in parallel, they still need to respect the pacing
         requirements from <xref target="RFC5245"/>, which is likely to
-        delay them even further. Some or all of the above would then
-        have to be completed by the remote agent. Both agents would then
-        need to perform connectivity checks and only then would they be
+        delay them even further. Some or all of the above would also
+        have to be completed by the remote agent. Both agents would
+        next perform connectivity checks and only then would they be
         ready to begin streaming media.
       </t>
       <t>
-        All of the above could lead to particularly lengthy session
+        All of the above could lead to relatively lengthy session
         establishment times and degraded user experience.
       </t>
       <t>
@@ -120,21 +120,20 @@
         Tickle ICE allows reducing session establishment times in cases
         where connectivity is confirmed for the first exchanged
         candidates (e.g. where the host candidates for one of the agents
-        is directly reachable from those of the second agent). Even when
-        this is not the case, running candidate harvesting for both
-        agents and connectivity checks all in parallel allows to
-        considerably reduce ICE processing times.
+        are directly reachable from the second agent). Even when this is
+        not the case, running candidate harvesting for both agents and
+        connectivity checks all in parallel allows to considerably
+        reduce ICE processing times.
       </t>
       <t>
         It is worth pointing out that before being introduced to the
-        IETF, trickle ICE had already been been included in
-        specifications such as <xref target="XEP-0176">XMPP
-        Jingle</xref> and it has been deployed in use by various
-        implementations.
+        IETF, trickle ICE had already been included in specifications
+        such as <xref target="XEP-0176">XMPP Jingle</xref> and it has
+        been in use in various implementations and deployments.
       </t>
       <t>
         In addition to the basics of trickle ICE, this document also
-        describes how, support for trickle ICE needs to be discovered,
+        describes how support for trickle ICE needs to be discovered,
         how regular ICE processing needs to be modified when
         building and updating check lists, and how trickle ICE
         implementations should interoperate with agents that only
@@ -144,9 +143,9 @@
         This specification does not define usage of trickle ICE with any
         specific signalling or media description protocol, contrary to
         <xref target="RFC5245"/> which defined a usage for ICE wht SIP
-        and SDP.
+        and SDP. Such usages would have to be specified in separate
+        documents.
       </t>
-
     </section>
     <section title="Terminology">
       <t>
@@ -160,30 +159,26 @@
         the protocol for Interactive Connectivity Establishment in
         <xref target="RFC5245"/>.
       </t>
-      <t>
-        This specification makes use of all terminology defined by the
-        the protocol for Interactive Connectivity Establishment in
-        <xref target="RFC5245"/>.
-      </t>
       <t hangText="Vanilla ICE:">
         The Interactive Connectivity Establishment protocol as defined
         in <xref target="RFC5245"/>.
       </t>
       <t hangText="Candidate Harvester:">
         A module used by an ICE agent to obtain local candidates.
-        Candidate Harvesters use different mechanisms for discovering
+        Candidate harvesters use different mechanisms for discovering
         local candidates. Some of them would typically make use of
-        techniques such as STUN or TURN or others whose use is defined
-        outside the context of <xref target="RFC5245"/>. UPnP based port
-        allocation and XMPP Jingle Relay Nodes <xref target="XEP-0278"/>
-        are examples of such mechanisms.
+        protocols such as STUN or TURN. Others may also employ
+        techniques that are not referenced within
+        <xref target="RFC5245"/>. UPnP based port allocation and XMPP
+        Jingle Relay Nodes <xref target="XEP-0278"/> are among the
+        possible examples.
       </t>
     </section>
     <section title='Incompatibility with Standard ICE'
              anchor='incompat'>
       <t>
         The ICE protocol was designed to be fairly flexible so that it
-        would work in and a adapt to as many network environments as
+        would work in and adapt to as many network environments as
         possible. It is hence important to point out at least some of
         the reasons why, despite its flexibility, the specification in
         <xref target="RFC5245"/> would not support trickle-ICE.
@@ -193,7 +188,6 @@
         update check lists and timer states while an ICE agent is in the
         Running state. These conditions are verified upon transaction
         completion and one of them stipulates that:
-
         <list style='empty'>
           <t>
             If there is not a pair in the valid list for each component
@@ -201,7 +195,6 @@
             Failed.
           </t>
         </list>
-
         This could be a problem and cause ICE processing to fail
         prematurely in a number of scenarios. Consider the following
         case:
@@ -235,10 +228,10 @@
         A similar race condition would occur if the initial offer from
         Alice only contains candidates that can be determined as
         unreachable (per
-        <xref target="I-D.keranen-mmusic-ice-address-selection"/>) from any
-        of the candidates that Bob has gathered. This would be the case
-        if Bob's candidates only contain IPv4 addresses and the first
-        candidate that he receives from Alice is an IPv6 one.
+        <xref target="I-D.keranen-mmusic-ice-address-selection"/>) from
+        any of the candidates that Bob has gathered. This would be the
+        case if Bob's candidates only contain IPv4 addresses and the
+        first candidate that he receives from Alice is an IPv6 one.
       </t>
       <t>
         [emcho: I am not sure we need the following since Bob's choice
@@ -281,9 +274,9 @@
       <t>
         In order to avoid interoperability problems such as those
         described in section <xref target="incompat"/>, it is important
-        that before generating an offer and sending its first candidates
-        an agent SHOULD first verify whether its correspondent also
-        supports trickle ICE.
+        that, before generating an offer and sending its first
+        candidates an agent SHOULD first verify whether its
+        correspondent also supports trickle ICE.
       </t>
       <t>
         The exact mechanisms that would allow for such verifications are
@@ -318,7 +311,7 @@
       </t>
       <t>
         In other cases yet, agents may choose to just send an offer
-        that the remote party reject as invalid unless it supports
+        that the remote party would reject as invalid unless it supports
         trickling. One such example would be an offer with no ICE
         candidates and an invalid default address (e.g. 0.0.0.0).
       </t>
@@ -363,8 +356,8 @@
         host addresses (e.g. relayed candidates).
       </t>
       <t>
-        Prior to actually sending an offer agents SHOULD verify if the
-        remote party supports trickle ICE. If absence if such support is
+        Prior to actually sending an offer, agents SHOULD verify if the
+        remote party supports trickle ICE. If absence of such support is
         confirmed agents SHOULD fall back to using vanilla ICE or
         abandon the entire session.
       </t>
@@ -375,8 +368,9 @@
         trickle ICE.
       </t>
       <t>
-        [TODO: prioritizing and calculating foundations and such should
-        work the same way they did with 5245]
+        Calculating priorities and foundations, as well as determining
+        redundancy of candidates work the same way they do with vanilla
+        ICE.
       </t>
     </section>
     <section title='Receiving the Initial Offer' >
@@ -385,13 +379,14 @@
         check if the offerer supports trickle ICE as explained in
         <xref target="disco"/>. If this is not the case, the agent MUST
         process this offer according to the <xref target="RFC5245"/>
-        procedures.
+        procedures or standard <xref target="RFC3264"/> processing in
+        case no ICE support is detected at all.
       </t>
       <t>
         If, the offer does indicate support for trickle ICE, the agent
         will determine its role, start gathering and prioritizing
-        candidates and, while doing so it will also send an answer,
-        start forming checklists and begin connectivity checks.
+        candidates and, while doing so it will also send an answer, in
+        order to start forming checklists and begin connectivity checks.
       </t>
       <section title="Sending an answer">
         <t>
@@ -403,7 +398,7 @@
           checklists and performing connectivity checks.
         </t>
         <t>
-          The answer MUST indicate support for trickle ICE as specified
+          The answer MUST indicate support for trickle ICE as described
           by usage specifications.
         </t>
       </section>
@@ -418,7 +413,7 @@
           pairing to be possible, it would be necessary that both the
           offer and the ensuing answer contained candidates. If this was
           not the case agents will still create the check lists (so that
-          thei Active/Frozen state could be monitored and updated) but
+          their Active/Frozen state could be monitored and updated) but
           they will only populate them once they have learned any local
           and remote candidates.
         </t>
@@ -456,12 +451,12 @@
         For the most part, trickle ICE agents perform connectivity
         checks following vanilla ICE procedures. Of course, the
         asynchronous nature of candidate harvesting in trickle ICE would
-        impose the following changes:
+        impose a number of changes:
       </t>
       <section title="Check List and Timer State Updates"
                anchor="state-updates">
         <t>
-          The vanilla ICE specification requires that agents update the
+          The vanilla ICE specification requires that agents update
           check lists and timer states upon completing a connectivity
           check transaction. During such an update vanilla ICE agents
           would set the state of a check list to Failed if the following
@@ -481,7 +476,7 @@
           With trickle ICE, the above situation would often occur when
           candidate harvesting and trickling are still in progress and
           it is perfectly possible that future checks will succeed. For
-          this reason trickle ICE agents add the following conditions
+          this reason trickle ICE agents add the following conditions to
           the above list:
           <list style="symbols">
             <t>
@@ -491,7 +486,7 @@
             <t>
               the remote agent has sent an end-of-candidates message
               for that check list as described in
-              <xref target="send-trickling"/>.
+              <xref target="end-of-candidates"/>.
             </t>
           </list>
           Vanilla ICE requires that agents then update all other check
@@ -500,7 +495,9 @@
           with trickle ICE, other check lists may still be empty at that
           point, a trickle ICE agent SHOULD also maintain an explicit
           Active/Frozen state for every check list, rather than deducing
-          it from the stat of the pairs it contains.
+          it from the state of the pairs it contains. This state should
+          be set to Active when unfreezing the first pair in a list
+          or when that couldn't happen because a list was empty.
         </t>
       </section>
     </section>
@@ -509,7 +506,7 @@
       <t>
         After an initial offer has been sent or received, agents will
         most likely continue discovering new local candidates as
-        STUN, TURN and other non-local candidate harvesting mechanisms
+        STUN, TURN and other non-host candidate harvesting mechanisms
         begin to yield results. Whenever such a new candidate is
         learned agents will compute its priority, type, foundation and
         component id according to normal vanilla ICE procedures.
@@ -518,18 +515,20 @@
         The new candidate is then checked for redundancy against the
         existing list of local candidates. If its transport address and
         base match those of an existing candidate, it will be considered
-        redundant and will be ignored. Contrary to vanilla ICE, trickle
-        ICE agents will consider the new candidate redundant regardless
-        of its priority. [TODO: is this OK? if not we need to check if
-        the existing candidate was already used in conn checks, cancel
-        them, and then restart them with the new candidate].
+        redundant and will be ignored. This would often happen for
+        server reflexive candidates that match the host addresses they
+        were obtained from (e.g. when the latter are public IPv4
+        addresses). Contrary to vanilla ICE, trickle ICE agents will
+        consider the new candidate redundant regardless of its priority.
+        [TODO: is this OK? if not we need to check if the existing
+        candidate was already used in conn checks, cancel them, and then
+        restart them with the new candidate ... and in this specific
+        case there's probably no point to do that].
       </t>
       <t>
         Then, if no remote candidates are currently known for this same
         stream, the new candidate will simply be added to the list of
-        local candidates (unless of course it turns out to have the same
-        transport address and base as an existing local candidate in
-        which case it will be redundant as per vanilla ICE).
+        local candidates.
       </t>
       <t>
         Otherwise, if the agent has already learned of one or more
@@ -609,15 +608,15 @@
         complete, or expire, the agent MUST generate an
         "end-of-candidates" event for that stream and send it to the
         remote agent via the signalling channel. This would allow the
-        remote agent to begin update check list states and, in case
+        remote agent to begin updating check list states and, in case
         valid pairs do not exist for every check component in every
         media stream, determine that ICE processing has failed.
       </t>
       <t>
         An agent MAY also choose to generate an "end-of-candiates" event
         before candidate harvesting has actually completed, if the agent
-        determines that harvesting has continued for more than a certain
-        period of time.
+        determines that harvesting has continued for more than an
+        acceptable period of time.
       </t>
       <t>
         Once the agent sends the end-of-candidates event, it SHOULD
@@ -662,7 +661,8 @@
       <t>
         Trickle ICE implementations MUST behave as non-trickle and
         follow <xref target="RFC5245"/> unless they can confirm that
-        the remote party supports this specification.
+        the remote party supports this specification. [TODO: anything
+        else?]
       </t>
     </section>
     <section title='Security Considerations'>
@@ -677,27 +677,7 @@
         be address here:
         <list style='numbers'>
           <t>
-            Should this document cover use of trickle ICE with SDP as
-            [RFC5245] does?
-          </t>
-          <t>
-            Should this document cover use of trickle ICE with SIP as
-            [RFC5245] does?
-          </t>
-          <t>
-            This document currently treats trickle ICE as an extra mode
-            of operation for ICE that is incompatible with RFC 5245 and
-            should only be used when support is confirmed. Is this the
-            right way?
-          </t>
-          <t>
-            If we do decide to handle SIP here: Using trickle ICE with
-            SIP adds additional constraints. RFC3261 disallows
-            reINVITE-s until the INVITE transaction completes which
-            means that candidate updates need to use another mechanism.
-            Using UPDATE requests [RFC3311] could be one option.
-            Requiring a hasty completion of the initial transaction
-            could be another and there are probably others.
+            FILL IN
           </t>
         </list>
       </t>
