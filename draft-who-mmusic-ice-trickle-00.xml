@@ -690,6 +690,7 @@
     </references>
     <references title='Informative References'>
       <?rfc include="reference.RFC.1918"?>
+      <?rfc include="reference.RFC.3264"?>
       <?rfc include="reference.RFC.3840"?>
       <?rfc include="reference.RFC.4787"?>
       <?rfc include="reference.RFC.5389"?>
