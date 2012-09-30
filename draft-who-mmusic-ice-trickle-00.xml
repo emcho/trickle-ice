@@ -238,13 +238,6 @@
         first candidate that he receives from Alice is an IPv6 one.
       </t>
       <t>
-        [emcho: I am not sure we need the following since Bob's choice
-        to start checks immediately is entirely an implemenation issue
-        issue and not a protocol one ...  this would however be an
-        issue if Alice also supports trickle ICE and she sends hers
-        server reflexive candidate in the original offer. ].
-      </t>
-      <t>
         Another potential problem could arise when a non-trickle
         ICE implementation sends an offer to a trickle one. Consider the
         following case:
@@ -253,7 +246,7 @@
             Alice's client has a non-trickle ICE implementation
           </t>
           <t>
-            Bob's client as support for trickle ICE.
+            Bob's client has support for trickle ICE.
           </t>
           <t>
             Alice and Bob are behind NATs with address-dependent
@@ -277,10 +270,10 @@
     <section title='Detecting Support for Trickle ICE' anchor="disco">
       <t>
         In order to avoid interoperability problems such as those
-        described in section <xref target="incompat"/>, it is important
-        that, before generating an offer and sending its first
-        candidates an agent SHOULD first verify whether its
-        correspondent also supports trickle ICE.
+        described in <xref target="incompat"/>, it is important that,
+        before generating an offer and sending its first candidates an
+        agent SHOULD first verify whether its correspondent also
+        supports trickle ICE.
       </t>
       <t>
         The exact mechanisms that would allow for such verifications are
@@ -390,7 +383,8 @@
         If, the offer does indicate support for trickle ICE, the agent
         will determine its role, start gathering and prioritizing
         candidates and, while doing so it will also send an answer, in
-        order to start forming checklists and begin connectivity checks.
+        order to start forming check lists and begin connectivity
+        checks.
       </t>
       <section title="Sending an answer">
         <t>
@@ -437,7 +431,7 @@
           Respecting the order in which lists have been reported to an
           ICE implementation, or in other words, the order in which
           streams had been described by the signalling protocol (e.g.
-          SDP) is necessary so that checks for the same media stream
+          SDP), is necessary so that checks for the same media stream
           would be performed simultaneously by both agents.
         </t>
       </section>
@@ -464,7 +458,7 @@
           check lists and timer states upon completing a connectivity
           check transaction. During such an update vanilla ICE agents
           would set the state of a check list to Failed if the following
-          to conditions are satisfied:
+          two conditions are satisfied:
           <list style="symbols">
             <t>
               all of the pairs in the check list are either in the
@@ -482,6 +476,8 @@
           it is perfectly possible that future checks will succeed. For
           this reason trickle ICE agents add the following conditions to
           the above list:
+        </t>
+        <t>
           <list style="symbols">
             <t>
               all candidate harvesters have completed and the agent
@@ -493,6 +489,8 @@
               <xref target="end-of-candidates"/>.
             </t>
           </list>
+        </t>
+        <t>
           Vanilla ICE requires that agents then update all other check
           lists, placing one pair in each of them into the Waiting
           state, effectively unfreezing the check list. Given that
@@ -541,7 +539,7 @@
         to the existing check lists according to their priority. Forming
         candidate pairs will work the way it is described by the vanilla
         ICE specification. Actually adding the new pair to a check list
-        however, will happen according to the following rules.
+        however, will happen according to the rules described below.
       </t>
       <t>
         If the new pair's local candidate is server reflexive, the
@@ -550,6 +548,8 @@
         examines the check list looking for another pair that would be
         redundant with the new one. If such a pair exists and its state
         is:
+      </t>
+      <t>
         <list style="hanging">
           <t hangText="Succeeded: ">
             the newly formed pair is ignored.

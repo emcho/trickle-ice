@@ -79,7 +79,7 @@ Table of Contents
      6.2.  Forming check lists and beginning connectivity checks  . .  8
    7.  Receipt of the Initial Answer  . . . . . . . . . . . . . . . .  8
    8.  Performing Connectivity Checks . . . . . . . . . . . . . . . .  8
-     8.1.  Check List and Timer State Updates . . . . . . . . . . . .  9
+     8.1.  Check List and Timer State Updates . . . . . . . . . . . .  8
    9.  Learning and Sending Additional Local Candidates . . . . . . .  9
      9.1.  Announcing End of Candidates . . . . . . . . . . . . . . . 11
    10. Receiving Additional Remote Candidates . . . . . . . . . . . . 11
@@ -246,17 +246,11 @@ Internet-Draft                 Trickle ICE                  October 2012
    candidates only contain IPv4 addresses and the first candidate that
    he receives from Alice is an IPv6 one.
 
-   [emcho: I am not sure we need the following since Bob's choice to
-   start checks immediately is entirely an implemenation issue issue and
-   not a protocol one ... this would however be an issue if Alice also
-   supports trickle ICE and she sends hers server reflexive candidate in
-   the original offer. ].
-
    Another potential problem could arise when a non-trickle ICE
    implementation sends an offer to a trickle one.  Consider the
    following case:
    o  Alice's client has a non-trickle ICE implementation
-   o  Bob's client as support for trickle ICE.
+   o  Bob's client has support for trickle ICE.
    o  Alice and Bob are behind NATs with address-dependent filtering
       [RFC4787].
    o  Bob has two STUN servers but one of them is currently unreachable
@@ -273,6 +267,12 @@ Internet-Draft                 Trickle ICE                  October 2012
 4.  Detecting Support for Trickle ICE
 
    In order to avoid interoperability problems such as those described
+   in Section 3, it is important that, before generating an offer and
+   sending its first candidates an agent SHOULD first verify whether its
+   correspondent also supports trickle ICE.
+
+   The exact mechanisms that would allow for such verifications are
+   outside the scope of this document and should be handled by the
 
 
 
@@ -281,12 +281,6 @@ Rescorla, et al.          Expires April 4, 2013                 [Page 5]
 Internet-Draft                 Trickle ICE                  October 2012
 
 
-   in section Section 3, it is important that, before generating an
-   offer and sending its first candidates an agent SHOULD first verify
-   whether its correspondent also supports trickle ICE.
-
-   The exact mechanisms that would allow for such verifications are
-   outside the scope of this document and should be handled by the
    signalling protocol that is employing ICE.
 
    Examples of how some signalling protocols already handle service and
@@ -329,6 +323,12 @@ Internet-Draft                 Trickle ICE                  October 2012
 
    Trickle ICE agents MAY include any set of candidates in their initial
    offer.  This includes the possibility of generating an offer with no
+   candidates, or one that contains all the candidates that the agent is
+   planning on using in the following session.
+
+   For optimal performance, it is RECOMMENDED that an initial offer
+   contains host candidates only.  This would allow both agents to start
+   gathering server reflexive, relayed and other non-host candidates
 
 
 
@@ -337,12 +337,6 @@ Rescorla, et al.          Expires April 4, 2013                 [Page 6]
 Internet-Draft                 Trickle ICE                  October 2012
 
 
-   candidates, or one that contains all the candidates that the agent is
-   planning on using in the following session.
-
-   For optimal performance, it is RECOMMENDED that an initial offer
-   contains host candidates only.  This would allow both agents to start
-   gathering server reflexive, relayed and other non-host candidates
    simultaneously, and it would also enable them to begin connectivity
    checks.
 
@@ -375,7 +369,7 @@ Internet-Draft                 Trickle ICE                  October 2012
    If, the offer does indicate support for trickle ICE, the agent will
    determine its role, start gathering and prioritizing candidates and,
    while doing so it will also send an answer, in order to start forming
-   checklists and begin connectivity checks.
+   check lists and begin connectivity checks.
 
 6.1.  Sending an answer
 
@@ -386,15 +380,18 @@ Internet-Draft                 Trickle ICE                  October 2012
    remote party can also start forming checklists and performing
    connectivity checks.
 
+   The answer MUST indicate support for trickle ICE as described by
+   usage specifications.
+
+
+
+
 
 
 Rescorla, et al.          Expires April 4, 2013                 [Page 7]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
-
-   The answer MUST indicate support for trickle ICE as described by
-   usage specifications.
 
 6.2.  Forming check lists and beginning connectivity checks
 
@@ -421,8 +418,8 @@ Internet-Draft                 Trickle ICE                  October 2012
 
    Respecting the order in which lists have been reported to an ICE
    implementation, or in other words, the order in which streams had
-   been described by the signalling protocol (e.g.  SDP) is necessary so
-   that checks for the same media stream would be performed
+   been described by the signalling protocol (e.g.  SDP), is necessary
+   so that checks for the same media stream would be performed
    simultaneously by both agents.
 
 
@@ -440,7 +437,10 @@ Internet-Draft                 Trickle ICE                  October 2012
    of candidate harvesting in trickle ICE would impose a number of
    changes:
 
+8.1.  Check List and Timer State Updates
 
+   The vanilla ICE specification requires that agents update check lists
+   and timer states upon completing a connectivity check transaction.
 
 
 
@@ -449,12 +449,8 @@ Rescorla, et al.          Expires April 4, 2013                 [Page 8]
 Internet-Draft                 Trickle ICE                  October 2012
 
 
-8.1.  Check List and Timer State Updates
-
-   The vanilla ICE specification requires that agents update check lists
-   and timer states upon completing a connectivity check transaction.
    During such an update vanilla ICE agents would set the state of a
-   check list to Failed if the following to conditions are satisfied:
+   check list to Failed if the following two conditions are satisfied:
    o  all of the pairs in the check list are either in the Failed or
       Succeeded state;
    o  if at least one of the components of the media stream has no pairs
@@ -464,10 +460,12 @@ Internet-Draft                 Trickle ICE                  October 2012
    candidate harvesting and trickling are still in progress and it is
    perfectly possible that future checks will succeed.  For this reason
    trickle ICE agents add the following conditions to the above list:
+
    o  all candidate harvesters have completed and the agent is not
       expecting to learn any new candidates;
    o  the remote agent has sent an end-of-candidates message for that
       check list as described in Section 9.1.
+
    Vanilla ICE requires that agents then update all other check lists,
    placing one pair in each of them into the Waiting state, effectively
    unfreezing the check list.  Given that with trickle ICE, other check
@@ -497,6 +495,8 @@ Internet-Draft                 Trickle ICE                  October 2012
    redundant regardless of its priority.  [TODO: is this OK? if not we
    need to check if the existing candidate was already used in conn
    checks, cancel them, and then restart them with the new candidate ...
+   and in this specific case there's probably no point to do that].
+
 
 
 
@@ -504,8 +504,6 @@ Rescorla, et al.          Expires April 4, 2013                 [Page 9]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
-
-   and in this specific case there's probably no point to do that].
 
    Then, if no remote candidates are currently known for this same
    stream, the new candidate will simply be added to the list of local
@@ -517,13 +515,14 @@ Internet-Draft                 Trickle ICE                  October 2012
    check lists according to their priority.  Forming candidate pairs
    will work the way it is described by the vanilla ICE specification.
    Actually adding the new pair to a check list however, will happen
-   according to the following rules.
+   according to the rules described below.
 
    If the new pair's local candidate is server reflexive, the server
    reflexive candidate MUST be replaced by its base before adding the
    pair to the list.  Once this is done, the agent examines the check
    list looking for another pair that would be redundant with the new
    one.  If such a pair exists and its state is:
+
    Succeeded:   the newly formed pair is ignored.
    Frozen or Waiting:   the agent chooses the pair with the higher
       priority local candidate, places it in the state that the old pair
@@ -552,6 +551,7 @@ Internet-Draft                 Trickle ICE                  October 2012
          neither Succeeded nor Failed (eventually the new pair will get
          unfrozen after the the on-going check for the existing pair
          concludes);
+
 
 
 
