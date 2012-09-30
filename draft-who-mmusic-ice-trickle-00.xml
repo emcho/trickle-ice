@@ -156,22 +156,26 @@
       </t>
       <t>
         This specification makes use of all terminology defined by the
-        the protocol for Interactive Connectivity Establishment in
+        protocol for Interactive Connectivity Establishment in
         <xref target="RFC5245"/>.
       </t>
-      <t hangText="Vanilla ICE:">
-        The Interactive Connectivity Establishment protocol as defined
-        in <xref target="RFC5245"/>.
-      </t>
-      <t hangText="Candidate Harvester:">
-        A module used by an ICE agent to obtain local candidates.
-        Candidate harvesters use different mechanisms for discovering
-        local candidates. Some of them would typically make use of
-        protocols such as STUN or TURN. Others may also employ
-        techniques that are not referenced within
-        <xref target="RFC5245"/>. UPnP based port allocation and XMPP
-        Jingle Relay Nodes <xref target="XEP-0278"/> are among the
-        possible examples.
+      <t>
+        <list style="hanging">
+          <t hangText="Vanilla ICE:">
+            The Interactive Connectivity Establishment protocol as
+            defined in <xref target="RFC5245"/>.
+          </t>
+          <t hangText="Candidate Harvester:">
+            A module used by an ICE agent to obtain local candidates.
+            Candidate harvesters use different mechanisms for
+            discovering local candidates. Some of them would typically
+            make use of protocols such as STUN or TURN. Others may also
+            employ techniques that are not referenced within
+            <xref target="RFC5245"/>. UPnP based port allocation and
+            XMPP Jingle Relay Nodes <xref target="XEP-0278"/> are among
+            the possible examples.
+          </t>
+        </list>
       </t>
     </section>
     <section title='Incompatibility with Standard ICE'
@@ -546,22 +550,22 @@
         examines the check list looking for another pair that would be
         redundant with the new one. If such a pair exists and its state
         is:
-        <list style="symbols">
-          <t hangText="Succeeded">
+        <list style="hanging">
+          <t hangText="Succeeded: ">
             the newly formed pair is ignored.
           </t>
-          <t hangText="Frozen or Waiting">
+          <t hangText="Frozen or Waiting: ">
             the agent chooses the pair with the higher priority local
             candidate, places it in the state that the old pair was in
             (i.e. Frozen or Waiting) and removes the other one as
             redundant.
           </t>
-          <t hangText="Failed">
+          <t hangText="Failed: ">
             the agent chooses the pair with the higher priority local
             candidate, places it in the Waiting state and removes the
             other one as redundant.
           </t>
-          <t hangText="In-Progress">
+          <t hangText="In-Progress: ">
             The the agent cancels the in-progress transaction (where
             cancellation happens as explained in Section 7.2.1.4 of
             <xref target="RFC5245"/>), then it chooses the pair with the
@@ -569,6 +573,8 @@
             state and removes the other one as redundant.
           </t>
         </list>
+      </t>
+      <t>
         For all other pairs, including those with a server reflexive
         local candidate that were not found to be redundant:
         <list style="symbols">
@@ -584,15 +590,15 @@
           <t>
             else if the check list is non-empty and Active, then the new
             pair state will be set to
-            <list style="symbols">
-              <t hangText="Frozen">
+            <list style="hanging">
+              <t hangText="Frozen: ">
                 if there is at least one pair in the list whose
                 foundation matches the one in the new pair and whose
                 state is neither Succeeded nor Failed (eventually the
                 new pair will get unfrozen after the the on-going check
                 for the existing pair concludes);
               </t>
-              <t hangText="Waiting">
+              <t hangText="Waiting: ">
                 if the list contains no pairs with the same foundation
                 as the new one, or, in case such pairs exist, they are
                 all in either the Succeeded or Failed states.

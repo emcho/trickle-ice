@@ -185,18 +185,18 @@ Internet-Draft                 Trickle ICE                  October 2012
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
    document are to be interpreted as described in [RFC2119].
 
-   This specification makes use of all terminology defined by the the
+   This specification makes use of all terminology defined by the
    protocol for Interactive Connectivity Establishment in [RFC5245].
 
-   The Interactive Connectivity Establishment protocol as defined in
-   [RFC5245].
-
-   A module used by an ICE agent to obtain local candidates.  Candidate
-   harvesters use different mechanisms for discovering local candidates.
-   Some of them would typically make use of protocols such as STUN or
-   TURN.  Others may also employ techniques that are not referenced
-   within [RFC5245].  UPnP based port allocation and XMPP Jingle Relay
-   Nodes [XEP-0278] are among the possible examples.
+   Vanilla ICE:  The Interactive Connectivity Establishment protocol as
+      defined in [RFC5245].
+   Candidate Harvester:  A module used by an ICE agent to obtain local
+      candidates.  Candidate harvesters use different mechanisms for
+      discovering local candidates.  Some of them would typically make
+      use of protocols such as STUN or TURN.  Others may also employ
+      techniques that are not referenced within [RFC5245].  UPnP based
+      port allocation and XMPP Jingle Relay Nodes [XEP-0278] are among
+      the possible examples.
 
 
 3.  Incompatibility with Standard ICE
