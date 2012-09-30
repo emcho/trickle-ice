@@ -84,7 +84,7 @@ Table of Contents
      9.1.  Announcing End of Candidates . . . . . . . . . . . . . . . 11
    10. Receiving Additional Remote Candidates . . . . . . . . . . . . 11
    11. Concluding ICE Processing with Trickle ICE . . . . . . . . . . 11
-   12. Interaction with non-Trickle ICE implementations . . . . . . . 11
+   12. Interaction with non-Trickle ICE implementations . . . . . . . 12
    13. Security Considerations  . . . . . . . . . . . . . . . . . . . 12
    14. Open Issues  . . . . . . . . . . . . . . . . . . . . . . . . . 12
    15. References . . . . . . . . . . . . . . . . . . . . . . . . . . 12
@@ -524,18 +524,20 @@ Internet-Draft                 Trickle ICE                  October 2012
    pair to the list.  Once this is done, the agent examines the check
    list looking for another pair that would be redundant with the new
    one.  If such a pair exists and its state is:
-   o  the newly formed pair is ignored.
-   o  the agent chooses the pair with the higher priority local
-      candidate, places it in the state that the old pair was in (i.e.
-      Frozen or Waiting) and removes the other one as redundant.
-   o  the agent chooses the pair with the higher priority local
+   Succeeded:   the newly formed pair is ignored.
+   Frozen or Waiting:   the agent chooses the pair with the higher
+      priority local candidate, places it in the state that the old pair
+      was in (i.e.  Frozen or Waiting) and removes the other one as
+      redundant.
+   Failed:   the agent chooses the pair with the higher priority local
       candidate, places it in the Waiting state and removes the other
       one as redundant.
-   o  The the agent cancels the in-progress transaction (where
-      cancellation happens as explained in Section 7.2.1.4 of
+   In-Progress:   The the agent cancels the in-progress transaction
+      (where cancellation happens as explained in Section 7.2.1.4 of
       [RFC5245]), then it chooses the pair with the higher priority
       local candidate, places it in the Waiting state and removes the
       other one as redundant.
+
    For all other pairs, including those with a server reflexive local
    candidate that were not found to be redundant:
    o  if this check list is Frozen then the new pair will also be
@@ -545,13 +547,11 @@ Internet-Draft                 Trickle ICE                  October 2012
       the new pair's state is set to Waiting.
    o  else if the check list is non-empty and Active, then the new pair
       state will be set to
-      *  if there is at least one pair in the list whose foundation
-         matches the one in the new pair and whose state is neither
-         Succeeded nor Failed (eventually the new pair will get unfrozen
-         after the the on-going check for the existing pair concludes);
-      *  if the list contains no pairs with the same foundation as the
-         new one, or, in case such pairs exist, they are all in either
-         the Succeeded or Failed states.
+      Frozen:   if there is at least one pair in the list whose
+         foundation matches the one in the new pair and whose state is
+         neither Succeeded nor Failed (eventually the new pair will get
+         unfrozen after the the on-going check for the existing pair
+         concludes);
 
 
 
@@ -560,6 +560,10 @@ Rescorla, et al.          Expires April 4, 2013                [Page 10]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
+
+      Waiting:   if the list contains no pairs with the same foundation
+         as the new one, or, in case such pairs exist, they are all in
+         either the Succeeded or Failed states.
 
 9.1.  Announcing End of Candidates
 
@@ -606,10 +610,6 @@ Internet-Draft                 Trickle ICE                  October 2012
    of [RFC5245].
 
 
-12.  Interaction with non-Trickle ICE implementations
-
-   Trickle ICE implementations MUST behave as non-trickle and follow
-
 
 
 Rescorla, et al.          Expires April 4, 2013                [Page 11]
@@ -617,6 +617,9 @@ Rescorla, et al.          Expires April 4, 2013                [Page 11]
 Internet-Draft                 Trickle ICE                  October 2012
 
 
+12.  Interaction with non-Trickle ICE implementations
+
+   Trickle ICE implementations MUST behave as non-trickle and follow
    [RFC5245] unless they can confirm that the remote party supports this
    specification.  [TODO: anything else?]
 
@@ -662,9 +665,6 @@ Internet-Draft                 Trickle ICE                  October 2012
               with Session Description Protocol (SDP)", RFC 3264,
               June 2002.
 
-   [RFC3840]  Rosenberg, J., Schulzrinne, H., and P. Kyzivat,
-              "Indicating User Agent Capabilities in the Session
-              Initiation Protocol (SIP)", RFC 3840, August 2004.
 
 
 
@@ -672,6 +672,10 @@ Rescorla, et al.          Expires April 4, 2013                [Page 12]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
+
+   [RFC3840]  Rosenberg, J., Schulzrinne, H., and P. Kyzivat,
+              "Indicating User Agent Capabilities in the Session
+              Initiation Protocol (SIP)", RFC 3840, August 2004.
 
    [RFC4787]  Audet, F. and C. Jennings, "Network Address Translation
               (NAT) Behavioral Requirements for Unicast UDP", BCP 127,
@@ -715,10 +719,6 @@ Authors' Addresses
 
    Phone: +1 650 678 2350
    Email: ekr@rtfm.com
-
-
-
-
 
 
 
