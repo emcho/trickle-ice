@@ -59,7 +59,6 @@
         <email>emcho@jitsi.org</email>
       </address>
     </author>
-
     <date />
     <abstract>
       <t>
@@ -169,6 +168,15 @@
       <t hangText="Vanilla ICE:">
         The Interactive Connectivity Establishment protocol as defined
         in <xref target="RFC5245"/>.
+      </t>
+      <t hangText="Candidate Harvester:">
+        A module used by an ICE agent to obtain local candidates.
+        Candidate Harvesters use different mechanisms for discovering
+        local candidates. Some of them would typically make use of
+        techniques such as STUN or TURN or others whose use is defined
+        outside the context of <xref target="RFC5245"/>. UPnP based port
+        allocation and XMPP Jingle Relay Nodes <xref target="XEP-0278"/>
+        are examples of such mechanisms.
       </t>
     </section>
     <section title='Incompatibility with Standard ICE'
@@ -401,37 +409,38 @@
       </section>
       <section title="Forming check lists and beginning connectivity
                       checks" anchor="check.lists">
-      <t>
-        After sending an answer, and as soon as they have gathered
-        any candidates, agents will begin forming candidate pairs,
-        computing their priorities and creating check lists according to
-        the vanilla ICE procedures described in
-        <xref target="RFC5245"/>. Obviously in order for candidate
-        pairing to be possible, it would be necessary that both the
-        offer and the ensuing answer contained candidates. If this was
-        not the case agent would postpone check list creation for a
-        point where they have learned both local and remote candidates.
-      </t>
-      <t>
-        Trickle ICE agents will then also attempt to unfreeze the check
-        list for the first media stream (i.e. the first media stream
-        that was reported to the ICE implementation from the using
-        application). If this checklist is still empty however, agents
-        will continue examining media streams in the order they were
-        reported and will unfreeze the first non-empty checklist.
-      </t>
-      <t>
-        Respecting the order in which lists have been reported to an ICE
-        implementation, or in other words, the order in which streams
-        had been described by the signalling protocol (e.g. SDP) is
-        necessary so that checks for the same media stream would be
-        performed simultaneously by both agents.
-      </t>
-      <t>
-        If there are currently no checklists that contain candidate
-        pairs, the agents would postpone check list creation for stages
-        when the first remote
-      </t>
+        <t>
+          After sending an answer, and as soon as they have gathered
+          any candidates, agents will begin forming candidate pairs,
+          computing their priorities and creating check lists according
+          to the vanilla ICE procedures described in
+          <xref target="RFC5245"/>. Obviously in order for candidate
+          pairing to be possible, it would be necessary that both the
+          offer and the ensuing answer contained candidates. If this was
+          not the case agents will still create the check lists (so that
+          thei Active/Frozen state could be monitored and updated) but
+          they will only populate them once they have learned any local
+          and remote candidates.
+        </t>
+        <t>
+          Initially, all check lists will have their Active/Frozen state
+          set to Frozen.
+        </t>
+        <t>
+          Trickle ICE agents will then also attempt to unfreeze the
+          check list for the first media stream (i.e. the first media
+          stream that was reported to the ICE implementation from the
+          using application). If this checklist is still empty however,
+          agents will continue examining media streams in the order they
+          were reported and will unfreeze the first non-empty checklist.
+        </t>
+        <t>
+          Respecting the order in which lists have been reported to an
+          ICE implementation, or in other words, the order in which
+          streams had been described by the signalling protocol (e.g.
+          SDP) is necessary so that checks for the same media stream
+          would be performed simultaneously by both agents.
+        </t>
       </section>
     </section>
     <section title="Receipt of the Initial Answer">
@@ -449,7 +458,8 @@
         asynchronous nature of candidate harvesting in trickle ICE would
         impose the following changes:
       </t>
-      <section title="Check List and Timer State Updates">
+      <section title="Check List and Timer State Updates"
+               anchor="state-updates">
         <t>
           The vanilla ICE specification requires that agents update the
           check lists and timer states upon completing a connectivity
@@ -470,9 +480,9 @@
         <t>
           With trickle ICE, the above situation would often occur when
           candidate harvesting and trickling are still in progress and
-          it is still perfectly possible that for checks will succeed.
-          For this reason trickle ICE agents add the following
-          conditions the above list:
+          it is perfectly possible that future checks will succeed. For
+          this reason trickle ICE agents add the following conditions
+          the above list:
           <list style="symbols">
             <t>
               all candidate harvesters have completed and the agent
@@ -481,157 +491,171 @@
             <t>
               the remote agent has sent an end-of-candidates message
               for that check list as described in
-              <xref target="end.trickling"/>.
+              <xref target="send-trickling"/>.
             </t>
           </list>
-          If
-        </t>
-        <t>
-        [TODO: unfreezing check lists should happen even if they are
-          empty so we should make sure that we have a check list state
-          and not just deduce it from the pairs in there]
-          !!!!!!!!!!! CONTINUE HERE !!!!!!!!
-          Contrary to <xref target="RFC5245"/> where connectivity checks
-        only start once all check lists have been created, a trickle ICE
-        agent would have to start earlier.
-        ekr: (a) as soon as any check list is non-empty, start that
-        media stream.
-        juberti: seems like the best choice
-        [TODO: expand]
-        ekr: Say I finish checks on one stream successfully.Ordinarily,
-        I would start to unfreeze other check lists, but what if those
-        are empty? How do they get unfrozen when candidates come in?
-        juberti: same condition as when we start: we wait and we
-        unfreeze any check list that gets a candidate.
-        martin: could fail if we start conn checking a server reflexive
-        candidate for a component where we haven't yet sent hours.
-        [TODO: discuss, resolve and expand]
+          Vanilla ICE requires that agents then update all other check
+          lists, placing one pair in each of them into the Waiting
+          state, effectively unfreezing the check list. Given that
+          with trickle ICE, other check lists may still be empty at that
+          point, a trickle ICE agent SHOULD also maintain an explicit
+          Active/Frozen state for every check list, rather than deducing
+          it from the stat of the pairs it contains.
         </t>
       </section>
     </section>
-    <section title='Learning Sending Additional Local Candidates'
+    <section title='Learning and Sending Additional Local Candidates'
              anchor="send-trickling">
       <t>
         After an initial offer has been sent or received, agents will
         most likely continue discovering new local candidates as
         STUN, TURN and other non-local candidate harvesting mechanisms
-        begin to yield results. Whenever such new candidates are
-        received agents will compute their priority, type, foundation
-        and component id according to normal vanilla ICE procedures
-        and send them to the remote agent.
+        begin to yield results. Whenever such a new candidate is
+        learned agents will compute its priority, type, foundation and
+        component id according to normal vanilla ICE procedures.
+      </t>
+      <t>
+        The new candidate is then checked for redundancy against the
+        existing list of local candidates. If its transport address and
+        base match those of an existing candidate, it will be considered
+        redundant and will be ignored. Contrary to vanilla ICE, trickle
+        ICE agents will consider the new candidate redundant regardless
+        of its priority. [TODO: is this OK? if not we need to check if
+        the existing candidate was already used in conn checks, cancel
+        them, and then restart them with the new candidate].
       </t>
       <t>
         Then, if no remote candidates are currently known for this same
-        stream, the new candidate is simply added to the list of local
-        candidates (unless of course it turns out to have the same
+        stream, the new candidate will simply be added to the list of
+        local candidates (unless of course it turns out to have the same
         transport address and base as an existing local candidate in
         which case it will be redundant as per vanilla ICE).
       </t>
       <t>
         Otherwise, if the agent has already learned of one or more
-        remote candidates, it will begin pairing the new candidates with
-        them and add then adding the pairs to the existing check lists
-        according to their priority. For the most part, forming
+        remote candidates for this stream and component, it will begin
+        pairing the new local candidates with them and adding the pairs
+        to the existing check lists according to their priority. Forming
         candidate pairs will work the way it is described by the vanilla
-        ICE specification although trickle ICE agents must also observe
-        the following rules:
-
-        For every newly added pair:
+        ICE specification. Actually adding the new pair to a check list
+        however, will happen according to the following rules.
+      </t>
+      <t>
+        If the new pair's local candidate is server reflexive, the
+        server reflexive candidate MUST be replaced by its base before
+        adding the pair to the list. Once this is done, the agent
+        examines the check list looking for another pair that would be
+        redundant with the new one. If such a pair exists and its state
+        is:
+        <list style="symbols">
+          <t hangText="Succeeded">
+            the newly formed pair is ignored.
+          </t>
+          <t hangText="Frozen or Waiting">
+            the agent chooses the pair with the higher priority local
+            candidate, places it in the state that the old pair was in
+            (i.e. Frozen or Waiting) and removes the other one as
+            redundant.
+          </t>
+          <t hangText="Failed">
+            the agent chooses the pair with the higher priority local
+            candidate, places it in the Waiting state and removes the
+            other one as redundant.
+          </t>
+          <t hangText="In-Progress">
+            The the agent cancels the in-progress transaction (where
+            cancellation happens as explained in Section 7.2.1.4 of
+            <xref target="RFC5245"/>), then it chooses the pair with the
+            higher priority local candidate, places it in the Waiting
+            state and removes the other one as redundant.
+          </t>
+        </list>
+        For all other pairs, including those with a server reflexive
+        local candidate that were not found to be redundant:
         <list style="symbols">
           <t>
-            if the checklist is currently empty or only contains pairs
-            candidates in Succeeded and or Failed states, then
-              - we add the new candidates and place them in Waiting
-                state
-            else - if the checklist contains pairs with the same
-            foundation that are still Frozen then
-              - we add the new pair and set it to Frozen too
-            else if the same foundations exist but are either waiting,
-            in-progress, succeeded or failed
-              - we place the new pair in the Waiting state
-            else if a pair exists with the same local and remote address
-            (after replacing the local with the base for SRV refl)
-              * if that pair is in the waiting state - we do nothing and
-                ignore the current one
-              * else, if that pair is in-progress, we cancel the
-                in-progress transaction (where cancelling a transaction
-                happens the same way as in vanilla ICE), and place it in
-                waiting again (or maybe do a triggered check too?)
+            if this check list is Frozen then the new pair will
+            also be assigned a Frozen state.
+          </t>
+          <t>
+            else if the check list is Active and it is either empty or
+            contains only candidates in the Succeeded and Failed states,
+            then the new pair's state is set to Waiting.
+          </t>
+          <t>
+            else if the check list is non-empty and Active, then the new
+            pair state will be set to
+            <list style="symbols">
+              <t hangText="Frozen">
+                if there is at least one pair in the list whose
+                foundation matches the one in the new pair and whose
+                state is neither Succeeded nor Failed (eventually the
+                new pair will get unfrozen after the the on-going check
+                for the existing pair concludes);
+              </t>
+              <t hangText="Waiting">
+                if the list contains no pairs with the same foundation
+                as the new one, or, in case such pairs exist, they are
+                all in either the Succeeded or Failed states.
+              </t>
+            </list>
           </t>
         </list>
       </t>
+      <section title='Announcing End of Candidates'
+             anchor="end-of-candidates">
       <t>
-        [TODO: newly received pairs may have to start as frozen or not
-        7.1.3.2.3.1 states when to unfreeze pairs. we should probably
-        maintain an "unfrozen foundations" list and check it out when
-        determining new pair states.]
-        [TODO: a newly created check list is immediately unfrozen if it
-        is the only non-empty]
-        [TODO: a newly discovered server-reflexive candidate should be
-        sent but only added to the check list if it's base is not in
-        there. if it is, and it's in-progress - cancel and place it in waiting? if it is failed - waiting. kind of as with triggered checks in 7.2.1.4t.]
-        [TODO: prioritizing and calculating foundations and such should
-        work the same way they did with 5245]
-        [TODO: when do we stop - a) when we have a nominated candidate
-           b) when all harvesters are completed ]
-        [TODO: Explain rules about how to trickle. Are there any? Can
-        we just send any candidate at any point?]
+        Once all candidate harvesters for a specific media stream
+        complete, or expire, the agent MUST generate an
+        "end-of-candidates" event for that stream and send it to the
+        remote agent via the signalling channel. This would allow the
+        remote agent to begin update check list states and, in case
+        valid pairs do not exist for every check component in every
+        media stream, determine that ICE processing has failed.
       </t>
       <t>
-        For the most part, trickle ICE agents perform connectivity
-        checks following vanilla ICE procedures. Of course, the
-        asynchronous nature of candidate harvesting in trickle ICE would
-        impose the following changes:
-
-        1. maintaining a list of unfrozen foundations and add there
-        foundations for all pairs who've seen a successful check
-        response.
-        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        An agent MAY also choose to generate an "end-of-candiates" event
+        before candidate harvesting has actually completed, if the agent
+        determines that harvesting has continued for more than a certain
+        period of time.
       </t>
+      <t>
+        Once the agent sends the end-of-candidates event, it SHOULD
+        update the state of the corresponding check list as explained
+        in section <xref target="state-updates"/>
+      </t>
+      <t>
+        [TODO: should we also have an end-of-candidates for the entire
+        harvesting process (as opposed to that of a single stream)]
+      </t>
+      </section>
     </section>
     <section title='Receiving Additional Remote Candidates'
              anchor="recv-trickling">
       <t>
-        [TODO: use 7.2.1.3 i 7.2.1.4. 7.1.3.2.1 for inspiration]
-        [TODO: depending on our state we either just remember the new
-        candidate or we pair it with every possible agent (including
-        peer reflexive), we prioritize it and add it to the check lists.
-        Potentially, we could ]
+        At any point of ICE processing, a trickle ICE agent may receive
+        new candidates from the remote agent. When this happens and no
+        local candidates are currently known for this same stream, the
+        new remote candidates are simply added to the list of remote
+        candidates.
       </t>
-    </section>
-    <section title='Processing Newly Received Candidates' >
       <t>
-        explain state updates and when we unfreeze new lists/pairs
-        explain checklist updates upon reception of new candidates.
-        we only care about pairs that end up being higher priority than
-        the valid ones.
-        juberti: If we have a valid pair, and we get a
-        candidate that results in higher priority pairs, we need to test
-        those pairs. Any lower priority pairs can be ignored though,
-        which may mean the whole candidate can be ignored. (ignoring hot
-        backups)
-        [TODO: expand]
+        Otherwise, the new candidates are used for forming candidate
+        pairs with the pool of local candidates.
       </t>
-    </section>
-    <section title="Ending Candidate Trickling" anchor="end.trickling">
       <t>
-        At any point while ICE is running any of the participating
-        agents may reach a point where it would not be able obtain any
-        new candidates. In such cases agents SHOULD send an indication
-        to the remote party, notifying them that the candidate trickling
-        has ended.
-        [TODO: should this be sent by the controlling agent only?]
-        [TODO: end of candidates should be sent for every checklist]
+        Once the remote agent has completed candidate harvesting, it
+        will send an "end-of-candidates" event. Upon receiving such an
+        event, the local agent MUST update check list states as per
+        <xref target="state-updates"/>. This may lead lead to sum check
+        lists being marked as Failed.
       </t>
     </section>
-    <section title='Ending ICE Processing with Trickle ICE'
+    <section title='Concluding ICE Processing with Trickle ICE'
              anchor="end.ice">
       <t>
-        In case checks succeed.
-        In case checks haven't succeeded but we are still waiting for
-        candidate harvesters.
-        In case checks fail and we have received the end-of-candidates
-        message or a timer has expired since the last received candidate
+        Trickle ICE processing SHOULD be concluded as explained in 
+        Section 8 of <xref target="RFC5245"/>.
       </t>
     </section>
     <section title='Interaction with non-Trickle ICE implementations'>
@@ -706,7 +730,7 @@
             <organization abbrev='Cisco'>Cisco</organization>
           </author>
           <author initials='J.' surname='Hildebrand'
-                  fullname='J. Hildebrand'>
+                  fullname='Joe Hildebrand'>
             <organization abbrev='Cisco'>Cisco</organization>
           </author>
           <author initials='S.' surname='Egan' fullname='Sean Egan'>
@@ -724,7 +748,7 @@
         <front>
           <title>XEP-0030: Service Discovery</title>
           <author initials='J.' surname='Hildebrand'
-                  fullname='J. Hildebrand'>
+                  fullname='Joe Hildebrand'>
             <organization abbrev='Cisco'>Cisco</organization>
           </author>
           <author initials='P.' surname='Millard'
@@ -745,7 +769,7 @@
         <front>
           <title>XEP-0115: Entity Capabilities</title>
           <author initials='J.' surname='Hildebrand'
-                  fullname='J. Hildebrand'>
+                  fullname='Joe Hildebrand'>
             <organization abbrev='Cisco'>Cisco</organization>
           </author>
           <author initials='P.' surname='Saint-Andre'
@@ -762,6 +786,16 @@
           <date month="February" year="2008" />
         </front>
         <seriesInfo name="XEP" value="XEP-0115" />
+      </reference>
+      <reference anchor="XEP-0278">
+        <front>
+          <title>XEP-0278: Jingle Relay Nodes</title>
+          <author initials='T.' surname='Camargo'
+                  fullname='T. Camargo'>
+          </author>
+          <date month="June" year="2011" />
+        </front>
+        <seriesInfo name="XEP" value="XEP-0278" />
       </reference>
     </references>
   </back>
