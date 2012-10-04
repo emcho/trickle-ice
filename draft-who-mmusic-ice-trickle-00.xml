@@ -566,7 +566,7 @@
             other one as redundant.
           </t>
           <t hangText="In-Progress: ">
-            The the agent cancels the in-progress transaction (where
+            The agent cancels the in-progress transaction (where
             cancellation happens as explained in Section 7.2.1.4 of
             <xref target="RFC5245"/>), then it chooses the pair with the
             higher priority local candidate, places it in the Waiting
@@ -615,13 +615,13 @@
         "end-of-candidates" event for that stream and send it to the
         remote agent via the signalling channel. This would allow the
         remote agent to begin updating check list states and, in case
-        valid pairs do not exist for every check component in every
-        media stream, determine that ICE processing has failed.
+        valid pairs do not exist for every component in every media
+        stream, determine that ICE processing has failed.
       </t>
       <t>
-        An agent MAY also choose to generate an "end-of-candiates" event
-        before candidate harvesting has actually completed, if the agent
-        determines that harvesting has continued for more than an
+        An agent MAY also choose to generate an "end-of-candidates"
+        event before candidate harvesting has actually completed, if the
+        agent determines that harvesting has continued for more than an
         acceptable period of time.
       </t>
       <t>
@@ -652,7 +652,7 @@
         Once the remote agent has completed candidate harvesting, it
         will send an "end-of-candidates" event. Upon receiving such an
         event, the local agent MUST update check list states as per
-        <xref target="state-updates"/>. This may lead lead to sum check
+        <xref target="state-updates"/>. This may lead to some check
         lists being marked as Failed.
       </t>
     </section>
