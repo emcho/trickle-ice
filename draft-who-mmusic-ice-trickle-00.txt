@@ -1,12 +1,13 @@
 
 
+
 Network Working Group                                        E. Rescorla
 Internet-Draft                                                RTFM, Inc.
 Intended status: Standards Track                               J. Uberti
-Expires: April 8, 2013                                            Google
+Expires: April 13, 2013                                           Google
                                                                  E. Ivov
                                                                    Jitsi
-                                                         October 5, 2012
+                                                        October 10, 2012
 
 
 Trickle ICE: Incremental Provisioning of Candidates for the Interactive
@@ -40,7 +41,7 @@ Status of this Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 8, 2013.
+   This Internet-Draft will expire on April 13, 2013.
 
 Copyright Notice
 
@@ -51,7 +52,7 @@ Copyright Notice
 
 
 
-Rescorla, et al.          Expires April 8, 2013                 [Page 1]
+Rescorla, et al.         Expires April 13, 2013                 [Page 1]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
@@ -107,7 +108,7 @@ Table of Contents
 
 
 
-Rescorla, et al.          Expires April 8, 2013                 [Page 2]
+Rescorla, et al.         Expires April 13, 2013                 [Page 2]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
@@ -146,9 +147,9 @@ Internet-Draft                 Trickle ICE                  October 2012
    as soon as the first candidates for that stream have become
    available.
 
-   Trickle ICE allows reducing session establishment times in cases where
-   connectivity is confirmed for the first exchanged candidates (e.g.
-   where the host candidates for one of the agents are directly
+   Trickle ICE allows reducing session establishment times in cases
+   where connectivity is confirmed for the first exchanged candidates
+   (e.g. where the host candidates for one of the agents are directly
    reachable from the second agent).  Even when this is not the case,
    running candidate harvesting for both agents and connectivity checks
    all in parallel allows to considerably reduce ICE processing times.
@@ -163,7 +164,7 @@ Internet-Draft                 Trickle ICE                  October 2012
 
 
 
-Rescorla, et al.          Expires April 8, 2013                 [Page 3]
+Rescorla, et al.         Expires April 13, 2013                 [Page 3]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
@@ -219,7 +220,7 @@ Internet-Draft                 Trickle ICE                  October 2012
 
 
 
-Rescorla, et al.          Expires April 8, 2013                 [Page 4]
+Rescorla, et al.         Expires April 13, 2013                 [Page 4]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
@@ -275,7 +276,7 @@ Internet-Draft                 Trickle ICE                  October 2012
 
 
 
-Rescorla, et al.          Expires April 8, 2013                 [Page 5]
+Rescorla, et al.         Expires April 13, 2013                 [Page 5]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
@@ -331,7 +332,7 @@ Internet-Draft                 Trickle ICE                  October 2012
 
 
 
-Rescorla, et al.          Expires April 8, 2013                 [Page 6]
+Rescorla, et al.         Expires April 13, 2013                 [Page 6]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
@@ -387,7 +388,7 @@ Internet-Draft                 Trickle ICE                  October 2012
 
 
 
-Rescorla, et al.          Expires April 8, 2013                 [Page 7]
+Rescorla, et al.         Expires April 13, 2013                 [Page 7]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
@@ -443,7 +444,7 @@ Internet-Draft                 Trickle ICE                  October 2012
 
 
 
-Rescorla, et al.          Expires April 8, 2013                 [Page 8]
+Rescorla, et al.         Expires April 13, 2013                 [Page 8]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
@@ -499,7 +500,7 @@ Internet-Draft                 Trickle ICE                  October 2012
 
 
 
-Rescorla, et al.          Expires April 8, 2013                 [Page 9]
+Rescorla, et al.         Expires April 13, 2013                 [Page 9]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
@@ -555,7 +556,7 @@ Internet-Draft                 Trickle ICE                  October 2012
 
 
 
-Rescorla, et al.          Expires April 8, 2013                [Page 10]
+Rescorla, et al.         Expires April 13, 2013                [Page 10]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
@@ -611,7 +612,7 @@ Internet-Draft                 Trickle ICE                  October 2012
 
 
 
-Rescorla, et al.          Expires April 8, 2013                [Page 11]
+Rescorla, et al.         Expires April 13, 2013                [Page 11]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
@@ -667,7 +668,7 @@ Internet-Draft                 Trickle ICE                  October 2012
 
 
 
-Rescorla, et al.          Expires April 8, 2013                [Page 12]
+Rescorla, et al.         Expires April 13, 2013                [Page 12]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
@@ -723,7 +724,7 @@ Authors' Addresses
 
 
 
-Rescorla, et al.          Expires April 8, 2013                [Page 13]
+Rescorla, et al.         Expires April 13, 2013                [Page 13]
 
 Internet-Draft                 Trickle ICE                  October 2012
 
@@ -779,6 +780,5 @@ Internet-Draft                 Trickle ICE                  October 2012
 
 
 
-
-Rescorla, et al.          Expires April 8, 2013                [Page 14]
+Rescorla, et al.         Expires April 13, 2013                [Page 14]
 
