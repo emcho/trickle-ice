@@ -1,6 +1,5 @@
 
 
-
 Network Working Group                                        E. Rescorla
 Internet-Draft                                                RTFM, Inc.
 Intended status: Standards Track                               J. Uberti
@@ -147,7 +146,7 @@ Internet-Draft                 Trickle ICE                  October 2012
    as soon as the first candidates for that stream have become
    available.
 
-   Tickle ICE allows reducing session establishment times in cases where
+   Trickle ICE allows reducing session establishment times in cases where
    connectivity is confirmed for the first exchanged candidates (e.g.
    where the host candidates for one of the agents are directly
    reachable from the second agent).  Even when this is not the case,
@@ -731,10 +730,11 @@ Internet-Draft                 Trickle ICE                  October 2012
 
    Justin Uberti
    Google
-   5 Cambridge Center
-   Cambridge, MA  02142
+   747 6th St S
+   Kirkland, WA  98033
    USA
 
+   Phone: +1 857 288 8888
    Email: justin@uberti.name
 
 
