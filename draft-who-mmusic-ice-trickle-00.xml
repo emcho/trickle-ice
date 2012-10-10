@@ -36,12 +36,13 @@
       <organization>Google</organization>
       <address>
         <postal>
-          <street>5 Cambridge Center</street>
-          <city>Cambridge</city>
-          <region>MA</region>
-          <code>02142</code>
+          <street>747 6th St S</street>
+          <city>Kirkland</city>
+          <region>WA</region>
+          <code>98033</code>
           <country>USA</country>
         </postal>
+        <phone>+1 857 288 8888</phone>
         <email>justin@uberti.name</email>
       </address>
     </author>
@@ -117,7 +118,7 @@
         stream have become available.
       </t>
       <t>
-        Tickle ICE allows reducing session establishment times in cases
+        Trickle ICE allows reducing session establishment times in cases
         where connectivity is confirmed for the first exchanged
         candidates (e.g. where the host candidates for one of the agents
         are directly reachable from the second agent). Even when this is
