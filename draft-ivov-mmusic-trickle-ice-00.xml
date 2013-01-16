@@ -852,6 +852,7 @@
     <references title='Normative References'>
       <?rfc include="reference.RFC.2119"?>
       <?rfc include="reference.RFC.5245"?>
+      <?rfc include="reference.RFC.3388"?>
     </references>
     <references title='Informative References'>
       <?rfc include="reference.RFC.1918"?>
