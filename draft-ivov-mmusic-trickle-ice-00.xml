@@ -710,6 +710,39 @@
           </t>
         </list>
       </t>
+      <section title="Encoding the SDP for Additional Candidates">
+        <t>
+          To facilitate interoperability an ICE agent will encode
+          additional candidates using the vanilla ICE SDP syntax. For
+          example:
+          <figure>
+            <artwork>
+<![CDATA[
+    a=candidate:2 1 UDP 1658497328 198.51.100.33 5000 typ host
+]]>
+            </artwork>
+          </figure>
+          Given that such lines do not provide a relationship between
+          the candidate and the m line that it relates to, signalling
+          protocols using trickle ICE MUST establish that relation
+          themselves. This can be done in one of two ways: using the
+          m-line index, or an <xref target="RFC3388">MID</xref>. The
+          m-line index is a zero-based index, referring to the Nth
+          m-line in the SDP. The MID uses "media stream identification",
+          as defined in <xref target="RFC3388"/>, to identify the
+          m-line. When creating candidate lines usages of trickle ICE
+          SHOULD use the MID if possible, or the m-line index if not.
+          Agents MUST NOT send individual candidates any prior to
+          generating the corresponding SDP session description.
+        </t>
+        <t>
+          The exact means of transporting additional candidates to a
+          remote agent is left to the protocols using trickle ICE. It is
+          important to note, however, that these candidate exchanges are
+          not part of the offer/answer model. [TODO: or should we pick
+          one of the two? Is there any reason not to mandate MID?]
+        </t>
+      </section>
       <section title='Announcing End of Candidates'
              anchor="end-of-candidates">
       <t>
