@@ -327,7 +327,53 @@
       <section title='Unilateral Use of Trickle ICE (Half Trickle)'
                anchor="half-trickle">
         <t>
-          In cases where an
+          The idea of using half trickle is about having the caller
+          send a regular, vanilla ICE offer, with a complete set of
+          candidates. This offer still indicates support for
+          trickle-ice, so the answerer is able to respond with an
+          incomplete set of candidates and continue trickling the rest.
+        </t>
+        <t>
+          The mechanism can be used in cases where there is no way for
+          an agent to verify in advance whether a remote party supports
+          trickle-ice. Because it contains a full set of candidates, its
+          first offer can thus be handled by a regular vanilla ICE
+          agent, while still allowing a trickle one to use the
+          optimisation defined in this specification. This prevents
+          negotiation from failing in the former case while still giving
+          roughly half the trickle ICE benefits in the latter (hence the
+          name of the mechanism).
+        </t>
+        <t>
+          Use of half trickle is only necessary during an initial
+          offer/answer exchange. Once both parties have received a
+          session description from their peer, they can each reliably
+          determine trickle ICE support and use it for all subsequent
+          offer/answer exchanges.
+        </t>
+        <t>
+          It is worth pointing out that using half trickle may actually
+          bring more than just half the improvement in terms of user
+          experience. This can happen in cases where an agent
+          starts gathering candidates upon user interface cues that a
+          call is pending, such as activity on a keypad or the phone
+          going offhook. This would mean a part or all candidate
+          harvesting could have completed before the agent actually
+          needs to send the offer. Given that the answerer will be able
+          to trickle candidates, both agents will be able to start
+          connectivity checks and complete ICE processing earlier than
+          with vanilla ICE and potentially even as early as with full
+          trickle.
+        </t>
+        <t>
+          However, such anticipation is not not always possible. For
+          example, a multipurpose user agent or a WebRTC web page where
+          communication is a non-central feature (e.g. calling a support
+          line in case of a problem with the main features) would not
+          necessarily have a way of distinguishing between call
+          intentions and other user activity. Still, even in these
+          cases, using half trickle would be an improvement over vanilla
+          ICE as it would optimize performance for answerers.
         </t>
       </section>
     </section>
