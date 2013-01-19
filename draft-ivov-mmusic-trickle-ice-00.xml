@@ -561,6 +561,8 @@
           check transaction. During such an update vanilla ICE agents
           would set the state of a check list to Failed if the following
           two conditions are satisfied:
+        </t>
+        <t>
           <list style="symbols">
             <t>
               all of the pairs in the check list are either in the
@@ -775,6 +777,11 @@
           the fact that an end-of-candidates notification has been
           received for and take it into account in future list updates.
         </t>
+        <t>
+          [TODO would we like to say anything about nomination? in
+          general this would be up to implementers but is there a need
+          for some basic guidelines?]
+        </t>
       </section>
     </section>
     <section title='Receiving Additional Remote Candidates'
@@ -796,6 +803,18 @@
         event, the local agent MUST update check list states as per
         <xref target="state-updates"/>. This may lead to some check
         lists being marked as Failed.
+      </t>
+    </section>
+    <section title='Concluding ICE Processing'
+                 anchor="concluding.ice">
+      <t>
+        This specification does not directly modify the procedures
+        ending ICE processing described in Section 8 of
+        <xref target="RFC5245"/>, and trickle ICE implementations will
+        follow the same rules.
+      </t>
+      <t>
+
       </t>
     </section>
     <section title='Subsequent Offer/Answer Exchanges'

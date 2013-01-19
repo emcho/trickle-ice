@@ -88,20 +88,20 @@ Table of Contents
      9.2.  Announcing End of Candidates . . . . . . . . . . . . . . . 13
      9.3.  Receiving an End Of Candidates Notification  . . . . . . . 13
    10. Receiving Additional Remote Candidates . . . . . . . . . . . . 13
-   11. Subsequent Offer/Answer Exchanges  . . . . . . . . . . . . . . 14
-   12. Interaction with non-Trickle ICE implementations . . . . . . . 14
+   11. Concluding ICE Processing  . . . . . . . . . . . . . . . . . . 14
+   12. Subsequent Offer/Answer Exchanges  . . . . . . . . . . . . . . 14
    13. Interaction with non-Trickle ICE implementations . . . . . . . 14
-   14. Example Flow . . . . . . . . . . . . . . . . . . . . . . . . . 14
-   15. Security Considerations  . . . . . . . . . . . . . . . . . . . 15
-   16. Acknowledgements . . . . . . . . . . . . . . . . . . . . . . . 15
-   17. References . . . . . . . . . . . . . . . . . . . . . . . . . . 15
-     17.1. Normative References . . . . . . . . . . . . . . . . . . . 15
-     17.2. Informative References . . . . . . . . . . . . . . . . . . 16
+   14. Interaction with non-Trickle ICE implementations . . . . . . . 14
+   15. Example Flow . . . . . . . . . . . . . . . . . . . . . . . . . 15
+   16. Security Considerations  . . . . . . . . . . . . . . . . . . . 15
+   17. Acknowledgements . . . . . . . . . . . . . . . . . . . . . . . 15
+   18. References . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+     18.1. Normative References . . . . . . . . . . . . . . . . . . . 15
+     18.2. Informative References . . . . . . . . . . . . . . . . . . 16
    Appendix A.  Open issues . . . . . . . . . . . . . . . . . . . . . 17
    Appendix B.  Changes From Earlier Versions . . . . . . . . . . . . 17
      B.1.  Changes From Individual Submission Draft -00 . . . . . . . 17
    Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 17
-
 
 
 
@@ -537,6 +537,7 @@ Internet-Draft                 Trickle ICE                  January 2013
    and timer states upon completing a connectivity check transaction.
    During such an update vanilla ICE agents would set the state of a
    check list to Failed if the following two conditions are satisfied:
+
    o  all of the pairs in the check list are either in the Failed or
       Succeeded state;
    o  if at least one of the components of the media stream has no pairs
@@ -552,7 +553,6 @@ Internet-Draft                 Trickle ICE                  January 2013
    o  the remote agent has sent an end-of-candidates message for that
       check list as described in Section 9.2.
 
-   Vanilla ICE requires that agents then update all other check lists,
 
 
 
@@ -561,6 +561,7 @@ Ivov, et al.              Expires July 23, 2013                [Page 10]
 Internet-Draft                 Trickle ICE                  January 2013
 
 
+   Vanilla ICE requires that agents then update all other check lists,
    placing one pair in each of them into the Waiting state, effectively
    unfreezing the check list.  Given that with trickle ICE, other check
    lists may still be empty at that point, a trickle ICE agent SHOULD
@@ -608,7 +609,6 @@ Internet-Draft                 Trickle ICE                  January 2013
    pair to the list.  Once this is done, the agent examines the check
    list looking for another pair that would be redundant with the new
    one.  If such a pair exists and its state is:
-
 
 
 
@@ -711,16 +711,16 @@ Internet-Draft                 Trickle ICE                  January 2013
    notification has been received for and take it into account in future
    list updates.
 
+   [TODO would we like to say anything about nomination? in general this
+   would be up to implementers but is there a need for some basic
+   guidelines?]
+
 
 10.  Receiving Additional Remote Candidates
 
    At any point of ICE processing, a trickle ICE agent may receive new
    candidates from the remote agent.  When this happens and no local
    candidates are currently known for this same stream, the new remote
-   candidates are simply added to the list of remote candidates.
-
-   Otherwise, the new candidates are used for forming candidate pairs
-   with the pool of local candidates.
 
 
 
@@ -729,13 +729,25 @@ Ivov, et al.              Expires July 23, 2013                [Page 13]
 Internet-Draft                 Trickle ICE                  January 2013
 
 
+   candidates are simply added to the list of remote candidates.
+
+   Otherwise, the new candidates are used for forming candidate pairs
+   with the pool of local candidates.
+
    Once the remote agent has completed candidate harvesting, it will
    send an end-of-candidates event.  Upon receiving such an event, the
    local agent MUST update check list states as per Section 8.1.  This
    may lead to some check lists being marked as Failed.
 
 
-11.  Subsequent Offer/Answer Exchanges
+11.  Concluding ICE Processing
+
+   This specification does not directly modify the procedures ending ICE
+   processing described in Section 8 of [RFC5245], and trickle ICE
+   implementations will follow the same rules.
+
+
+12.  Subsequent Offer/Answer Exchanges
 
    Either agent MAY generate a subsequent offer at any time allowed by
    [RFC3264].  When this happens agents will use [RFC5245] semantics to
@@ -753,13 +765,6 @@ Internet-Draft                 Trickle ICE                  January 2013
       trickle or confirming support with other mechanisms.
 
 
-12.  Interaction with non-Trickle ICE implementations
-
-   Trickle ICE implementations MUST behave as non-trickle and follow
-   [RFC5245] unless they can confirm that the remote party supports this
-   specification.  [TODO: anything else?]
-
-
 13.  Interaction with non-Trickle ICE implementations
 
    Trickle ICE implementations MUST behave as non-trickle and follow
@@ -767,22 +772,23 @@ Internet-Draft                 Trickle ICE                  January 2013
    specification.  [TODO: anything else?]
 
 
-14.  Example Flow
+14.  Interaction with non-Trickle ICE implementations
 
-   A typical successful trickle ICE exchange with an Offer/Answer
-   protocol would look this way:
-
-
-
-
-
-
+   Trickle ICE implementations MUST behave as non-trickle and follow
+   [RFC5245] unless they can confirm that the remote party supports this
+   specification.  [TODO: anything else?]
 
 
 
 Ivov, et al.              Expires July 23, 2013                [Page 14]
 
 Internet-Draft                 Trickle ICE                  January 2013
+
+
+15.  Example Flow
+
+   A typical successful trickle ICE exchange with an Offer/Answer
+   protocol would look this way:
 
 
            Alice                                            Bob
@@ -806,20 +812,20 @@ Internet-Draft                 Trickle ICE                  January 2013
                              Figure 1: Example
 
 
-15.  Security Considerations
+16.  Security Considerations
 
    [TODO]
 
 
-16.  Acknowledgements
+17.  Acknowledgements
 
    The authors would like to thank Christer Holmberg and Martin Thomson
    for their reviews and suggestions on improving this document.
 
 
-17.  References
+18.  References
 
-17.1.  Normative References
+18.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119, March 1997.
@@ -828,12 +834,6 @@ Internet-Draft                 Trickle ICE                  January 2013
               Schulzrinne, "Grouping of Media Lines in the Session
               Description Protocol (SDP)", RFC 3388, December 2002.
 
-   [RFC5245]  Rosenberg, J., "Interactive Connectivity Establishment
-              (ICE): A Protocol for Network Address Translator (NAT)
-              Traversal for Offer/Answer Protocols", RFC 5245,
-              April 2010.
-
-
 
 
 Ivov, et al.              Expires July 23, 2013                [Page 15]
@@ -841,7 +841,12 @@ Ivov, et al.              Expires July 23, 2013                [Page 15]
 Internet-Draft                 Trickle ICE                  January 2013
 
 
-17.2.  Informative References
+   [RFC5245]  Rosenberg, J., "Interactive Connectivity Establishment
+              (ICE): A Protocol for Network Address Translator (NAT)
+              Traversal for Offer/Answer Protocols", RFC 5245,
+              April 2010.
+
+18.2.  Informative References
 
    [I-D.keranen-mmusic-ice-address-selection]
               Keraenen, A. and J. Arkko, "Update on Candidate Address
@@ -884,11 +889,6 @@ Internet-Draft                 Trickle ICE                  January 2013
               February 2008.
 
    [XEP-0176]
-              Beda, J., Ludwig, S., Saint-Andre, P., Hildebrand, J.,
-              Egan, S., and R. McQueen, "XEP-0176: Jingle ICE-UDP
-              Transport Method", XEP XEP-0176, June 2009.
-
-   [XEP-0278]
 
 
 
@@ -897,6 +897,11 @@ Ivov, et al.              Expires July 23, 2013                [Page 16]
 Internet-Draft                 Trickle ICE                  January 2013
 
 
+              Beda, J., Ludwig, S., Saint-Andre, P., Hildebrand, J.,
+              Egan, S., and R. McQueen, "XEP-0176: Jingle ICE-UDP
+              Transport Method", XEP XEP-0176, June 2009.
+
+   [XEP-0278]
               Camargo, T., "XEP-0278: Jingle Relay Nodes", XEP XEP-0278,
               June 2011.
 
@@ -935,11 +940,6 @@ Authors' Addresses
 
    Phone: +33 6 72 81 15 55
    Email: emcho@jitsi.org
-
-
-
-
-
 
 
 
