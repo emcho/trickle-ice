@@ -189,7 +189,7 @@
         would work in and adapt to as many network environments as
         possible. It is hence important to point out at least some of
         the reasons why, despite its flexibility, the specification in
-        <xref target="RFC5245"/> would not support trickle-ICE.
+        <xref target="RFC5245"/> would not support trickle ICE.
       </t>
       <t>
         <xref target="RFC5245"/> describes the conditions required to
@@ -283,7 +283,7 @@
       <t>
         According to <xref target="RFC5245"/> every time an agent
         supporting trickle ICE generates an offer or an answer, it MUST
-        include the "trickle-ice" token in the ice-options attribute.
+        include the "trickle" token in the ice-options attribute.
         Syntax for this token is defined in <xref target="sdp.offer"/>.
       </t>
       <t>
@@ -292,7 +292,7 @@
         that trickle ICE negotiation is only attempted in cases where
         the remote party actually supports this specification. Agents
         that receive offers or answers can verify support by examining
-        them for the "trickle-ice" ice-options token. However, agents
+        them for the "trickle" ice-options token. However, agents
         that are about to send a first offer, have no immediate way of
         doing this. This means that usages of trickle for specific
         protocols would need to either:
@@ -330,13 +330,15 @@
           The idea of using half trickle is about having the caller
           send a regular, vanilla ICE offer, with a complete set of
           candidates. This offer still indicates support for
-          trickle-ice, so the answerer is able to respond with an
+          trickle ice, so the answerer is able to respond with an
           incomplete set of candidates and continue trickling the rest.
+          Half trickle offers will typically contain an
+          end-of-candidates indication.
         </t>
         <t>
           The mechanism can be used in cases where there is no way for
           an agent to verify in advance whether a remote party supports
-          trickle-ice. Because it contains a full set of candidates, its
+          trickle ice. Because it contains a full set of candidates, its
           first offer can thus be handled by a regular vanilla ICE
           agent, while still allowing a trickle one to use the
           optimisation defined in this specification. This prevents
@@ -588,7 +590,7 @@
               is not expecting to learn any new candidates;
             </t>
             <t>
-              the remote agent has sent an end-of-candidates message
+              the remote agent has sent an end-of-candidates indication
               for that check list as described in
               <xref target="end-of-candidates"/>.
             </t>
@@ -749,13 +751,22 @@
       <t>
         Once all candidate harvesters for a specific media stream
         complete, or expire, the agent MUST generate an
-        "end-of-candidates" notification for that stream and send it to
-        the remote agent via the signalling channel. The mechanism for
-        encoding the option is left to specific trickle ICE usages. Yet
-        it is expected that doing this in an SDP attribute may be a
-        convenient choice since it is already used by this specification
-        and it would also allow a complete offer to be represented with
-        a single signalling message.
+        "end-of-candidates" indication for that stream and send it to
+        the remote agent via the signalling channel. The SDP
+        representation for end-of-candidates following form:
+        <figure>
+          <artwork>
+<![CDATA[
+            a=end-of-candidates
+]]>
+          </artwork>
+        </figure>
+        The end-of-candidates notifications can be sent as part of an
+        offer, which would typically be the case with half trickle
+        initial offers, they can accompany the last candidate an agent
+        can send for a stream, and they can also be sent alone (e.g.
+        after STUN Binding requests or TURN Allocate requests to a
+        server timeout and the agent has no other active harvesters).
       </t>
       <t>
         Receiving an end-of-candidates notification allows an agent to
@@ -767,16 +778,18 @@
         An agent MAY also choose to generate an end-of-candidates
         event before candidate harvesting has actually completed, if the
         agent determines that harvesting has continued for more than an
-        acceptable period of time.
+        acceptable period of time. However, an agent MUST NOT send any
+        more candidates after it has send an end-of-candidates
+        notification.
       </t>
       <t>
         Half trickle agents SHOULD send end-of-candidates together with
         their initial offer unless they are planning on potentially
         sending additional candidates in case the remote party turns out
-        to actually support trickle ICE.
+        to actually support trickle ICE. (TODO: can this be useful?)
       </t>
       <t>
-        Once the agent sends the end-of-candidates event, it SHOULD
+        Once the agent sends the end-of-candidates event, it will
         update the state of the corresponding check list as explained
         in section <xref target="state-updates"/>
       </t>
@@ -885,12 +898,12 @@
         <artwork>
 <![CDATA[
         Alice                                            Bob
-          |            Offer+ICE Description              |
+          |                     Offer                     |
           |---------------------------------------------->|
           |            Additional Candidates              |
           |---------------------------------------------->|
           |                                               |
-          |            Answer+ICE Description             |
+          |                     Answer                    |
           |<----------------------------------------------|
           |            Additional Candidates              |
           |<----------------------------------------------|
@@ -912,8 +925,8 @@
     <section title='Acknowledgements'>
       <t>
         The authors would like to thank Bernard Adoba, Christer
-        Holmberg, Jonathan Lennox and Martin Thomson for their reviews
-        and suggestions on improving this document.
+        Holmberg, Enrico Marocco, Jonathan Lennox and Martin Thomson for
+        their reviews and suggestions on improving this document.
       </t>
     </section>
   </middle>
@@ -1021,25 +1034,46 @@
       <t>
         At the time of writing of this document the authors have no
         clear view on how and if the following list of issues should
-        be address here:
-        <list style='numbers'>
-          <t>
-            This specification does not currently define syntax for
-            end-of-candidate notifications and leaves this to trickle
-            ICE usages. Yet, it is reasonable to assume that most usages
-            would simply add an a=end-of-candidates attribute since this
-            would be the most straightforward option. We are hence
-            wondering if there's a good reason not to do so here.
-          </t>
-          <t>
-            ICE Lite implementations of Trickle ICE do not necessarily
-            need to receive candidates from their peers: it would be
-            enough for them to start getting checks and discover all
-            candidates as peer reflexive. This would allow to reduce
-            signalling traffic but could introduce other issues.
-          </t>
-        </list>
+        be addressed.
       </t>
+      <section title="MID/Stream Indices in SDP">
+        <t>
+          This specification does not currently define syntax for
+          candidate-to-stream bindings although it says that they should
+          be implemented with MID or a stream index. Yet, it is
+          reasonable to assume that most usages would need to do this
+          within the SDP and it may make sense to agree on the format.
+          Here's one possible way to do this:
+          <figure>
+            <artwork>
+<![CDATA[
+      a=mid:1
+      a=candidate:1 1 UDP 1658497328 192.168.100.33 5000 typ host
+      a=candidate:2 1 UDP 1658497328 96.1.2.3 5000 typ srflx
+      a=mid:2
+      a=candidate:2 1 UDP 1658497328 96.1.2.3 5002 typ srflx
+      a=end-of-candidates
+]]>
+            </artwork>
+          </figure>
+        </t>
+      </section>
+      <section title="ICE Lite and Candidate Signalling">
+        <t>
+          ICE Lite implementations of Trickle ICE do not necessarily
+          need to receive candidates from their peers: it would be
+          enough for them to start getting checks and discover all
+          candidates as peer reflexive. This would allow to reduce
+          signalling traffic but could introduce other issues.
+        </t>
+      </section>
+      <section title="Handling new candidates after check completion">
+        <t>
+          Basically, do any new candidates discovered after ICE
+          completes (e.g. from a new interface that comes up) need an
+          ICE restart, or not?
+        </t>
+      </section>
     </section>
     <section title='Changes From Earlier Versions'>
       <t>
@@ -1056,14 +1090,15 @@
             </t>
             <t>
               Added SDP specification for trickled candidates, the
-              trickle-ice option and 0.0.0.0 addresses in m-lines.
+              trickle option and 0.0.0.0 addresses in m-lines, and
+              end-of-candidates.
             </t>
             <t>
               Support and Discovery. Changed that section to be less
               abstract. As discussed in IETF85, the draft now says
               implementations and usages need to either determine
               support in advance and directly use trickle, or do
-              half-trickle. Removed suggestion about use of discovery in
+              half trickle. Removed suggestion about use of discovery in
               SIP or about letting implementing protocols do what they
               want.
             </t>
