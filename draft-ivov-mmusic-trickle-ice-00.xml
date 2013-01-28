@@ -357,7 +357,7 @@
           experience. This can happen in cases where an agent
           starts gathering candidates upon user interface cues that a
           call is pending, such as activity on a keypad or the phone
-          going offhook. This would mean a part or all candidate
+          going off hook. This would mean a part or all candidate
           harvesting could have completed before the agent actually
           needs to send the offer. Given that the answerer will be able
           to trickle candidates, both agents will be able to start
@@ -425,9 +425,9 @@
       </t>
       <section title='Encoding the SDP' anchor="sdp.offer">
         <t>
-          The process of encoding the SDP is mostly the same as the one
-          used by vanilla ICE. Still, trickle ICE does require a few
-          differences described here.
+          The process of encoding the SDP <xref target="RFC4566"/> is
+          mostly the same as the one used by vanilla ICE. Still, trickle
+          ICE does require a few differences described here.
         </t>
         <t>
           Agents MUST indicate support for Trickle ICE by including the
@@ -749,17 +749,31 @@
       <t>
         Once all candidate harvesters for a specific media stream
         complete, or expire, the agent MUST generate an
-        "end-of-candidates" event for that stream and send it to the
-        remote agent via the signalling channel. This would allow the
-        remote agent to begin updating check list states and, in case
-        valid pairs do not exist for every component in every media
-        stream, determine that ICE processing has failed.
+        "end-of-candidates" notification for that stream and send it to
+        the remote agent via the signalling channel. The mechanism for
+        encoding the option is left to specific trickle ICE usages. Yet
+        it is expected that doing this in an SDP attribute may be a
+        convenient choice since it is already used by this specification
+        and it would also allow a complete offer to be represented with
+        a single signalling message.
+      </t>
+      <t>
+        Receiving an end-of-candidates notification allows an agent to
+        update check list states and, in case valid pairs do not exist
+        for every component in every media stream, determine that ICE
+        processing has failed.
       </t>
       <t>
         An agent MAY also choose to generate an end-of-candidates
         event before candidate harvesting has actually completed, if the
         agent determines that harvesting has continued for more than an
         acceptable period of time.
+      </t>
+      <t>
+        Half trickle agents SHOULD send end-of-candidates together with
+        their initial offer unless they are planning on potentially
+        sending additional candidates in case the remote party turns out
+        to actually support trickle ICE.
       </t>
       <t>
         Once the agent sends the end-of-candidates event, it SHOULD
@@ -846,20 +860,20 @@
         </list>
       </t>
     </section>
-    <section title='Interaction with non-Trickle ICE implementations'>
+    <section title='Interaction with ICE Lite'>
       <t>
-        Trickle ICE implementations MUST behave as non-trickle and
-        follow <xref target="RFC5245"/> unless they can confirm that
-        the remote party supports this specification. [TODO: anything
-        else?]
+        Behaviour of Trickle ICE capable ICE lite agents does not
+        require any particular rules other than those already defined
+        in this specification and <xref target="RFC5245"/>. This section
+        is hence added with an informational purpose only.
       </t>
-    </section>
-    <section title='Interaction with non-Trickle ICE implementations'>
       <t>
-        Trickle ICE implementations MUST behave as non-trickle and
-        follow <xref target="RFC5245"/> unless they can confirm that
-        the remote party supports this specification. [TODO: anything
-        else?]
+        A Trickle ICE capable ICE Lite agent would generate offers or
+        answers as per <xref target="RFC5245"/>. Both will indicate
+        support for trickle ICE (<xref target="sdp.offer"/>) and given
+        that they will contain a complete set of candidates (the agent's
+        host candidates) these offers and answers would also be
+        accompanied with an end-of-candidates notification.
       </t>
     </section>
     <section title='Example Flow'>
@@ -897,21 +911,24 @@
     </section>
     <section title='Acknowledgements'>
       <t>
-        The authors would like to thank Christer Holmberg and Martin
-        Thomson for their reviews and suggestions on improving this
-        document.
+        The authors would like to thank Bernard Adoba, Christer
+        Holmberg, Jonathan Lennox and Martin Thomson for their reviews
+        and suggestions on improving this document.
       </t>
     </section>
   </middle>
   <back>
     <references title='Normative References'>
       <?rfc include="reference.RFC.2119"?>
+      <?rfc include="reference.RFC.3264"?>
+      <?rfc include="reference.RFC.4566"?>
       <?rfc include="reference.RFC.5245"?>
-      <?rfc include="reference.RFC.3388"?>
+
     </references>
     <references title='Informative References'>
       <?rfc include="reference.RFC.1918"?>
-      <?rfc include="reference.RFC.3264"?>
+      <?rfc include="reference.RFC.3261"?>
+      <?rfc include="reference.RFC.3388"?>
       <?rfc include="reference.RFC.3840"?>
       <?rfc include="reference.RFC.4787"?>
       <?rfc include="reference.RFC.5389"?>
@@ -1007,11 +1024,19 @@
         be address here:
         <list style='numbers'>
           <t>
-            Do we need a "stop sending me candidates" message. What
-            would be the use case for that.
+            This specification does not currently define syntax for
+            end-of-candidate notifications and leaves this to trickle
+            ICE usages. Yet, it is reasonable to assume that most usages
+            would simply add an a=end-of-candidates attribute since this
+            would be the most straightforward option. We are hence
+            wondering if there's a good reason not to do so here.
           </t>
           <t>
-            Is there anything specific we need to say about ICE lite?
+            ICE Lite implementations of Trickle ICE do not necessarily
+            need to receive candidates from their peers: it would be
+            enough for them to start getting checks and discover all
+            candidates as peer reflexive. This would allow to reduce
+            signalling traffic but could introduce other issues.
           </t>
         </list>
       </t>
@@ -1021,7 +1046,51 @@
         Note to the RFC-Editor: please remove this section prior to
         publication as an RFC.
       </t>
-      <section title='Changes From Individual Submission Draft -00'>
+      <section title='Changes From draft-rescorla-01'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Brought back explicit use of Offer/Answer. There are no
+              more attempts to try to do this in an O/A independent way.
+              Also removed the use of ICE Descriptions.
+            </t>
+            <t>
+              Added SDP specification for trickled candidates, the
+              trickle-ice option and 0.0.0.0 addresses in m-lines.
+            </t>
+            <t>
+              Support and Discovery. Changed that section to be less
+              abstract. As discussed in IETF85, the draft now says
+              implementations and usages need to either determine
+              support in advance and directly use trickle, or do
+              half-trickle. Removed suggestion about use of discovery in
+              SIP or about letting implementing protocols do what they
+              want.
+            </t>
+            <t>
+              Defined Half Trickle. Added a section that says how it
+              works. Mentioned that it only needs to happen in the first
+              o/a (not necessary in updates), and added Jonathan's
+              comment about how it could, in some cases, offer more than
+              half the improvement if you can pre-gather part or all of
+              your candidates before the user actually presses the call
+              button.
+            </t>
+            <t>
+              Added a short section about subsequent offer/answer
+              exchanges.
+            </t>
+            <t>
+              Added a short section about interactions with ICE Lite
+              implementations.
+            </t>
+            <t>
+              Added two new entries to the open issues section.
+            </t>
+          </list>
+        </t>
+      </section>
+      <section title='Changes From draft-rescorla-00'>
         <t>
           <list style='symbols'>
             <t>

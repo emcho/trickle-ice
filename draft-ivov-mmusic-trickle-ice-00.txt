@@ -4,10 +4,10 @@
 Network Working Group                                            E. Ivov
 Internet-Draft                                                     Jitsi
 Intended status: Standards Track                             E. Rescorla
-Expires: July 23, 2013                                        RTFM, Inc.
+Expires: August 1, 2013                                       RTFM, Inc.
                                                                J. Uberti
                                                                   Google
-                                                        January 19, 2013
+                                                        January 28, 2013
 
 
 Trickle ICE: Incremental Provisioning of Candidates for the Interactive
@@ -41,7 +41,7 @@ Status of this Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on July 23, 2013.
+   This Internet-Draft will expire on August 1, 2013.
 
 Copyright Notice
 
@@ -52,7 +52,7 @@ Copyright Notice
 
 
 
-Ivov, et al.              Expires July 23, 2013                 [Page 1]
+Ivov, et al.             Expires August 1, 2013                 [Page 1]
 
 Internet-Draft                 Trickle ICE                  January 2013
 
@@ -87,28 +87,28 @@ Table of Contents
      9.1.  Encoding the SDP for Additional Candidates . . . . . . . . 12
      9.2.  Announcing End of Candidates . . . . . . . . . . . . . . . 13
      9.3.  Receiving an End Of Candidates Notification  . . . . . . . 13
-   10. Receiving Additional Remote Candidates . . . . . . . . . . . . 13
+   10. Receiving Additional Remote Candidates . . . . . . . . . . . . 14
    11. Concluding ICE Processing  . . . . . . . . . . . . . . . . . . 14
    12. Subsequent Offer/Answer Exchanges  . . . . . . . . . . . . . . 14
-   13. Interaction with non-Trickle ICE implementations . . . . . . . 14
-   14. Interaction with non-Trickle ICE implementations . . . . . . . 14
-   15. Example Flow . . . . . . . . . . . . . . . . . . . . . . . . . 15
-   16. Security Considerations  . . . . . . . . . . . . . . . . . . . 15
-   17. Acknowledgements . . . . . . . . . . . . . . . . . . . . . . . 15
-   18. References . . . . . . . . . . . . . . . . . . . . . . . . . . 15
-     18.1. Normative References . . . . . . . . . . . . . . . . . . . 15
-     18.2. Informative References . . . . . . . . . . . . . . . . . . 16
+   13. Interaction with ICE Lite  . . . . . . . . . . . . . . . . . . 15
+   14. Example Flow . . . . . . . . . . . . . . . . . . . . . . . . . 15
+   15. Security Considerations  . . . . . . . . . . . . . . . . . . . 15
+   16. Acknowledgements . . . . . . . . . . . . . . . . . . . . . . . 16
+   17. References . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+     17.1. Normative References . . . . . . . . . . . . . . . . . . . 16
+     17.2. Informative References . . . . . . . . . . . . . . . . . . 16
    Appendix A.  Open issues . . . . . . . . . . . . . . . . . . . . . 17
-   Appendix B.  Changes From Earlier Versions . . . . . . . . . . . . 17
-     B.1.  Changes From Individual Submission Draft -00 . . . . . . . 17
-   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 17
+   Appendix B.  Changes From Earlier Versions . . . . . . . . . . . . 18
+     B.1.  Changes From draft-rescorla-01 . . . . . . . . . . . . . . 18
+     B.2.  Changes From draft-rescorla-00 . . . . . . . . . . . . . . 18
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 18
 
 
 
 
 
 
-Ivov, et al.              Expires July 23, 2013                 [Page 2]
+Ivov, et al.             Expires August 1, 2013                 [Page 2]
 
 Internet-Draft                 Trickle ICE                  January 2013
 
@@ -164,7 +164,7 @@ Internet-Draft                 Trickle ICE                  January 2013
 
 
 
-Ivov, et al.              Expires July 23, 2013                 [Page 3]
+Ivov, et al.             Expires August 1, 2013                 [Page 3]
 
 Internet-Draft                 Trickle ICE                  January 2013
 
@@ -220,7 +220,7 @@ Internet-Draft                 Trickle ICE                  January 2013
 
 
 
-Ivov, et al.              Expires July 23, 2013                 [Page 4]
+Ivov, et al.             Expires August 1, 2013                 [Page 4]
 
 Internet-Draft                 Trickle ICE                  January 2013
 
@@ -276,7 +276,7 @@ Internet-Draft                 Trickle ICE                  January 2013
 
 
 
-Ivov, et al.              Expires July 23, 2013                 [Page 5]
+Ivov, et al.             Expires August 1, 2013                 [Page 5]
 
 Internet-Draft                 Trickle ICE                  January 2013
 
@@ -332,7 +332,7 @@ Internet-Draft                 Trickle ICE                  January 2013
 
 
 
-Ivov, et al.              Expires July 23, 2013                 [Page 6]
+Ivov, et al.             Expires August 1, 2013                 [Page 6]
 
 Internet-Draft                 Trickle ICE                  January 2013
 
@@ -346,7 +346,7 @@ Internet-Draft                 Trickle ICE                  January 2013
    more than just half the improvement in terms of user experience.
    This can happen in cases where an agent starts gathering candidates
    upon user interface cues that a call is pending, such as activity on
-   a keypad or the phone going offhook.  This would mean a part or all
+   a keypad or the phone going off hook.  This would mean a part or all
    candidate harvesting could have completed before the agent actually
    needs to send the offer.  Given that the answerer will be able to
    trickle candidates, both agents will be able to start connectivity
@@ -388,7 +388,7 @@ Internet-Draft                 Trickle ICE                  January 2013
 
 
 
-Ivov, et al.              Expires July 23, 2013                 [Page 7]
+Ivov, et al.             Expires August 1, 2013                 [Page 7]
 
 Internet-Draft                 Trickle ICE                  January 2013
 
@@ -411,9 +411,9 @@ Internet-Draft                 Trickle ICE                  January 2013
 
 5.1.  Encoding the SDP
 
-   The process of encoding the SDP is mostly the same as the one used by
-   vanilla ICE.  Still, trickle ICE does require a few differences
-   described here.
+   The process of encoding the SDP [RFC4566] is mostly the same as the
+   one used by vanilla ICE.  Still, trickle ICE does require a few
+   differences described here.
 
    Agents MUST indicate support for Trickle ICE by including the
    "trickle" token for the "a=ice-options" attribute:
@@ -444,7 +444,7 @@ Internet-Draft                 Trickle ICE                  January 2013
 
 
 
-Ivov, et al.              Expires July 23, 2013                 [Page 8]
+Ivov, et al.             Expires August 1, 2013                 [Page 8]
 
 Internet-Draft                 Trickle ICE                  January 2013
 
@@ -500,7 +500,7 @@ Internet-Draft                 Trickle ICE                  January 2013
 
 
 
-Ivov, et al.              Expires July 23, 2013                 [Page 9]
+Ivov, et al.             Expires August 1, 2013                 [Page 9]
 
 Internet-Draft                 Trickle ICE                  January 2013
 
@@ -556,7 +556,7 @@ Internet-Draft                 Trickle ICE                  January 2013
 
 
 
-Ivov, et al.              Expires July 23, 2013                [Page 10]
+Ivov, et al.             Expires August 1, 2013                [Page 10]
 
 Internet-Draft                 Trickle ICE                  January 2013
 
@@ -612,7 +612,7 @@ Internet-Draft                 Trickle ICE                  January 2013
 
 
 
-Ivov, et al.              Expires July 23, 2013                [Page 11]
+Ivov, et al.             Expires August 1, 2013                [Page 11]
 
 Internet-Draft                 Trickle ICE                  January 2013
 
@@ -668,7 +668,7 @@ Internet-Draft                 Trickle ICE                  January 2013
 
 
 
-Ivov, et al.              Expires July 23, 2013                [Page 12]
+Ivov, et al.             Expires August 1, 2013                [Page 12]
 
 Internet-Draft                 Trickle ICE                  January 2013
 
@@ -687,16 +687,28 @@ Internet-Draft                 Trickle ICE                  January 2013
 9.2.  Announcing End of Candidates
 
    Once all candidate harvesters for a specific media stream complete,
-   or expire, the agent MUST generate an "end-of-candidates" event for
-   that stream and send it to the remote agent via the signalling
-   channel.  This would allow the remote agent to begin updating check
-   list states and, in case valid pairs do not exist for every component
-   in every media stream, determine that ICE processing has failed.
+   or expire, the agent MUST generate an "end-of-candidates"
+   notification for that stream and send it to the remote agent via the
+   signalling channel.  The mechanism for encoding the option is left to
+   specific trickle ICE usages.  Yet it is expected that doing this in
+   an SDP attribute may be a convenient choice since it is already used
+   by this specification and it would also allow a complete offer to be
+   represented with a single signalling message.
+
+   Receiving an end-of-candidates notification allows an agent to update
+   check list states and, in case valid pairs do not exist for every
+   component in every media stream, determine that ICE processing has
+   failed.
 
    An agent MAY also choose to generate an end-of-candidates event
    before candidate harvesting has actually completed, if the agent
    determines that harvesting has continued for more than an acceptable
    period of time.
+
+   Half trickle agents SHOULD send end-of-candidates together with their
+   initial offer unless they are planning on potentially sending
+   additional candidates in case the remote party turns out to actually
+   support trickle ICE.
 
    Once the agent sends the end-of-candidates event, it SHOULD update
    the state of the corresponding check list as explained in section
@@ -709,6 +721,14 @@ Internet-Draft                 Trickle ICE                  January 2013
    In case the list is still in the Active state after the update, the
    agent will persist the the fact that an end-of-candidates
    notification has been received for and take it into account in future
+
+
+
+Ivov, et al.             Expires August 1, 2013                [Page 13]
+
+Internet-Draft                 Trickle ICE                  January 2013
+
+
    list updates.
 
    [TODO would we like to say anything about nomination? in general this
@@ -721,14 +741,6 @@ Internet-Draft                 Trickle ICE                  January 2013
    At any point of ICE processing, a trickle ICE agent may receive new
    candidates from the remote agent.  When this happens and no local
    candidates are currently known for this same stream, the new remote
-
-
-
-Ivov, et al.              Expires July 23, 2013                [Page 13]
-
-Internet-Draft                 Trickle ICE                  January 2013
-
-
    candidates are simply added to the list of remote candidates.
 
    Otherwise, the new candidates are used for forming candidate pairs
@@ -765,27 +777,29 @@ Internet-Draft                 Trickle ICE                  January 2013
       trickle or confirming support with other mechanisms.
 
 
-13.  Interaction with non-Trickle ICE implementations
-
-   Trickle ICE implementations MUST behave as non-trickle and follow
-   [RFC5245] unless they can confirm that the remote party supports this
-   specification.  [TODO: anything else?]
-
-
-14.  Interaction with non-Trickle ICE implementations
-
-   Trickle ICE implementations MUST behave as non-trickle and follow
-   [RFC5245] unless they can confirm that the remote party supports this
-   specification.  [TODO: anything else?]
 
 
 
-Ivov, et al.              Expires July 23, 2013                [Page 14]
+Ivov, et al.             Expires August 1, 2013                [Page 14]
 
 Internet-Draft                 Trickle ICE                  January 2013
 
 
-15.  Example Flow
+13.  Interaction with ICE Lite
+
+   Behaviour of Trickle ICE capable ICE lite agents does not require any
+   particular rules other than those already defined in this
+   specification and [RFC5245].  This section is hence added with an
+   informational purpose only.
+
+   A Trickle ICE capable ICE Lite agent would generate offers or answers
+   as per [RFC5245].  Both will indicate support for trickle ICE
+   (Section 5.1) and given that they will contain a complete set of
+   candidates (the agent's host candidates) these offers and answers
+   would also be accompanied with an end-of-candidates notification.
+
+
+14.  Example Flow
 
    A typical successful trickle ICE exchange with an Offer/Answer
    protocol would look this way:
@@ -812,41 +826,48 @@ Internet-Draft                 Trickle ICE                  January 2013
                              Figure 1: Example
 
 
-16.  Security Considerations
+15.  Security Considerations
 
    [TODO]
 
 
-17.  Acknowledgements
-
-   The authors would like to thank Christer Holmberg and Martin Thomson
-   for their reviews and suggestions on improving this document.
 
 
-18.  References
 
-18.1.  Normative References
+
+
+Ivov, et al.             Expires August 1, 2013                [Page 15]
+
+Internet-Draft                 Trickle ICE                  January 2013
+
+
+16.  Acknowledgements
+
+   The authors would like to thank Bernard Adoba, Christer Holmberg,
+   Jonathan Lennox and Martin Thomson for their reviews and suggestions
+   on improving this document.
+
+
+17.  References
+
+17.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119, March 1997.
 
-   [RFC3388]  Camarillo, G., Eriksson, G., Holler, J., and H.
-              Schulzrinne, "Grouping of Media Lines in the Session
-              Description Protocol (SDP)", RFC 3388, December 2002.
+   [RFC3264]  Rosenberg, J. and H. Schulzrinne, "An Offer/Answer Model
+              with Session Description Protocol (SDP)", RFC 3264,
+              June 2002.
 
-
-
-Ivov, et al.              Expires July 23, 2013                [Page 15]
-
-Internet-Draft                 Trickle ICE                  January 2013
-
+   [RFC4566]  Handley, M., Jacobson, V., and C. Perkins, "SDP: Session
+              Description Protocol", RFC 4566, July 2006.
 
    [RFC5245]  Rosenberg, J., "Interactive Connectivity Establishment
               (ICE): A Protocol for Network Address Translator (NAT)
               Traversal for Offer/Answer Protocols", RFC 5245,
               April 2010.
 
-18.2.  Informative References
+17.2.  Informative References
 
    [I-D.keranen-mmusic-ice-address-selection]
               Keraenen, A. and J. Arkko, "Update on Candidate Address
@@ -858,11 +879,24 @@ Internet-Draft                 Trickle ICE                  January 2013
               E. Lear, "Address Allocation for Private Internets",
               BCP 5, RFC 1918, February 1996.
 
-   [RFC3264]  Rosenberg, J. and H. Schulzrinne, "An Offer/Answer Model
-              with Session Description Protocol (SDP)", RFC 3264,
+   [RFC3261]  Rosenberg, J., Schulzrinne, H., Camarillo, G., Johnston,
+              A., Peterson, J., Sparks, R., Handley, M., and E.
+              Schooler, "SIP: Session Initiation Protocol", RFC 3261,
               June 2002.
 
+   [RFC3388]  Camarillo, G., Eriksson, G., Holler, J., and H.
+              Schulzrinne, "Grouping of Media Lines in the Session
+              Description Protocol (SDP)", RFC 3388, December 2002.
+
    [RFC3840]  Rosenberg, J., Schulzrinne, H., and P. Kyzivat,
+
+
+
+Ivov, et al.             Expires August 1, 2013                [Page 16]
+
+Internet-Draft                 Trickle ICE                  January 2013
+
+
               "Indicating User Agent Capabilities in the Session
               Initiation Protocol (SIP)", RFC 3840, August 2004.
 
@@ -889,14 +923,6 @@ Internet-Draft                 Trickle ICE                  January 2013
               February 2008.
 
    [XEP-0176]
-
-
-
-Ivov, et al.              Expires July 23, 2013                [Page 16]
-
-Internet-Draft                 Trickle ICE                  January 2013
-
-
               Beda, J., Ludwig, S., Saint-Andre, P., Hildebrand, J.,
               Egan, S., and R. McQueen, "XEP-0176: Jingle ICE-UDP
               Transport Method", XEP XEP-0176, June 2009.
@@ -911,9 +937,27 @@ Appendix A.  Open issues
    At the time of writing of this document the authors have no clear
    view on how and if the following list of issues should be address
    here:
-   1.  Do we need a "stop sending me candidates" message.  What would be
-       the use case for that.
-   2.  Is there anything specific we need to say about ICE lite?
+   1.  This specification does not currently define syntax for end-of-
+       candidate notifications and leaves this to trickle ICE usages.
+       Yet, it is reasonable to assume that most usages would simply add
+       an a=end-of-candidates attribute since this would be the most
+       straightforward option.  We are hence wondering if there's a good
+       reason not to do so here.
+
+
+
+
+
+Ivov, et al.             Expires August 1, 2013                [Page 17]
+
+Internet-Draft                 Trickle ICE                  January 2013
+
+
+   2.  ICE Lite implementations of Trickle ICE do not necessarily need
+       to receive candidates from their peers: it would be enough for
+       them to start getting checks and discover all candidates as peer
+       reflexive.  This would allow to reduce signalling traffic but
+       could introduce other issues.
 
 
 Appendix B.  Changes From Earlier Versions
@@ -921,7 +965,31 @@ Appendix B.  Changes From Earlier Versions
    Note to the RFC-Editor: please remove this section prior to
    publication as an RFC.
 
-B.1.  Changes From Individual Submission Draft -00
+B.1.  Changes From draft-rescorla-01
+
+   o  Brought back explicit use of Offer/Answer.  There are no more
+      attempts to try to do this in an O/A independent way.  Also
+      removed the use of ICE Descriptions.
+   o  Added SDP specification for trickled candidates, the trickle-ice
+      option and 0.0.0.0 addresses in m-lines.
+   o  Support and Discovery.  Changed that section to be less abstract.
+      As discussed in IETF85, the draft now says implementations and
+      usages need to either determine support in advance and directly
+      use trickle, or do half-trickle.  Removed suggestion about use of
+      discovery in SIP or about letting implementing protocols do what
+      they want.
+   o  Defined Half Trickle.  Added a section that says how it works.
+      Mentioned that it only needs to happen in the first o/a (not
+      necessary in updates), and added Jonathan's comment about how it
+      could, in some cases, offer more than half the improvement if you
+      can pre-gather part or all of your candidates before the user
+      actually presses the call button.
+   o  Added a short section about subsequent offer/answer exchanges.
+   o  Added a short section about interactions with ICE Lite
+      implementations.
+   o  Added two new entries to the open issues section.
+
+B.2.  Changes From draft-rescorla-00
 
    o  Relaxed requirements about verifying support following a
       discussion on MMUSIC.
@@ -929,6 +997,16 @@ B.1.  Changes From Individual Submission Draft -00
       3264 language and inappropriate references to offers and answers.
    o  Removed inappropriate assumption of adoption by RTCWEB pointed out
       by Martin Thomson.
+
+
+
+
+
+
+
+Ivov, et al.             Expires August 1, 2013                [Page 18]
+
+Internet-Draft                 Trickle ICE                  January 2013
 
 
 Authors' Addresses
@@ -940,17 +1018,6 @@ Authors' Addresses
 
    Phone: +33 6 72 81 15 55
    Email: emcho@jitsi.org
-
-
-
-
-
-
-
-
-Ivov, et al.              Expires July 23, 2013                [Page 17]
-
-Internet-Draft                 Trickle ICE                  January 2013
 
 
    Eric Rescorla
@@ -993,16 +1060,5 @@ Internet-Draft                 Trickle ICE                  January 2013
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-Ivov, et al.              Expires July 23, 2013                [Page 18]
+Ivov, et al.             Expires August 1, 2013                [Page 19]
 
