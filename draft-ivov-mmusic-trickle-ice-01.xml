@@ -179,6 +179,31 @@
             XMPP Jingle Relay Nodes <xref target="XEP-0278"/> are among
             the possible examples.
           </t>
+          <t hangText="Trickled Candidates:">
+            Candidates that a trickle ICE agent is sending subsequently
+            to but within the context defined by an offer or an answer.
+            Trickled candidates can be sent in parallel with candidate
+            harvesting and connectivity checks.
+          </t>
+          <t hangText="Trickling/Trickle (v.):">
+            The act of sending trickled candidates.
+          </t>
+          <t hangText="Half Trickle:">
+            A trickle ICE mode of operation where the offerer gathers
+            its first generation of candidates strictly before creating
+            and sending the offer. Once sent, that offer can be
+            processed by vanilla ICE agents and does not require support
+            for this specification. It also allows trickle ICE capable
+            answerers to still gather candidates and perform
+            connectivity checks in a non-blocking way, thus roughly
+            offering "half" the advantages of trickle ICE. The mechanism
+            is mostly meant for use in cases where support for trickle
+            ICE cannot be confirmed prior to sending a first offer.
+          </t>
+          <t hangText="Full Trickle:">
+            Regular mode of operation for trickle ICE agents, used in
+            opposition to the half trickle mode of operation.
+          </t>
         </list>
       </t>
     </section>
@@ -1080,6 +1105,16 @@
         Note to the RFC-Editor: please remove this section prior to
         publication as an RFC.
       </t>
+      <section title='Changes From draft-ivov-00'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Added more terminology, including trickling, trickled
+              candidates, half trickle, full trickle,
+            </t>
+          </list>
+        </t>
+      </section>
       <section title='Changes From draft-rescorla-01'>
         <t>
           <list style='symbols'>
