@@ -147,7 +147,9 @@
         This specification makes use of all terminology defined by the
         protocol for Interactive Connectivity Establishment in
         <xref target="RFC5245"/> and its Trickle ICE extension
-        <xref target="I-D.ivov-mmusic-trickle-ice"/>.
+        <xref target="I-D.ivov-mmusic-trickle-ice"/>. It is assumed that
+        the reader will be familiar with the terminology from both of
+        them.
       </t>
     </section>
     <section title='Half vs Full Trickle'
@@ -171,7 +173,7 @@
         by a completely different one.
       </t>
       <t>
-        For all these reasons SIP UAs implementing trickle ICE MUST
+        For all these reasons SIP UAs implementing trickle ICE SHOULD
         always perform half trickle, unless that behaviour is
         specifically overridden by configuration (which could be the
         case in controlled environments where every agent supports
@@ -200,6 +202,13 @@
         <figure>
           <artwork>
 <![CDATA[
+      INFO sip:alice@example.com SIP/2.0
+      ...
+      Info-Package: trickle-ice
+      Content-type: application/sdp
+      Content-Disposition: Info-Package
+      Content-length: ...
+
       a=m-line-id:1
       a=candidate:1 1 UDP 1658497328 192.168.100.33 5000 typ host
       a=candidate:2 1 UDP 1658497328 96.1.2.3 5000 typ srflx
@@ -277,8 +286,51 @@
     </section>
     <section title='Example Flows'>
       <t>
-        A typical successful trickle ICE exchange with SIP would look
-        this way: [TODO]
+        A typical successful (half) trickle ICE exchange with SIP would
+        look this way:
+        <figure title="Example " anchor="fig-example">
+          <artwork>
+  <![CDATA[
+   STUN/Turn                                                STUN/TURN
+    Servers          Alice                      Bob          Servers
+       |               |                         |               |
+       |<--------------|                         |               |
+       |               |                         |               |
+       |               |                         |               |
+       |   Candidate   |                         |               |
+       |               |                         |               |
+       |               |                         |               |
+       |   Discovery   |                         |               |
+       |               |                         |               |
+       |               |                         |               |
+       |-------------->|     INVITE (Offer)      |               |
+       |               |------------------------>|               |
+       |               |      180 (Answer)       |-------------->|
+       |               |<------------------------|               |
+       |               |                         |               |
+       |               |  INFO (more candidates) |   Candidate   |
+       |               |<------------------------|               |
+       |               |  Connectivity Checks    |               |
+       |               |<=======================>|   Discovery   |
+       |               | INFO (more candidates)  |               |
+       |               |<------------------------|               |
+       |               |  Connectivity Checks    |<--------------|
+       |               |<=======================>|               |
+       |               |                         |               |
+       |               |          200 OK         |               |
+       |               |<------------------------|               |
+       |               |                         |               |
+       |               |    5245 SIP re-INVITE   |               |
+       |               |------------------------>|               |
+       |               |          200 OK         |               |
+       |               |<------------------------|               |
+       |               |                         |               |
+       |               |                         |               |
+       |               |<===== MEDIA FLOWS =====>|               |
+       |               |                         |               |
+]]>
+          </artwork>
+        </figure>
       </t>
     </section>
     <section title='Security Considerations'>

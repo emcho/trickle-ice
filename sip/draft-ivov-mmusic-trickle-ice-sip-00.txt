@@ -74,20 +74,20 @@ Table of Contents
    2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . . . 3
    3.  Half vs Full Trickle  . . . . . . . . . . . . . . . . . . . . . 3
    4.  Encoding and Sending Candidate Information  . . . . . . . . . . 4
-   5.  Info Package  . . . . . . . . . . . . . . . . . . . . . . . . . 4
-     5.1.  Overall Description . . . . . . . . . . . . . . . . . . . . 4
+   5.  Info Package  . . . . . . . . . . . . . . . . . . . . . . . . . 5
+     5.1.  Overall Description . . . . . . . . . . . . . . . . . . . . 5
      5.2.  Applicability . . . . . . . . . . . . . . . . . . . . . . . 5
      5.3.  INFO Package Name . . . . . . . . . . . . . . . . . . . . . 5
      5.4.  INFO Package Parameters . . . . . . . . . . . . . . . . . . 5
      5.5.  SIP Option-Tags . . . . . . . . . . . . . . . . . . . . . . 5
      5.6.  INFO Message Body Parts . . . . . . . . . . . . . . . . . . 5
    6.  Example Flows . . . . . . . . . . . . . . . . . . . . . . . . . 6
-   7.  Security Considerations . . . . . . . . . . . . . . . . . . . . 6
-   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . 6
-   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . . . 6
-     9.1.  Normative References  . . . . . . . . . . . . . . . . . . . 6
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . . . 7
+   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . 7
+   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+     9.1.  Normative References  . . . . . . . . . . . . . . . . . . . 7
      9.2.  Informative References  . . . . . . . . . . . . . . . . . . 7
-   Appendix A.  Open issues  . . . . . . . . . . . . . . . . . . . . . 7
+   Appendix A.  Open issues  . . . . . . . . . . . . . . . . . . . . . 8
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . . . 8
 
 
@@ -152,15 +152,15 @@ Internet-Draft             Trickle ICE for SIP              January 2013
 
    This specification makes use of all terminology defined by the
    protocol for Interactive Connectivity Establishment in [RFC5245] and
-   its Trickle ICE extension [I-D.ivov-mmusic-trickle-ice].
+   its Trickle ICE extension [I-D.ivov-mmusic-trickle-ice].  It is
+   assumed that the reader will be familiar with the terminology from
+   both of them.
 
 
 3.  Half vs Full Trickle
 
    Trickle ICE defines a mode of operation called "half trickle".  With
    half trickle the first offer in a session contains all candidates and
-   subsequent trickling occurs from the offerer in this first offer/
-   answer negotiation.  Half trickle offers can hence be processed by
 
 
 
@@ -169,6 +169,8 @@ Ivov, et al.             Expires August 2, 2013                 [Page 3]
 Internet-Draft             Trickle ICE for SIP              January 2013
 
 
+   subsequent trickling occurs from the offerer in this first offer/
+   answer negotiation.  Half trickle offers can hence be processed by
    both vanilla and trickle ICE agents, which offers an interesting
    advantage in cases where support for trickle cannot be verified prior
    to sending an offer.
@@ -180,7 +182,7 @@ Internet-Draft             Trickle ICE for SIP              January 2013
    capabilities can hence be routed to and answered by one entity and a
    subsequent INVITE by a completely different one.
 
-   For all these reasons SIP UAs implementing trickle ICE MUST always
+   For all these reasons SIP UAs implementing trickle ICE SHOULD always
    perform half trickle, unless that behaviour is specifically
    overridden by configuration (which could be the case in controlled
    environments where every agent supports trickle ICE).
@@ -202,6 +204,13 @@ Internet-Draft             Trickle ICE for SIP              January 2013
    by an 'm-line-id' SDP attribute line as follows:
 
 
+         INFO sip:alice@example.com SIP/2.0
+         ...
+         Info-Package: trickle-ice
+         Content-type: application/sdp
+         Content-Disposition: Info-Package
+         Content-length: ...
+
          a=m-line-id:1
          a=candidate:1 1 UDP 1658497328 192.168.100.33 5000 typ host
          a=candidate:2 1 UDP 1658497328 96.1.2.3 5000 typ srflx
@@ -211,20 +220,17 @@ Internet-Draft             Trickle ICE for SIP              January 2013
 
 
 
+Ivov, et al.             Expires August 2, 2013                 [Page 4]
+
+Internet-Draft             Trickle ICE for SIP              January 2013
+
+
 5.  Info Package
 
 5.1.  Overall Description
 
    This specification defines an INFO package meant for use by SIP user
    agents implementing Trickle ICE.  Typically INFO requests would carry
-
-
-
-Ivov, et al.             Expires August 2, 2013                 [Page 4]
-
-Internet-Draft             Trickle ICE for SIP              January 2013
-
-
    ICE candidates discovered after the user agent has sent or received a
    trickle-ice offer.
 
@@ -267,12 +273,6 @@ Internet-Draft             Trickle ICE for SIP              January 2013
 
    Entities implementing this specification MUST include SDP encoded ICE
    candidates in all SIP INFO requests.  The MIME type for the payload
-   MUST be of type 'application/sdp' as defined in Section 4 and
-   [I-D.ivov-mmusic-trickle-ice].
-
-
-
-
 
 
 
@@ -281,10 +281,63 @@ Ivov, et al.             Expires August 2, 2013                 [Page 5]
 Internet-Draft             Trickle ICE for SIP              January 2013
 
 
+   MUST be of type 'application/sdp' as defined in Section 4 and
+   [I-D.ivov-mmusic-trickle-ice].
+
+
 6.  Example Flows
 
-   A typical successful trickle ICE exchange with SIP would look this
-   way: [TODO]
+   A typical successful (half) trickle ICE exchange with SIP would look
+   this way:
+
+
+      STUN/Turn                                                STUN/TURN
+       Servers          Alice                      Bob          Servers
+          |               |                         |               |
+          |<--------------|                         |               |
+          |               |                         |               |
+          |               |                         |               |
+          |   Candidate   |                         |               |
+          |               |                         |               |
+          |               |                         |               |
+          |   Discovery   |                         |               |
+          |               |                         |               |
+          |               |                         |               |
+          |-------------->|     INVITE (Offer)      |               |
+          |               |------------------------>|               |
+          |               |      180 (Answer)       |-------------->|
+          |               |<------------------------|               |
+          |               |                         |               |
+          |               |  INFO (more candidates) |   Candidate   |
+          |               |<------------------------|               |
+          |               |  Connectivity Checks    |               |
+          |               |<=======================>|   Discovery   |
+          |               | INFO (more candidates)  |               |
+          |               |<------------------------|               |
+          |               |  Connectivity Checks    |<--------------|
+          |               |<=======================>|               |
+          |               |                         |               |
+          |               |          200 OK         |               |
+          |               |<------------------------|               |
+          |               |                         |               |
+          |               |    5245 SIP re-INVITE   |               |
+          |               |------------------------>|               |
+          |               |          200 OK         |               |
+          |               |<------------------------|               |
+          |               |                         |               |
+          |               |                         |               |
+          |               |<===== MEDIA FLOWS =====>|               |
+          |               |                         |               |
+
+
+
+
+Ivov, et al.             Expires August 2, 2013                 [Page 6]
+
+Internet-Draft             Trickle ICE for SIP              January 2013
+
+
+                             Figure 1: Example
 
 
 7.  Security Considerations
@@ -327,21 +380,19 @@ Internet-Draft             Trickle ICE for SIP              January 2013
               Initiation Protocol (SIP) INFO Method and Package
               Framework", RFC 6086, January 2011.
 
-
-
-
-
-
-Ivov, et al.             Expires August 2, 2013                 [Page 6]
-
-Internet-Draft             Trickle ICE for SIP              January 2013
-
-
 9.2.  Informative References
 
    [I-D.keranen-mmusic-ice-address-selection]
               Keraenen, A. and J. Arkko, "Update on Candidate Address
               Selection for Interactive Connectivity Establishment
+
+
+
+Ivov, et al.             Expires August 2, 2013                 [Page 7]
+
+Internet-Draft             Trickle ICE for SIP              January 2013
+
+
               (ICE)", draft-keranen-mmusic-ice-address-selection-01
               (work in progress), July 2012.
 
@@ -388,7 +439,12 @@ Appendix A.  Open issues
 
 
 
-Ivov, et al.             Expires August 2, 2013                 [Page 7]
+
+
+
+
+
+Ivov, et al.             Expires August 2, 2013                 [Page 8]
 
 Internet-Draft             Trickle ICE for SIP              January 2013
 
@@ -444,5 +500,5 @@ Authors' Addresses
 
 
 
-Ivov, et al.             Expires August 2, 2013                 [Page 8]
+Ivov, et al.             Expires August 2, 2013                 [Page 9]
 
