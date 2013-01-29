@@ -196,9 +196,8 @@
       <t>
         Since neither the "a=candidate" nor the "a=end-of-candidates"
         lines contain information matching them to a stream, this is
-        handled through the use of MID <xref target="RFC3388"/> or a
-        zero-based m-line index carried by an 'm-line-id' SDP attribute
-        line as follows:
+        handled through the use of MID <xref target="RFC3388"/> as
+        follows:
         <figure>
           <artwork>
 <![CDATA[
@@ -209,7 +208,7 @@
       Content-Disposition: Info-Package
       Content-length: ...
 
-      a=m-line-id:1
+      a=mid:1
       a=candidate:1 1 UDP 1658497328 192.168.100.33 5000 typ host
       a=candidate:2 1 UDP 1658497328 96.1.2.3 5000 typ srflx
       a=m-line-id:2
