@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ivov-mmusic-trickle-ice-00'>
+     docName='draft-ivov-mmusic-trickle-ice-sip-00'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -43,18 +43,6 @@
         <email>enrico.marocco@telecomitalia.it</email>
       </address>
     </author>
-    <author initials='E.' surname='Marocco' fullname='Enrico Marocco'>
-      <organization>Telecom Italia</organization>
-      <address>
-        <postal>
-          <street>Via G. Reiss Romoli, 274</street>
-          <city>Turin</city>
-          <code>10148</code>
-          <country>Italy</country>
-        </postal>
-        <email>enrico.marocco@telecomitalia.it</email>
-      </address>
-    </author>
     <author initials="C.H." surname="Holmberg"
             fullname="Christer Holmberg">
       <organization>Ericsson</organization>
@@ -66,20 +54,6 @@
           <country>Finland</country>
         </postal>
         <email>christer.holmberg@ericsson.com</email>
-      </address>
-    </author>
-    <author initials='H.' surname='Kaplan'
-                fullname='Hadriel Kaplan'>
-      <organization>Acme Packet</organization>
-      <address>
-        <postal>
-          <street>100 Crosby Drive</street>
-          <city>Bedford</city>
-          <region>MA</region>
-          <code>01730</code>
-          <country>USA</country>
-        </postal>
-        <email>hkaplan@acmepacket.com</email>
       </address>
     </author>
     <date />

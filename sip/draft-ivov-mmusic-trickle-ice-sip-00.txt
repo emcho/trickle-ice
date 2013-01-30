@@ -4,17 +4,14 @@
 Network Working Group                                            E. Ivov
 Internet-Draft                                                     Jitsi
 Intended status: Standards Track                              E. Marocco
-Expires: August 2, 2013                                       E. Marocco
-                                                          Telecom Italia
+Expires: August 3, 2013                                   Telecom Italia
                                                              C. Holmberg
                                                                 Ericsson
-                                                               H. Kaplan
-                                                             Acme Packet
-                                                        January 29, 2013
+                                                        January 30, 2013
 
 
        A Session Initiation Protocol (SIP) usage for Trickle ICE
-                    draft-ivov-mmusic-trickle-ice-00
+                  draft-ivov-mmusic-trickle-ice-sip-00
 
 Abstract
 
@@ -43,22 +40,23 @@ Status of this Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 2, 2013.
+   This Internet-Draft will expire on August 3, 2013.
 
 Copyright Notice
 
    Copyright (c) 2013 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
 
 
-Ivov, et al.             Expires August 2, 2013                 [Page 1]
+
+Ivov, et al.             Expires August 3, 2013                 [Page 1]
 
 Internet-Draft             Trickle ICE for SIP              January 2013
 
 
-   This document is subject to BCP 78 and the IETF Trust's Legal
-   Provisions Relating to IETF Documents
    (http://trustee.ietf.org/license-info) in effect on the date of
    publication of this document.  Please review these documents
    carefully, as they describe your rights and restrictions with respect
@@ -108,7 +106,9 @@ Table of Contents
 
 
 
-Ivov, et al.             Expires August 2, 2013                 [Page 2]
+
+
+Ivov, et al.             Expires August 3, 2013                 [Page 2]
 
 Internet-Draft             Trickle ICE for SIP              January 2013
 
@@ -164,7 +164,7 @@ Internet-Draft             Trickle ICE for SIP              January 2013
 
 
 
-Ivov, et al.             Expires August 2, 2013                 [Page 3]
+Ivov, et al.             Expires August 3, 2013                 [Page 3]
 
 Internet-Draft             Trickle ICE for SIP              January 2013
 
@@ -220,7 +220,7 @@ Internet-Draft             Trickle ICE for SIP              January 2013
 
 
 
-Ivov, et al.             Expires August 2, 2013                 [Page 4]
+Ivov, et al.             Expires August 3, 2013                 [Page 4]
 
 Internet-Draft             Trickle ICE for SIP              January 2013
 
@@ -276,7 +276,7 @@ Internet-Draft             Trickle ICE for SIP              January 2013
 
 
 
-Ivov, et al.             Expires August 2, 2013                 [Page 5]
+Ivov, et al.             Expires August 3, 2013                 [Page 5]
 
 Internet-Draft             Trickle ICE for SIP              January 2013
 
@@ -332,7 +332,7 @@ Internet-Draft             Trickle ICE for SIP              January 2013
 
 
 
-Ivov, et al.             Expires August 2, 2013                 [Page 6]
+Ivov, et al.             Expires August 3, 2013                 [Page 6]
 
 Internet-Draft             Trickle ICE for SIP              January 2013
 
@@ -388,7 +388,7 @@ Internet-Draft             Trickle ICE for SIP              January 2013
 
 
 
-Ivov, et al.             Expires August 2, 2013                 [Page 7]
+Ivov, et al.             Expires August 3, 2013                 [Page 7]
 
 Internet-Draft             Trickle ICE for SIP              January 2013
 
@@ -444,7 +444,7 @@ Appendix A.  Open issues
 
 
 
-Ivov, et al.             Expires August 2, 2013                 [Page 8]
+Ivov, et al.             Expires August 3, 2013                 [Page 8]
 
 Internet-Draft             Trickle ICE for SIP              January 2013
 
@@ -469,15 +469,6 @@ Authors' Addresses
    Email: enrico.marocco@telecomitalia.it
 
 
-   Enrico Marocco
-   Telecom Italia
-   Via G. Reiss Romoli, 274
-   Turin  10148
-   Italy
-
-   Email: enrico.marocco@telecomitalia.it
-
-
    Christer Holmberg
    Ericsson
    Hirsalantie 11
@@ -487,18 +478,27 @@ Authors' Addresses
    Email: christer.holmberg@ericsson.com
 
 
-   Hadriel Kaplan
-   Acme Packet
-   100 Crosby Drive
-   Bedford, MA  01730
-   USA
-
-   Email: hkaplan@acmepacket.com
 
 
 
 
 
 
-Ivov, et al.             Expires August 2, 2013                 [Page 9]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Ivov, et al.             Expires August 3, 2013                 [Page 9]
 
