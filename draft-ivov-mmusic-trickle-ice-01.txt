@@ -103,7 +103,7 @@ Table of Contents
      17.2.  Informative References . . . . . . . . . . . . . . . . .  19
    Appendix A.  Open issues  . . . . . . . . . . . . . . . . . . . .  21
      A.1.  MID/Stream Indices in SDP . . . . . . . . . . . . . . . .  21
-     A.2.  End-of-candidates and aggressive nomination . . . . . . .  21
+     A.2.  Starting checks . . . . . . . . . . . . . . . . . . . . .  21
    Appendix B.  Changes From Earlier Versions  . . . . . . . . . . .  21
      B.1.  Changes From draft-ivov-00  . . . . . . . . . . . . . . .  21
 
@@ -790,16 +790,18 @@ Internet-Draft                Trickle ICE                     March 2013
    TURN Allocate requests to a server timeout and the agent has no other
    active harvesters).
 
-   Controlled trickle ICE agents MUST always send end-of-candidates
-   indications once harvesting for a media stream has completed.  This
-   is necessary in order to avoid ambiguities and speed up ICE
-   conclusion.  Controlling agents on the other hand MAY sometimes
-   conclude ICE processing prior to sending end-of-candidates
-   notifications for all streams.  This would typically be the case with
-   aggressive nomination.  Yet it is RECOMMENDED that controlling agents
-   do send such indications whenever possible for the sake of
-   consistency and keeping middle boxes and controlled agents up-to-date
-   on the state of ICE processing.
+   Controlled trickle ICE agents SHOULD always send end-of-candidates
+   indications once harvesting for a media stream has completed unless
+   ICE processing terminates before they've had a chance to do so.
+   Sending the indication is necessary in order to avoid ambiguities and
+   speed up ICE conclusion.  This is necessary in order to avoid
+   ambiguities and speed up ICE conclusion.  Controlling agents on the
+   other hand MAY sometimes conclude ICE processing prior to sending
+   end-of-candidates notifications for all streams.  This would
+   typically be the case with aggressive nomination.  Yet it is
+   RECOMMENDED that controlling agents do send such indications whenever
+   possible for the sake of consistency and keeping middle boxes and
+   controlled agents up-to-date on the state of ICE processing.
 
    When sending end-of-candidates during trickling, rather than as a
    part of an offer or an answer, it is the responsibility of the using
@@ -831,9 +833,7 @@ Internet-Draft                Trickle ICE                     March 2013
    can appear as a session-level attribute, which would be equivalent to
    having it appear in all m-lines.
 
-   Once an agent sends the end-of-candidates event, it will update the
-   state of the corresponding check list as explained in section
-   Section 8.1.  Past that point agents MUST NOT send any new
+
 
 
 
@@ -842,6 +842,9 @@ Ivov, et al.           Expires September 12, 2013              [Page 15]
 Internet-Draft                Trickle ICE                     March 2013
 
 
+   Once an agent sends the end-of-candidates event, it will update the
+   state of the corresponding check list as explained in section
+   Section 8.1.  Past that point agents MUST NOT send any new
    candidates.  Once an agent has received an end-of-candidates
    indication, it MUST also ignore any newly received candidates for
    that media stream.  Adding new candidates to the negotiation is hence
@@ -886,9 +889,6 @@ Internet-Draft                Trickle ICE                     March 2013
 
 11.  Concluding ICE Processing
 
-   This specification does not directly modify the procedures ending ICE
-   processing described in Section 8 of [RFC5245], and trickle ICE
-   implementations will follow the same rules.
 
 
 
@@ -897,6 +897,10 @@ Ivov, et al.           Expires September 12, 2013              [Page 16]
 
 Internet-Draft                Trickle ICE                     March 2013
 
+
+   This specification does not directly modify the procedures ending ICE
+   processing described in Section 8 of [RFC5245], and trickle ICE
+   implementations will follow the same rules.
 
 12.  Subsequent Offer/Answer Exchanges
 
@@ -942,10 +946,6 @@ Internet-Draft                Trickle ICE                     March 2013
 
 
            ICE Lite                                          Bob
-            Agent
-              |   Offer (a=ice-lite a=ice-options:trickle)    |
-              |---------------------------------------------->|
-              |                                               |no cand
 
 
 
@@ -954,6 +954,10 @@ Ivov, et al.           Expires September 12, 2013              [Page 17]
 Internet-Draft                Trickle ICE                     March 2013
 
 
+            Agent
+              |   Offer (a=ice-lite a=ice-options:trickle)    |
+              |---------------------------------------------->|
+              |                                               |no cand
               |         Answer (a=ice-options:trickle)        |trickling
               |<----------------------------------------------|
               |              Connectivity Checks              |
@@ -996,10 +1000,6 @@ Internet-Draft                Trickle ICE                     March 2013
 
 
                              Figure 2: Example
-
-
-
-
 
 
 
@@ -1145,13 +1145,15 @@ A.1.  MID/Stream Indices in SDP
 
 
 
-A.2.  End-of-candidates and aggressive nomination
+A.2.  Starting checks
 
-   In this version of the draft we made end-of-candidates optional
-   because sending them in time would be impossible with aggressive
-   nomination.  Yet, there's a problem here because a controlled agent
-   does not really know if it should consider an aggressive check as
-   successful or not.
+   Normally Vanilla ICE implementations would first activate a check
+   list, validate at least one pair in every component and only then
+   unfreeze all other checklists.  With trickle ICE this would be
+   suboptimal since, candidates can arrive randomly and we would be
+   wasting time waiting for a checklist to fill (almost as if we were
+   doing vanilla ICE).  We need to decide if unfreezing everything
+   solely based on foundation is good enough.
 
 Appendix B.  Changes From Earlier Versions
 
@@ -1166,9 +1168,7 @@ B.1.  Changes From draft-ivov-00
       optional for cases such as aggressive nomination for controlled
       agents.
 
-   o  Added an example for ICE lite and trickle ICE to illustrate how,
-      when talking to an ICE lite agent doesn't need to send or even
-      discover any candidates.
+
 
 
 
@@ -1177,6 +1177,10 @@ Ivov, et al.           Expires September 12, 2013              [Page 21]
 
 Internet-Draft                Trickle ICE                     March 2013
 
+
+   o  Added an example for ICE lite and trickle ICE to illustrate how,
+      when talking to an ICE lite agent doesn't need to send or even
+      discover any candidates.
 
    o  Added an example for ICE lite and trickle ICE to illustrate how,
       when talking to an ICE lite agent doesn't need to send or even
@@ -1222,10 +1226,6 @@ B.2.  Changes From draft-rescorla-01
       discovery in SIP or about letting implementing protocols do what
       they want.
 
-   o  Defined Half Trickle.  Added a section that says how it works.
-      Mentioned that it only needs to happen in the first o/a (not
-      necessary in updates), and added Jonathan's comment about how it
-      could, in some cases, offer more than half the improvement if you
 
 
 
@@ -1234,6 +1234,10 @@ Ivov, et al.           Expires September 12, 2013              [Page 22]
 Internet-Draft                Trickle ICE                     March 2013
 
 
+   o  Defined Half Trickle.  Added a section that says how it works.
+      Mentioned that it only needs to happen in the first o/a (not
+      necessary in updates), and added Jonathan's comment about how it
+      could, in some cases, offer more than half the improvement if you
       can pre-gather part or all of your candidates before the user
       actually presses the call button.
 
@@ -1274,10 +1278,6 @@ Authors' Addresses
 
    Phone: +1 650 678 2350
    Email: ekr@rtfm.com
-
-
-
-
 
 
 

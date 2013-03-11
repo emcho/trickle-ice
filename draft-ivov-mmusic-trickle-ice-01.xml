@@ -823,17 +823,19 @@
         server timeout and the agent has no other active harvesters).
       </t>
       <t>
-        Controlled trickle ICE agents MUST always send end-of-candidates
-        indications once harvesting for a media stream has completed.
-        This is necessary in order to avoid ambiguities and speed up
-        ICE conclusion. Controlling agents on the other hand MAY
-        sometimes conclude ICE processing prior to sending
-        end-of-candidates notifications for all streams. This would
-        typically be the case with aggressive nomination. Yet it is
-        RECOMMENDED that controlling agents do send such indications
-        whenever possible for the sake of consistency and keeping middle
-        boxes and controlled agents up-to-date on the state of ICE
-        processing.
+        Controlled trickle ICE agents SHOULD always send
+        end-of-candidates indications once harvesting for a media stream
+        has completed unless ICE processing terminates before they've
+        had a chance to do so. Sending the indication is necessary in
+        order to avoid ambiguities and speed up ICE conclusion. This is
+        necessary in order to avoid ambiguities and speed up ICE
+        conclusion. Controlling agents on the other hand MAY sometimes
+        conclude ICE processing prior to sending end-of-candidates
+        notifications for all streams. This would typically be the case
+        with aggressive nomination. Yet it is RECOMMENDED that
+        controlling agents do send such indications whenever possible
+        for the sake of consistency and keeping middle boxes and
+        controlled agents up-to-date on the state of ICE processing.
       </t>
       <t>
         When sending end-of-candidates during trickling, rather than as
@@ -1199,13 +1201,16 @@
           </figure>
         </t>
       </section>
-      <section title='End-of-candidates and aggressive nomination'>
+      <section title='Starting checks'>
         <t>
-          In this version of the draft we made end-of-candidates
-          optional because sending them in time would be impossible with
-          aggressive nomination. Yet, there's a problem here because a
-          controlled agent does not really know if it should consider
-          an aggressive check as successful or not.
+          Normally Vanilla ICE implementations would first activate a
+          check list, validate at least one pair in every component
+          and only then unfreeze all other checklists. With trickle ICE
+          this would be suboptimal since, candidates can arrive randomly
+          and we would be wasting time waiting for a checklist to fill
+          (almost as if we were doing vanilla ICE). We need to decide if
+          unfreezing everything solely based on foundation is good
+          enough.
         </t>
       </section>
     </section>
