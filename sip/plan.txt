@@ -1,0 +1,69 @@
+V  1.  Introduction  
+	what we already have
+V  2.  Terminology
+	reuse
+V  3.  Protocol Overview 
+      3.1 rationale
+        . why trikcle ice (copy from trickle ice draft)
+V       . why INFO
+      3.2 Discovery of trickle ICE support (Half vs. Full Trickle) (you already have this)
+        . intro to the discovery problem
+        . options for discovery: 
+          ..configuration, 
+          ..GRUUs with OPTIONS, presence, 
+          .. (CUSAX?)
+      3.3.  Offer answer relationship
+            offer answer does not depend on trickle ice. it is the same as 5245.8     
+            peer-reflexive example      
+   
+
+   4. Incremental Signaling of Discovered Candidates
+	4.1 The 'trikle-ice' INFO package
+		. it carries sdpfrag
+		. it is incremental (we should say how to identify candidates, full vs partial comparisons)
+		. matching INFO requests to ICE generations
+		. example of an INFO req
+	4.2 Satisfying the SIP dialog states
+		. make clear that unrealiable transport == ALWAYS
+		. prack
+		. acknowledging receipt
+	4.3 Trickle-ice option tag
+	4.4. Trickle-ice support discovery
+		. option tag in in-dialog messages
+		. does not solve the problem of getting rid of half-trickle -> not enough to do full trickle
+		. OPTIONS with GRUU
+		. Presence (I would just put a placeholder here, with an open Q for the WG)
+	4.5. Half Trickle
+
+	5. Examples
+	5.5 Half Trickle example
+	5.6 Full Trickle example
+	5.7 prack example
+	5.8 acknoledging (pr-hack)
+
+   6.  Info Package 
+	6.1.  Overall Description 
+	6.2.  Applicability
+	6.3.  INFO Package Name
+	6.4.  INFO Package Parameters 
+	6.5.  SIP Option-Tags 
+	6.6.  INFO Message Body Parts 
+
+	
+   7. IANA Considerations
+ 
+   8.  Security Considerations
+	. [TODO] PLEASE HELP!
+
+
+Open issues:
+	why not send info requests before the confirmation
+	send info and consider the dialog ok
+		when you get an info (end of candidates)
+		when you get a successful final response to an INFO from the answerer
+
+what happens if you get a 183 with no ICE info?
+	wrong?
+	3264?
+
+triabva da kajem niakyde zashto triabwa da sa in-dialog INFO-tata
