@@ -6,17 +6,17 @@ V  3.  Protocol Overview
       3.1 rationale
 X       . why trikcle ice (copy from trickle ice draft)
 V       . why INFO
-      3.2 Discovery of trickle ICE support (Half vs. Full Trickle) (you already have this)
-        . intro to the discovery problem
-        . options for discovery: 
-          ..GRUUs with OPTIONS, presence, 
-          .. (CUSAX?)
-	  ..configuration, 
-	  .. falling back to half trickle
-	  .. leap of faith and fall back to 3264.
-      3.3.  Offer answer relationship
-            offer answer does not depend on trickle ice. it is the same as 5245.8     
-            peer-reflexive example      
+V     3.2 Discovery of trickle ICE support (Half vs. Full Trickle) (you already have this)
+V       . intro to the discovery problem
+V       . options for discovery: 
+V         ..GRUUs with OPTIONS, presence, 
+V         .. (CUSAX?)
+V         ..configuration, 
+V         .. falling back to half trickle
+V         .. leap of faith and fall back to 3264.
+V     3.3.  Offer answer relationship
+V         ..offer answer does not depend on trickle ice. it is the same as 5245.8     
+V         ..peer-reflexive example      
    
 
    4. Incremental Signaling of Discovered Candidates
@@ -36,12 +36,14 @@ V       . why INFO
 		. OPTIONS with GRUU
 		. Presence (I would just put a placeholder here, with an open Q for the WG)
 	4.5. Half Trickle
+	5.8. offer answer
 
 	5. Examples
 	5.5 Half Trickle example
 	5.6 Full Trickle example
 	5.7 prack example
 	5.8 acknoledging (pr-hack)
+
 
    6.  Info Package 
 	6.1.  Overall Description 
