@@ -226,36 +226,126 @@
               What's worse is that there are no mechanisms in SIP to
               actually prevent that. <xref target="RFC3261"/>, where
               the situation of offers crossing on the wire is described
-              as "glare", only defines a procedure for solving the issue
-              after it has occurred. According to that procedure both
-              offers are invalidated and both sides need to retry the
-              negotiation after a period between 0 and 4 seconds. The
-              high likelihood for glare to occur and the average 2
-              second backoff intervals would imply ICE processing
-              durations not only failt to improve but actually exceed
-              those of vanilla ICE.
+              as "glare", only defines a procedure for addressing the
+              issue after it has occurred. According to that procedure
+              both offers are invalidated and both sides need to retry
+              the negotiation after a period between 0 and 4 seconds.
+              The high likelihood for glare to occur and the average two
+              second backoff intervals would imply trickle ICE
+              processing duration would not only fail to improve but
+              actually exceed those of vanilla ICE.
             </t>
           </list>
         </t>
+        <t>
+          INFO messages have no impact on the Offer/Answer negotiation
+          and are subject to none of the glare issues described above,
+          which makes them a very convenient and lightweight mechanism
+          for asynchronous delivery of candidates.
+        </t>
+        <t>
+          Using in-dialog INFO messages also provides a way of
+          guaranteeing that candidates are delivered end-to-end, between
+          the same entities that are actually in the process of
+          initiating a session. The alternative would have implied
+          requiring support for Globally Routable UA URI (GRUU)
+          <xref target="RFC5627"/> which, given GRUUs relatively low
+          adoption levels, would have constituted too strong of
+          constraint to the adoption of trickle ICE.
+        </t>
       </section>
-      <section title="Rationale. Why INFO" anchor="disco">
+      <section title="Discovery issues" anchor="disco-issues">
         <t>
-          The high likelihood of glare occurrences, their handlign and
+          In order for to benefit from trickle ICE's full potential and
+          reduce session establishment latency to a minimum, trickle ICE
+          agents need to generate SDP offers and answers that contain
+          incomplete, potentially empty sets of candidates. Such offers
+          and answers can only be handled meaningfully by agents that
+          actually support incremental candidate provisioning, which
+          implies the need to confirm such support before actually using
+          it.
         </t>
         <t>
-          In order to guarantee the end-to-end delivery of ICE candidates
-          without requiring support for Globally Routable UA URI (GRUU)
-          <xref target="RFC5627"/>, trickle ICE relies on using in-dialog
-          INFO requests.
+          Contrary to other protocols, like XMPP
+          <xref target="RFC6120"/>, where "in advance" capability
+          discovery is widely implemented, the mechanisms that allow this
+          for sip (i.e., a combination of UA Capabilities
+          <xref target="RFC3840"/> and GRUU <xref target="RFC5627"/>)
+          have only seen low levels of adoption. This presents an issue
+          for trickle ICE implementations as SIP UAs do not have an
+          obvious means of verifying that their peer will support
+          incremental candidate provisioning.
         </t>
+        <t>
+          The "half-trickle" mode of operation defined in the trickle
+          ICE specification <xref target="I-D.ietf-mmusic-trickle-ice"/>
+          provides one way around this, by requiring first offers to
+          contain a complete set of ICE candidates and only using
+          incremental provisioning for the rest of the sessions.
+        </t>
+        <t>
+          While using "half-trickle" does provide a working solution it
+          also comes at the price of increased latency.
+          <xref target="disco"/> therefore makes several alternative
+          suggestions that enable SIP UAs to engage in full trickle
+          right from their first offer: <xref target="disco-prov"/>
+          discusses the use of on-line provisioning as a means of
+          allowing use of trickle ICE for all endpoints in controlled
+          environments. <xref target="disco-leap"/> describes the
+          possibility to simply assume support of trickle ICE in a
+          "leap of faith" way by then falling back to regular
+          Offer/Answer semantics. <xref target="disco-gruu"/> describes
+          anticipatory discovery for implementations that actually do
+          support GRUU and UA Capabilities and
+          <xref target="half-full-trickle"/> discusses the implementation
+          and use of "half-trickle" by SIP UAs where none of the above
+          are an option.
+        </t>
+      </section>
+    </section>
+    <section title="Initial discovery of trickle ICE support"
+               anchor="disco">
+
+        <t>
+          SIP User Agents (UAs) that support and intend to use trickle
+          ICE are REQUIRED by
+          <xref target="I-D.ietf-mmusic-trickle-ice"/> to indicate
+          that in their offers and answers using the following
+          attribute: "a=ice-options:trickle". This makes discovery
+          fairly straightforward for answerers or for cases where
+          offers need to be generated within existing dialogs (i.e.,
+          when sending re-INVITE requests). In both scenarios prior
+          SDP would have provided the necessary information.
+        </t>
+        <t>
+          Obviously, prior SDP is not available at the time a first
+          offer is being constructed and it is therefore impossible
+          for ICE agents to determine support for incremental
+          provisioning that way. The following options are suggested as
+          ways of addressing this issue.
+        </t>
+        <section title="Provisioning support for trickle ICE"
+                 anchor="disco-prov">
+          <t>.</t>
+        </section>
+        <section title="Leap of faith. Assuming support for trickle ICE"
+                 anchor="disco-leap">
+          <t>.</t>
+        </section>
+        <section title="Conventional trickle ICE discovery with GRUU and UA Capabilities"
+                 anchor="disco-gruu">
+          <t>.</t>
+        </section>
+        <section title="Discovery through SDP"
+                 anchor="disco-sdp">
         <t>
           Also, in addition to avoid backward compatibility issues, this
-          specifications mandates that, prior to initiating trickle ICE
+          specification mandates that, prior to initiating trickle ICE
           semantics, an agent confirms support of trickle ICE by their
           peer. This is either achieved through confirming user agent
           capabilities (which potentially requires support for GRUU) or
           through the half trickle mode defined in
-          <xref target="I-D.ietf-mmusic-trickle-ice"/>.
+          .
         </t>
         <t>
           Use of half trickle is particularly convenient for SIP as it
@@ -271,10 +361,10 @@
         </t>
         <t>
           Use of GRUU is one solution to this problem, and this
-          specification allows that when available. Making use of trickle
-          ICE in more conventional SIP deployments, however,  would only
-          be possible through the half trickle semantics defined in
-          <xref target="half-full-trickle"/>.
+          specification allows that when available. Making use of
+          trickle ICE in more conventional SIP deployments, however,
+          would only be possible through the half trickle semantics
+          defined in <xref target="half-full-trickle"/>.
         </t>
       </section>
     </section>
@@ -507,6 +597,7 @@
       <?rfc include="reference.RFC.4566"?>
       <?rfc include="reference.RFC.5245"?>
       <?rfc include="reference.RFC.6086"?>
+      <?rfc include="reference.RFC.6120"?>
       <?rfc include="reference.I-D.ietf-mmusic-trickle-ice"?>
     </references>
     <references title='Informative References'>

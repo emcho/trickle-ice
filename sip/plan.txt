@@ -4,14 +4,16 @@ V  2.  Terminology
 	reuse
 V  3.  Protocol Overview 
       3.1 rationale
-        . why trikcle ice (copy from trickle ice draft)
+X       . why trikcle ice (copy from trickle ice draft)
 V       . why INFO
       3.2 Discovery of trickle ICE support (Half vs. Full Trickle) (you already have this)
         . intro to the discovery problem
         . options for discovery: 
-          ..configuration, 
           ..GRUUs with OPTIONS, presence, 
           .. (CUSAX?)
+	  ..configuration, 
+	  .. falling back to half trickle
+	  .. leap of faith and fall back to 3264.
       3.3.  Offer answer relationship
             offer answer does not depend on trickle ice. it is the same as 5245.8     
             peer-reflexive example      
@@ -67,3 +69,5 @@ what happens if you get a 183 with no ICE info?
 	3264?
 
 triabva da kajem niakyde zashto triabwa da sa in-dialog INFO-tata
+
+fall back to latching?
