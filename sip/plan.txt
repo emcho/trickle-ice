@@ -20,25 +20,25 @@ V         ..peer-reflexive example
    
 
    4. Incremental Signaling of Discovered Candidates
-	4.1 The 'trikle-ice' INFO package
-		. it carries sdpfrag
-		. it is incremental (we should say how to identify candidates, full vs partial comparisons)
-		. matching INFO requests to ICE generations
-		. example of an INFO req
+V	4.1 The 'trikle-ice' INFO package
+V		. it carries sdpfrag
+V		. it is incremental (we should say how to identify candidates, full vs partial comparisons)
+V		. matching INFO requests to ICE generations
+V		. example of an INFO req
 	4.2 Satisfying the SIP dialog states
 		. make clear that unrealiable transport == ALWAYS
 		. prack
 		. acknowledging receipt
-	4.3 Trickle-ice option tag
-	4.4. Trickle-ice support discovery
-		. option tag in in-dialog messages
-		. does not solve the problem of getting rid of half-trickle -> not enough to do full trickle
-		. OPTIONS with GRUU
-		. Presence (I would just put a placeholder here, with an open Q for the WG)
-	4.5. Half Trickle
-	5.8. offer answer
+X	4.3 Trickle-ice option tag
+V	4.4. Trickle-ice support discovery
+V		. option tag in in-dialog messages
+V		. does not solve the problem of getting rid of half-trickle -> not enough to do full trickle
+V		. OPTIONS with GRUU
+V		. Presence (I would just put a placeholder here, with an open Q for the WG)
+V	4.5. Half Trickle
+V	4.6. offer answer
 
-	5. Examples
+    5. Examples
 	5.5 Half Trickle example
 	5.6 Full Trickle example
 	5.7 prack example
