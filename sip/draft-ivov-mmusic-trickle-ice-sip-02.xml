@@ -141,8 +141,8 @@
         defined Info Package <xref target="RFC6086"/>.
       </t>
       <t>
-        Specifically, in cases where trickle ICE is fully supported
-        A typical exchange would happen along the following lines:
+        Specifically, in cases where trickle ICE is fully supported,
+        a typical exchange would happen along the following lines:
         The offerer would send an INVITE containing a subset of
         candidates and then wait for an early dialog to be established.
         Once that happens, it will be able to continue sending
@@ -151,9 +151,9 @@
       <t>
         Similarly, once it has sent an answer (though not earlier)
         an answerer can continue "trickling" ICE candidates using INFO
-        messages within the dialog established by its 183 Session
-        Progress response. <xref target="fig-intro-example"/> shows such
-        a sample exchange:
+        messages within the dialog established by its 18x provisional
+        response. <xref target="fig-intro-example"/> shows such a sample
+        exchange:
       </t>
       <t>
         <figure title="Sample trickle ICE scenario with SIP"
@@ -164,7 +164,7 @@
        |               |                         |                |
        |  STUN Bi.Req. |     INVITE (Offer)      |                |
        |<--------------|------------------------>|                |
-       |               |      180 (Answer)       | TURN Alloc Req |
+       |               |      183 (Answer)       | TURN Alloc Req |
        | STUN Bi.Resp. |<------------------------|--------------->|
        |-------------->|  INFO/OK (SRFLX Cand.)  |                |
        |               |------------------------>| TURN Alloc Resp|
@@ -327,7 +327,7 @@
       |              |                      |                |
       |              |    INVITE (Offer)    |                |
       |              |--------------------->|                |
-      |              |     180 (Answer)     |                |
+      |              |     183 (Answer)     |                |
       |              |<---------------------|                |
       |              |                      |                |
       |                                                      |
@@ -442,7 +442,7 @@
                 |                         |
                 |     INVITE (Offer)      |
                 |------------------------>|
-                |      180 (Answer)       |
+                |      183 (Answer)       |
                 |<------------------------|
                 |                         |
       +----------------------+            |
@@ -479,7 +479,7 @@
                 |                         |
                 |        INVITE           |
                 |------------------------>|
-                |      180 (Offer)        |
+                |      183 (Offer)        |
                 |<------------------------|
                 |     PRACK (Answer)      |
                 |------------------------>|
@@ -523,14 +523,14 @@
             <artwork><![CDATA[
               Alice                      Bob
                 |                         |
-                |        INVITE           |
+                |     INVITE (Offer)      |
                 |------------------------>|
-                |      180 (Offer)        |
+                |      183 (Answer)       |
                 |<------------------------|
                 |                         |
                 |               +----------------------+
                 |               |Bob:  I don't know if |
-                |               |Alice got my 180 or if|
+                |               |Alice got my 183 or if|
                 |               |her dialog is already |
                 |               |in the early state.   |
                 |               |  Can I send INFO???  |
@@ -567,9 +567,9 @@
             <artwork><![CDATA[
               Alice                      Bob
                 |                         |
-                |        INVITE           |
+                |     INVITE (Offer)      |
                 |------------------------>|
-                |      180 (Offer)        |
+                |      183 (Answer)       |
                 |<------------------------|
                 |  INFO/OK (SRFLX Cand.)  |
                 |------------------------>|
@@ -753,8 +753,48 @@
             opposed to arbitrary instances of an address of record).
             Combining the two and using the "trickle-ice" option tag
             defined in <xref target="option-tag"/> provides SIP UAs with
-            a way of querying specific peers for trickle ICE support
-            before attempting to initiate a session with them.
+            a way of learning the capabilities of specific US instances
+            and then addressing them directly with INVITE requests that
+            require SIP support.
+          </t>
+          <t>
+            Such targeted trickling may happen in different ways. One
+            option would be for a SIP UA to learn the GRUU
+            instance ID of a peer through presence and to then query
+            its capabilities direction with an OPTIONS request.
+            Alternately, it can also just send an OPTIONS request to
+            the AOR it intends to contact and then inspect the returned
+            response(s) for support of both GRUU and trickle ICE
+            (<xref target="options-gruu"/>).
+          </t>
+          <t>
+            <figure title="Trickle ICE support discovery with OPTIONS and
+                           GRUU"
+                  anchor="options-gruu">
+              <artwork><![CDATA[
+         Alice                                                Bob
+           |                                                   |
+           |        OPTIONS sip:b1@example.com SIP/2.0         |
+           |-------------------------------------------------->|
+           |                                                   |
+           |                      200 OK                       |
+           |    Contact: sip:b1@example.com;gr=hha9s8d-999a    |
+           |            ;audio;video|;trickle-ice;...          |
+           |<--------------------------------------------------|
+           |                                                   |
+           | INVITE sip:b1@example.com;gr=hha9s8d-999a SIP/2.0 |
+           |-------------------------------------------------->|
+           |                                                   |
+           |                  183 (Answer)                     |
+           |<--------------------------------------------------|
+           |                INFO/OK (Trickling)                |
+           |<------------------------------------------------->|
+           |                                                   |
+           |                      ...                          |
+           |                                                   |
+
+              ]]></artwork>
+            </figure>
           </t>
           <t>
             Confirming support for trickle ICE through
@@ -818,7 +858,7 @@
        |               |                         |               |
        |-------------->|     INVITE (Offer)      |               |
        |               |------------------------>|               |
-       |               |      180 (Answer)       |-------------->|
+       |               |      183 (Answer)       |-------------->|
        |               |<------------------------|               |
        |               |                         |               |
        |               |  INFO (more candidates) |   Candidate   |
@@ -928,8 +968,9 @@
       <t>
         The authors would like to thank Thomas Stack for suggesting
         the INFO acknowledgements used in the specification as a way of
-        avoiding making PRACKs mandatory and Jonathan Lennox for making
-        various suggestions for improvements and optimisations.
+        avoiding making PRACKs mandatory, Paul Kyzivat and Jonathan
+        Lennox for making various suggestions for improvements and
+        optimisations.
       </t>
     </section>
   </middle>
