@@ -1,0 +1,1005 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd">
+
+<rfc category='std' ipr='trust200902'
+     docName='draft-ietf-mmusic-trickle-ice-sip-00'>
+
+<?rfc toc='yes' ?>
+<?rfc symrefs='yes' ?>
+<?rfc sortrefs='yes'?>
+<?rfc iprnotified='no' ?>
+<?rfc strict='yes' ?>
+<?rfc compact='yes' ?>
+  <front>
+
+    <title abbrev='Trickle ICE for SIP'>
+      A Session Initiation Protocol (SIP) usage for Trickle ICE
+    </title>
+    <author initials='E.' surname='Ivov'
+            fullname='Emil Ivov'>
+      <organization abbrev='Jitsi'>Jitsi</organization>
+      <address>
+        <postal>
+          <street></street>
+          <city>Strasbourg</city>
+          <code>67000</code>
+          <country>France</country>
+        </postal>
+        <phone>+33 6 72 81 15 55</phone>
+        <email>emcho@jitsi.org</email>
+      </address>
+    </author>
+    <author initials='E.' surname='Marocco' fullname='Enrico Marocco'>
+      <organization>Telecom Italia</organization>
+      <address>
+        <postal>
+          <street>Via G. Reiss Romoli, 274</street>
+          <city>Turin</city>
+          <code>10148</code>
+          <country>Italy</country>
+        </postal>
+        <email>enrico.marocco@telecomitalia.it</email>
+      </address>
+    </author>
+    <author initials="C.H." surname="Holmberg"
+            fullname="Christer Holmberg">
+      <organization>Ericsson</organization>
+      <address>
+        <postal>
+          <street>Hirsalantie 11</street>
+          <code>02420</code>
+          <city>Jorvas</city>
+          <country>Finland</country>
+        </postal>
+        <email>christer.holmberg@ericsson.com</email>
+      </address>
+    </author>
+    <date />
+    <abstract>
+      <t>
+        The Interactive Connectivity Establishment (ICE) protocol
+        describes a Network Address Translator (NAT) traversal mechanism
+        for UDP-based multimedia sessions established with the
+        offer/answer model. The ICE extension for Incremental
+        Provisioning of Candidates (Trickle ICE) defines a mechanism
+        that allows ICE agents to shorten session establishment delays
+        by making the candidate gathering and connectivity checking
+        phases of ICE non-blocking and by executing them in parallel.
+      </t>
+      <t>
+        This document defines usage semantics for Trickle ICE with the
+        Session Initiation Protocol (SIP).
+      </t>
+    </abstract>
+  </front>
+  <middle>
+    <section title='Introduction'>
+      <t>
+        The vanilla specification of the Interactive Connectivity
+        Establishment (vanilla ICE) protocol <xref target="RFC5245"/>
+        describes a mechanism for NAT traversal that consists of three
+        main phases: a phase where an agent gathers a set of candidate
+        transport addresses (source IP address, port and transport
+        protocol), a second phase where these candidates are sent to a
+        remote agent and this gathering procedure is repeated and,
+        finally, a third phase where connectivity between all candidates
+        in both sets is checked (connectivity checks). Once these phases
+        have been completed, and only then, can both agents begin
+        communication. According to the Vanilla ICE specification the
+        three phases above happen consecutively, in a blocking way,
+        which may lead to undesirable latency during session
+        establishment.
+      </t>
+      <t>
+        The trickle ICE extension defined in
+        <xref target="I-D.ietf-mmusic-trickle-ice"/> defines generic
+        semantics required for these ICE phases to happen
+        simultaneously, in a non-blocking way and hence speed up session
+        establishment.
+      </t>
+      <t>
+        The present specification defines a usage of trickle ICE with
+        the Session Initiation Protocol (SIP). It describes how ICE
+        candidates are to be incrementally exchanged with SIP INFO
+        requests and how the half and full-trickle modes defined in
+        <xref target="I-D.ietf-mmusic-trickle-ice"/> are to be used by
+        SIP User Agents (UAs) depending on their expectations for
+        support of trickle ICE by a remote agent.
+      </t>
+      <t>
+        This document defines a new Info Package
+        <xref target="RFC6086"/> for use with Trickle ICE.
+      </t>
+    </section>
+    <section title="Terminology">
+      <t>
+        The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+        NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and
+        "OPTIONAL" in this document are to be interpreted as described
+        in <xref target="RFC2119"/>.
+      </t>
+      <t>
+        This specification makes use of all terminology defined by the
+        protocol for Interactive Connectivity Establishment in
+        <xref target="RFC5245"/> and its Trickle ICE extension
+        <xref target="I-D.ietf-mmusic-trickle-ice"/>. It is assumed that
+        the reader will be familiar with the terminology from both of
+        them.
+      </t>
+    </section>
+    <section title='Protocol Overview' anchor='overview'>
+      <t>
+        The semantics that vanilla ICE <xref target="RFC5245"/> defines
+        for exchanging ICE candidates are exclusively based on use of
+        Offers and Answers as per <xref target="RFC3264"/> over the
+        Session Description Protocol (SDP) <xref target="RFC4566"/>.
+        This specification extends these mechanism by allowing ICE
+        candidates to also be sent after the completion of Offer/Answer
+        negotiation, through the use of SIP INFO messages and a newly
+        defined Info Package <xref target="RFC6086"/>.
+      </t>
+      <t>
+        Specifically, in cases where trickle ICE is fully supported,
+        a typical exchange would happen along the following lines:
+        The offerer would send an INVITE containing a subset of
+        candidates and then wait for an early dialog to be established.
+        Once that happens, it will be able to continue sending
+        candidates through in INFO requests and within the same dialog.
+      </t>
+      <t>
+        Similarly, once it has sent an answer (though not earlier)
+        an answerer can continue "trickling" ICE candidates using INFO
+        messages within the dialog established by its 18x provisional
+        response. <xref target="fig-intro-example"/> shows such a sample
+        exchange:
+      </t>
+      <t>
+        <figure title="Sample trickle ICE scenario with SIP"
+                anchor="fig-intro-example">
+          <artwork><![CDATA[
+   STUN/Turn                                                STUN/TURN
+    Servers          Alice                      Bob          Servers
+       |               |                         |                |
+       |  STUN Bi.Req. |     INVITE (Offer)      |                |
+       |<--------------|------------------------>|                |
+       |               |      183 (Answer)       | TURN Alloc Req |
+       | STUN Bi.Resp. |<------------------------|--------------->|
+       |-------------->|  INFO/OK (SRFLX Cand.)  |                |
+       |               |------------------------>| TURN Alloc Resp|
+       |               |  INFO/OK (Relay Cand.)  |<---------------|
+       |               |<------------------------|                |
+       |               |                         |                |
+       |               |  More Cands & ConnChecks|                |
+       |               |<=======================>|                |
+       |               |                         |                |
+       |               |          200 OK         |                |
+       |               |<------------------------|                |
+       |               |            ACK          |                |
+       |               |------------------------>|                |
+       |               |                         |                |
+       |               |    5245 SIP re-INVITE   |                |
+       |               |------------------------>|                |
+       |               |          200 OK         |                |
+       |               |<------------------------|                |
+       |               |            ACK          |                |
+       |               |------------------------>|                |
+       |               |                         |                |
+       |               |<===== MEDIA FLOWS =====>|                |
+       |               |                         |                |
+          ]]></artwork>
+        </figure>
+      </t>
+      <section title="Rationale. Why INFO" anchor="rationale">
+        <t>
+          The decision to use SIP INFO requests as a candidate transport
+          method is based primarily on their lightweight nature. Once a
+          dialog has been established, INFO messages can be exchanged
+          both ways with no restrictions on timing and frequency and no
+          risk of collision.
+        </t>
+        <t>
+          On the other hand, using offer/answer and UPDATE requests,
+          which from an <xref target="RFC5245"/> perspective is the
+          traditional way of transporting ICE candidates, introduces
+          the following complications:
+        </t>
+        <t>
+          <list style="hanging">
+
+            <t hangText="Need for a turn-based mechanism: ">
+              <xref target="RFC3264"/> defines Offer/Answer as a
+              strictly sequential mechanism. There can only be a maximum
+              of one exchange at any point of time. Both sides cannot
+              simultaneously send offers nor can they generate multiple
+              offers prior to receiving an answer. Using UPDATEs for
+              candidate transport would therefore imply the
+              implementation of a candidate pool at every agent where
+              candidates can be stored until it is once again that
+              agent's "turn" to emit an answer or a new offer. Such an
+              approach would introduce non-negligible complexity for no
+              additional value.
+            </t>
+            <t hangText="Elevated risk of glare: ">
+              The sequential nature of Offer/Answer also makes it
+              impossible for both sides to send offers simultaneously.
+              What's worse is that there are no mechanisms in SIP to
+              actually prevent that. <xref target="RFC3261"/>, where
+              the situation of offers crossing on the wire is described
+              as "glare", only defines a procedure for addressing the
+              issue after it has occurred. According to that procedure
+              both offers are invalidated and both sides need to retry
+              the negotiation after a period between 0 and 4 seconds.
+              The high likelihood for glare to occur and the average two
+              second backoff intervals would imply trickle ICE
+              processing duration would not only fail to improve but
+              actually exceed those of vanilla ICE.
+            </t>
+          </list>
+        </t>
+        <t>
+          INFO messages have no impact on the Offer/Answer negotiation
+          and are subject to none of the glare issues described above,
+          which makes them a very convenient and lightweight mechanism
+          for asynchronous delivery of candidates.
+        </t>
+        <t>
+          Using in-dialog INFO messages also provides a way of
+          guaranteeing that candidates are delivered end-to-end, between
+          the same entities that are actually in the process of
+          initiating a session. The alternative would have implied
+          requiring support for Globally Routable UA URI (GRUU)
+          <xref target="RFC5627"/> which, given GRUUs relatively low
+          adoption levels, would have constituted too strong of
+          constraint to the adoption of trickle ICE.
+        </t>
+      </section>
+      <section title="Discovery issues" anchor="disco-issues">
+        <t>
+          In order for to benefit from trickle ICE's full potential and
+          reduce session establishment latency to a minimum, trickle ICE
+          agents need to generate SDP offers and answers that contain
+          incomplete, potentially empty sets of candidates. Such offers
+          and answers can only be handled meaningfully by agents that
+          actually support incremental candidate provisioning, which
+          implies the need to confirm such support before actually using
+          it.
+        </t>
+        <t>
+          Contrary to other protocols, like XMPP
+          <xref target="RFC6120"/>, where "in advance" capability
+          discovery is widely implemented, the mechanisms that allow this
+          for sip (i.e., a combination of UA Capabilities
+          <xref target="RFC3840"/> and GRUU <xref target="RFC5627"/>)
+          have only seen low levels of adoption. This presents an issue
+          for trickle ICE implementations as SIP UAs do not have an
+          obvious means of verifying that their peer will support
+          incremental candidate provisioning.
+        </t>
+        <t>
+          The "half trickle" mode of operation defined in the trickle
+          ICE specification <xref target="I-D.ietf-mmusic-trickle-ice"/>
+          provides one way around this, by requiring first offers to
+          contain a complete set of ICE candidates and only using
+          incremental provisioning for the rest of the sessions.
+        </t>
+        <t>
+          While using "half trickle" does provide a working solution it
+          also comes at the price of increased latency.
+          <xref target="disco"/> therefore makes several alternative
+          suggestions that enable SIP UAs to engage in full trickle
+          right from their first offer: <xref target="disco-prov"/>
+          discusses the use of on-line provisioning as a means of
+          allowing use of trickle ICE for all endpoints in controlled
+          environments. <xref target="disco-gruu"/> describes
+          anticipatory discovery for implementations that actually do
+          support GRUU and UA Capabilities and
+          <xref target="half-full-trickle"/> discusses the implementation
+          and use of "half trickle" by SIP UAs where none of the above
+          are an option.
+        </t>
+      </section>
+      <section title="Relationship with the Offer/Answer Model">
+        <t>
+          It is important to note that this specification does not
+          require, define, or even assume any mechanisms that would
+          have an impact on the Offer/Answer model beyond the way it is
+          already used by vanilla ICE <xref target="RFC5245"/>. From the
+          perspective of all SIP middle boxes and proxies, and with the
+          exception of the actual INFO messages, signalling in general
+          and Offer/Answer exchanges in particular would look the same
+          way for trickle as they would for vanilla ICE.
+        </t>
+        <t>
+          <figure title="Distinguishing between trickle ICE and
+          traditional signalling." anchor="fig-oa-and-trickle">
+            <artwork>
+  <![CDATA[
++-------------------------------+  +-------------------------------+
+|   Alice      +--------------+ |  | +--------------+       Bob    |
+|              | Offer/Answer | |  | | Offer/Answer |              |
+| +-------+    |    Module    | |  | |    Module    |    +-------+ |
+| |  ICE  |    +--------------+ |  | +--------------+    |  ICE  | |
+| | Agent |          |          |  |        |            | Agent | |
+| +-------+          |          |  |        |            +-------+ |
++-------------------------------+  +-------------------------------+
+      |              |                      |                |
+      |              |    INVITE (Offer)    |                |
+      |              |--------------------->|                |
+      |              |     183 (Answer)     |                |
+      |              |<---------------------|                |
+      |              |                      |                |
+      |                                                      |
+      |             SIP INFO (more candidates)               |
+      |----------------------------------------------------->|
+      |             SIP INFO (more candidates)               |
+      |<-----------------------------------------------------|
+      |                                                      |
+      |          STUN Binding Requests/Responses             |
+      |----------------------------------------------------->|
+      |          STUN Binding Requests/Responses             |
+      |<-----------------------------------------------------|
+      |                                                      |
+      |              |                      |                |
+      |              |  5245 SIP re-INVITE  |                |
+      |              |--------------------->|                |
+      |              |        200 OK        |                |
+      |              |<---------------------|                |
+
+]]>
+            </artwork>
+          </figure>
+        </t>
+        <t>
+          It is important to note that, as displayed on
+          <xref target="fig-oa-and-trickle"/>, exchanging candidates
+          through SIP INFO messages are best represented as signalling
+          between ICE agents and not between the traditional SIP and
+          Offer/Answer modules of SIP User Agents. Such INFO requests
+          do not impact the state of Offer/Answer, nor do they have an
+          impact on the version number in the "o=" line. In that regard
+          they are actually comparable to Peer Reflexive candidates that
+          ICE agents can discover during ICE processing.
+        </t>
+      </section>
+    </section>
+    <section title="Incremental signalling of ICE candidates"
+             anchor="normative">
+      <t>
+        Trickle ICE agents will construct offers and answers the same
+        way a  <xref target="RFC5245"/> compatible agent would, with
+        the following two main differences:
+      </t>
+      <t>
+        <list style="symbols">
+          <t>
+            First, all offers and answers sent by the trickle ICE
+            capable agents MUST indicate support for trickle ICE through
+            the "trickle" ice-options tag defined in
+            <xref target="I-D.ietf-mmusic-trickle-ice"/>:
+           <figure>
+              <artwork>
+<![CDATA[
+      a=ice-options:trickle
+]]>
+              </artwork>
+            </figure>
+          </t>
+          <t>
+            Second, offers and answers may contain all, some, or no ICE
+            candidates at all.
+          </t>
+        </list>
+      </t>
+      <t>
+        Once an agent has sent an offer or an answer indicating
+        support for trickle ICE, it MUST be prepared to receive SIP
+        INFO requests within that same dialog, containing additional
+        candidates or an indication for the end of such candidates.
+      </t>
+      <t>
+        Similarly, as soon as a SIP UA has established a dialog
+        (including an early state one) it MAY begin sending INFO
+        requests containing additional candidates or end-of-candidates
+        indications. Such INFO requests MUST be sent
+        within that same dialog. This is necessary
+        so that the candidates from these INFO messages could be
+        delivered to the same entities that initiated the session.
+      </t>
+      <section title="Asserting Offer/Answer delivery and dialog state"
+               anchor="oa">
+        <t>
+          In order for SIP UAs to be able to start trickling, the
+          following two conditions need to be satisfied:
+        </t>
+        <t>
+          <list style="symbols">
+            <t>
+              ICE support in the peer agent MUST be confirmed.
+            </t>
+            <t>
+              The SIP dialog at both sides MUST be at least in the early
+              state.
+            </t>
+          </list>
+        </t>
+        <t>
+          <xref target="disco"/> discusses in detail the various options
+          for satisfying the first of the above conditions. Regardless
+          of those mechanisms however, agents are certain to have a
+          clear understanding of whether their peers support trickle
+          ICE once an offer and and an answer have been exchanged,
+          which needs to happen anyway for ICE processing to commence
+          (see <xref target="offerer-can-trickle"/>).
+        </t>
+        <t>
+          <figure title="SIP Offerer can freely trickle as soon as it
+                  receives an answer."
+                anchor="offerer-can-trickle">
+            <artwork><![CDATA[
+              Alice                      Bob
+                |                         |
+                |     INVITE (Offer)      |
+                |------------------------>|
+                |      183 (Answer)       |
+                |<------------------------|
+                |                         |
+      +----------------------+            |
+      |Alice:  I know Bob can|            |
+      |trickle and I know his|            |
+      |dialog is in the early|            |
+      |state. Send INFO!     |            |
+      +----------------------+            |
+                |                         |
+                |  INFO/OK (SRFLX Cand.)  |
+                |------------------------>|
+                |                         |
+            ]]></artwork>
+          </figure>
+        </t>
+        <t>
+          Satisfying both conditions is also relatively trivial for
+          ICE agents that have sent an offer in an INVITE and that have
+          received an answer. Regardless of how that answer was
+          delivered, it is guaranteed to have confirmed support for
+          trickle ICE within the answerer (or lack thereof) and to have
+          fully initialized the SIP dialog at both ends. Offerers in
+          the above situation can therefore freely commence trickling
+          within the newly established dialog
+          (see <xref target="offerer-can-trickle-in-3pcc"/>).
+        </t>
+        <t>
+          <figure title="A SIP Offerer in a 3PCC scenario can also
+                         freely start trickling as soon as it receives
+                         an answer."
+                anchor="offerer-can-trickle-in-3pcc">
+            <artwork><![CDATA[
+              Alice                      Bob
+                |                         |
+                |        INVITE           |
+                |------------------------>|
+                |      183 (Offer)        |
+                |<------------------------|
+                |     PRACK (Answer)      |
+                |------------------------>|
+                |                         |
+                |               +----------------------+
+                |               |Bob:  I know Alice can|
+                |               |trickle and I know her|
+                |               |dialog is in the early|
+                |               |state. Send INFO!     |
+                |               +----------------------+
+                |                         |
+                |  INFO/OK (SRFLX Cand.)  |
+                |<------------------------|
+                |                         |
+            ]]></artwork>
+          </figure>
+        </t>
+        <t>
+          Agents that have sent an offer in a reliable provisional
+          response or in a 200 OK and that receive an answer in a PRACK
+          or in an ACK are also in a similar situation because, by the
+          time the offer and the answer are exchanged, support for
+          trickle ICE will be confirmed and the SIP dialog is guaranteed
+          to be in a state that would allow in-dialog INFO requests.
+        </t>
+        <t>
+          The situation is a bit more delicate for agents that have
+          received an offer in an INVITE request and have sent an answer
+          in an unreliable provisional response because, once the
+          response has been sent, there is no way for the answerer to
+          know when or if it has been received
+          (<xref target="answerer-cant-trickle"/>).
+        </t>
+        <t>
+          <figure title="A SIP UA that has answer-ed in an unreliable
+                         provisional response cannot know exactly when
+                         it is received and when the dialog at the
+                         side of the receiver has entered the early
+                         state"
+                anchor="answerer-cant-trickle">
+            <artwork><![CDATA[
+              Alice                      Bob
+                |                         |
+                |     INVITE (Offer)      |
+                |------------------------>|
+                |      183 (Answer)       |
+                |<------------------------|
+                |                         |
+                |               +----------------------+
+                |               |Bob:  I don't know if |
+                |               |Alice got my 183 or if|
+                |               |her dialog is already |
+                |               |in the early state.   |
+                |               |  Can I send INFO???  |
+                |               +----------------------+
+                |                         |
+            ]]></artwork>
+          </figure>
+        </t>
+        <t>
+          In order to clear this ambiguity as soon as possible, trickle
+          ICE SIP UAs MUST send a trickle ICE INFO request as soon as
+          they receive an SDP Answer in an unreliable provisional
+          response. This INFO message can only contain the candidates
+          that were already provided in the offer (as would be the case
+          when half trickle is performed or when no new candidates have
+          been learned since then) or they can also deliver new
+          information, such as new candidates (if available) or an
+          end-of-candidates indication in case candidate discovery has
+          ended in the mean time.
+        </t>
+        <t>
+          As soon as answerers have received such INFO requests, they
+          would have an indication that a dialog is well established
+          at both ends and they MAY begin trickling
+          (<xref target="answerer-can-now-trickle"/>).
+        </t>
+        <t>
+          <figure title="A SIP UA that has answer-ed in an unreliable
+                         provisional response cannot know exactly when
+                         it is received and when the dialog at the
+                         side of the receiver has entered the early
+                         state"
+                anchor="answerer-can-now-trickle">
+            <artwork><![CDATA[
+              Alice                      Bob
+                |                         |
+                |     INVITE (Offer)      |
+                |------------------------>|
+                |      183 (Answer)       |
+                |<------------------------|
+                |  INFO/OK (SRFLX Cand.)  |
+                |------------------------>|
+                |                         |
+                |               +----------------------+
+                |               |Bob:  Now I know Alice|
+                |               | is ready. Send INFO! |
+                |               +----------------------+
+                |  INFO/OK (SRFLX Cand.)  |
+                |<------------------------|
+                |                         |
+            ]]></artwork>
+          </figure>
+        </t>
+        <t>
+          Obviously, if PRACK <xref target="RFC3262"/> requests are
+          supported and used, there is no need for the above as the
+          PRACKs themselves would provide sufficient indication for
+          the state of the dialog.
+        </t>
+      </section>
+      <section title="Delivering candidates in INFO messages"
+               anchor="info-sdp">
+        <t>
+          Whenever new ICE candidates become available for sending,
+          agents would encode them in "a=candidate" lines as described
+          by <xref target="I-D.ietf-mmusic-trickle-ice"/>. For example:
+           <figure>
+              <artwork>
+<![CDATA[
+        a=candidate:2 1 UDP 1694498815 192.0.2.3 5000 typ srflx
+                  raddr 10.0.1.1 rport 8998
+]]>
+            </artwork>
+          </figure>
+        </t>
+        <t>
+          The use of SIP INFO requests happens within the context of an
+          Info Package specifically defined for the purpose
+          (<xref target="info-package"/>).
+        </t>
+        <t>
+          Such INFO requests MUST be sent within the existing SIP
+          dialog. The MIME type for their payload MUST be set to
+          'application/sdpfrag' as defined in
+          <xref target="I-D.ivov-dispatch-sdpfrag"/>.
+        </t>
+        <t>
+          Since neither the "a=candidate" nor the "a=end-of-candidates"
+          lines contain information that would allow correlating them to
+          a specific "m=" line, this is handled through the use of MID
+          <xref target="RFC3388"/>. Agents MUST include the
+          corresponding "a=mid" line for every "m=" line whose candidate
+          list they intend to update. Such "a=mid" lines MUST
+          immediately precede the list of candidates for that specific
+          "m=" line. All "a=candidate" or "a=end-of-candidates" lines
+          following an "a=mid" line, up until (and excluding) the next
+          occurrence of an "a=mid" line, pertain the the "m=" line
+          identified by that MID. "a=end-of-candidates" lines preceding
+          any "a=mid" lines indicate end of all trickling from that
+          agent (as opposed to end of trickling for a specific "m="
+          line.
+        </t>
+        <t>
+          The use of "a=mid" lines allows for a structure similar to
+          the one in SDP offers and answers where one can distinguish
+          separate media-level and session-level sections. In the
+          current case lines preceding any "a=mid" lines are considered
+          to be session-level. Lines appearing in between or after
+          "a=mid" lines will be interpreted as media-level.
+        </t>
+        <t>
+          All INFO requests MUST carry the "ice-pwd" and "ice-ufrag"
+          attributes that would allow mapping them to a specific ICE
+          generation. INFO requests containing ice-ufrag and ice-pwd
+          values that do not match those of the current ICE processing
+          session MUST be discarded. The "ice-pwd" and "ice-ufrag"
+          attributes MUST appear at the same level as the ones in the
+          Offer/Answer exchange. In other words, if they were present
+          as sesssion-level attributes there, they will also appear
+          at the beginning of all INFO message payloads, preceding all
+          "a=mid" lines. If they were originally exchanged as media
+          level attributes, potentially overriding session-level values,
+          then they will also be included in INFO message payloads,
+          following the corresponding "a=mid' line.
+        </t>
+        <t>
+          In every INFO request agents MUST include all local candidates
+          they have previously signalled. This is necessary in order to
+          more easily avoid problems that would arise from misordering
+          and unreliability.
+        </t>
+        <t>
+          When receiving INFO requests carrying any candidates, agents
+          will therefore first identify and discard the SDP lines
+          containing candidates they have already received in previous
+          INFO requests or in the Offer/Answer exchange preceding them.
+          Two candidates are considered to be equal if their IP address
+          port, transport and component ID are the same. After
+          identifying and discarding known candidates, agents will then
+          process them remaining ones (the actual new candidates)
+          according to the rules described in
+          <xref target="I-D.ietf-mmusic-trickle-ice"/>.
+        </t>
+        <t>
+          The following example shows the content of one sample
+          candidate delivering INFO request:
+        </t>
+        <t>
+          <figure>
+            <artwork>
+<![CDATA[
+      INFO sip:alice@example.com SIP/2.0
+      ...
+      Info-Package: trickle-ice
+      Content-type: application/sdp
+      Content-Disposition: Info-Package
+      Content-length: ...
+
+      a=ice-pwd:asd88fgpdd777uzjYhagZg
+      a=ice-ufrag:8hhY
+      a=mid:1
+      a=candidate:1 1 UDP 1658497328 192.168.100.33 5000 typ host
+      a=candidate:2 1 UDP 1658497328 96.1.2.3 5000 typ srflx
+              raddr 10.0.1.1 rport 8998
+      a=mid:2
+      a=candidate:2 1 UDP 1658497328 96.1.2.3 5002 typ srflx
+              raddr 10.0.1.1 rport 9000
+      a=end-of-candidates
+]]>
+            </artwork>
+          </figure>
+        </t>
+      </section>
+    </section>
+    <section title="Initial discovery of trickle ICE support"
+               anchor="disco">
+        <t>
+          SIP User Agents (UAs) that support and intend to use trickle
+          ICE are REQUIRED by
+          <xref target="I-D.ietf-mmusic-trickle-ice"/> to indicate
+          that in their offers and answers using the following
+          attribute: "a=ice-options:trickle". This makes discovery
+          fairly straightforward for answerers or for cases where
+          offers need to be generated within existing dialogs (i.e.,
+          when sending re-INVITE requests). In both scenarios prior
+          SDP would have provided the necessary information.
+        </t>
+        <t>
+          Obviously, prior SDP is not available at the time a first
+          offer is being constructed and it is therefore impossible
+          for ICE agents to determine support for incremental
+          provisioning that way. The following options are suggested as
+          ways of addressing this issue.
+        </t>
+        <section title="Provisioning support for trickle ICE"
+                 anchor="disco-prov">
+          <t>
+            In certain situations it may be possible for integrators
+            deploying trickle ICE to know in advance that some or all
+            endpoints reachable from within the deployment will support
+            trickle ICE. This is likely to be the case, for example,
+            for WebRTC clients that will always be communicating with
+            other WebRTC clients or known Session Border Controllers
+            (SBC) with support for this specification.
+          </t>
+          <t>
+            While the exact mechanism for allowing such  provisioning
+            is out of scope here, this specification encourages trickle
+            ICE implementations to allow the option in the way they find
+            most appropriate.
+          </t>
+        </section>
+        <section title="Trickle ICE discovery with GRUU"
+                 anchor="disco-gruu">
+          <t>
+            <xref target="RFC3840"/> provides a way for SIP user agents
+            to query for support of specific capabilities using, among
+            others, OPTIONS requests. GRUU support on the other hand
+            allows SIP requests to be addressed to specific UAs (as
+            opposed to arbitrary instances of an address of record).
+            Combining the two and using the "trickle-ice" option tag
+            defined in <xref target="option-tag"/> provides SIP UAs with
+            a way of learning the capabilities of specific US instances
+            and then addressing them directly with INVITE requests that
+            require SIP support.
+          </t>
+          <t>
+            Such targeted trickling may happen in different ways. One
+            option would be for a SIP UA to learn the GRUU
+            instance ID of a peer through presence and to then query
+            its capabilities direction with an OPTIONS request.
+            Alternately, it can also just send an OPTIONS request to
+            the AOR it intends to contact and then inspect the returned
+            response(s) for support of both GRUU and trickle ICE
+            (<xref target="options-gruu"/>).
+          </t>
+          <t>
+            <figure title="Trickle ICE support discovery with OPTIONS and
+                           GRUU"
+                  anchor="options-gruu">
+              <artwork><![CDATA[
+         Alice                                                Bob
+           |                                                   |
+           |        OPTIONS sip:b1@example.com SIP/2.0         |
+           |-------------------------------------------------->|
+           |                                                   |
+           |                      200 OK                       |
+           |    Contact: sip:b1@example.com;gr=hha9s8d-999a    |
+           |            ;audio;video|;trickle-ice;...          |
+           |<--------------------------------------------------|
+           |                                                   |
+           | INVITE sip:b1@example.com;gr=hha9s8d-999a SIP/2.0 |
+           |-------------------------------------------------->|
+           |                                                   |
+           |                  183 (Answer)                     |
+           |<--------------------------------------------------|
+           |                INFO/OK (Trickling)                |
+           |<------------------------------------------------->|
+           |                                                   |
+           |                      ...                          |
+           |                                                   |
+
+              ]]></artwork>
+            </figure>
+          </t>
+          <t>
+            Confirming support for trickle ICE through
+            <xref target="RFC3840"/> gives SIP UAs the options to engage
+            in full trickle negotiation (as opposed to the more lengthy
+            half-trickle) from the very first offer they send.
+          </t>
+        </section>
+        <section title="Trickle ICE discovery through other protocols"
+                 anchor="disco-cusax">
+          <t>
+            Protocols like XMPP <xref target="RFC6120"/> define advanced
+            discovery mechanisms that allow specific features to be
+            queried priory to actually attempting to use them. Solutions
+            like <xref target="RFC7081"/> define ways of using SIP and
+            XMPP together which also provides a way for dual stack
+            SIP+XMPP endpoints to make use of such features and verify
+            trickle ICE support for a specific SIP endpoint through
+            XMPP. [TODO expand on a specific way to do this]
+          </t>
+        </section>
+        <section title='Fallback to half trickle'
+             anchor='half-full-trickle'>
+          <t>
+            In cases where none of the other mechanisms in this section
+            are acceptable, SIP UAs should use the "half trickle" mode
+            defined in <xref target="I-D.ietf-mmusic-trickle-ice"/>.
+            With half trickle, agents initiate sessions the same way
+            they would when using vanilla ICE <xref target="RFC5245"/>.
+            This means that, prior to actually sending an offer, agents
+            would first gather ICE candidates in a blocking way and then
+            send them all in that offer. The blocking nature of the
+            process would likely imply that some amount of latency will
+            be accumulated and it is advised that agents try to
+            anticipate it where possible, like for example, when user
+            actions indicate a high likelyhood for an imminent call
+            (e.g., activity on a keypad or a phone going offhook).
+          </t>
+          <t>
+            Using half trickle would result in offers that are
+            compatible with both vanilla ICE and legacy
+            <xref target="RFC3264"/> endpoints both.
+          </t>
+          <t>
+            A typical (half) trickle ICE exchange with SIP would
+            look this way:
+            <figure title="Example " anchor="fig-half-trickle">
+              <artwork>
+  <![CDATA[
+   STUN/Turn                                                STUN/TURN
+    Servers          Alice                      Bob          Servers
+       |               |                         |               |
+       |<--------------|                         |               |
+       |               |                         |               |
+       |               |                         |               |
+       |   Candidate   |                         |               |
+       |               |                         |               |
+       |               |                         |               |
+       |   Discovery   |                         |               |
+       |               |                         |               |
+       |               |                         |               |
+       |-------------->|     INVITE (Offer)      |               |
+       |               |------------------------>|               |
+       |               |      183 (Answer)       |-------------->|
+       |               |<------------------------|               |
+       |               |                         |               |
+       |               |  INFO (more candidates) |   Candidate   |
+       |               |<------------------------|               |
+       |               |  Connectivity Checks    |               |
+       |               |<=======================>|   Discovery   |
+       |               | INFO (more candidates)  |               |
+       |               |<------------------------|               |
+       |               |  Connectivity Checks    |<--------------|
+       |               |<=======================>|               |
+       |               |                         |               |
+       |               |          200 OK         |               |
+       |               |<------------------------|               |
+       |               |                         |               |
+       |               |    5245 SIP re-INVITE   |               |
+       |               |------------------------>|               |
+       |               |          200 OK         |               |
+       |               |<------------------------|               |
+       |               |                         |               |
+       |               |                         |               |
+       |               |<===== MEDIA FLOWS =====>|               |
+       |               |                         |               |
+]]>
+            </artwork>
+          </figure>
+        </t>
+        <t>
+          It is worth reminding that once a single offer or answer had
+          been exchanged within a specific dialog, support for
+          trickle ICE will have been determined. No further use of half
+          trickle will therefore be necessary within that same dialog
+          and all subsequent exchanges can use the full trickle mode
+          of operation.
+        </t>
+      </section>
+    </section>
+    <section title="Info Package" anchor="info-package">
+      <section title="Overall Description">
+        <t>
+          This specification defines an Info Package meant for use by
+          SIP user agents implementing Trickle ICE. Typically INFO
+          requests would carry ICE candidates discovered after the user
+          agent has sent or received a trickle-ice offer.
+        </t>
+      </section>
+      <section title="Applicability">
+        <t>
+          The purpose of the ICE protocol is to establish a media path.
+          The candidates that this specification transports in INFO
+          requests are part of this establishment. There is hence no way
+          for them to be transported through the not yet existing media
+          path.
+        </t>
+        <t>
+          Candidates sent by a trickle ICE agent after the offer, are
+          meant to follow the same signalling path and reach the same
+          entity as the offer itself. While it is true that GRUUs can
+          be used to achieve this, one of the goals of this
+          specification is to allow operation of trickle ICE in as many
+          environments as possible including those with no GRUU support.
+          Using out-of-dialog SUBSCRIBE/NOTIFY requests would not
+          satisfy this goal.
+        </t>
+      </section>
+      <section title="Info Package Name">
+        <t>
+          This document defines a SIP Info Package as per
+          <xref target="RFC6086"/>. The Info Package token name for this
+          package is "trickle-ice"
+        </t>
+      </section>
+      <section title="Info Package Parameters">
+        <t>
+          This document does not define any Info package parameters.
+        </t>
+      </section>
+      <section title="SIP Option-Tags" anchor="option-tag">
+        <t>
+          <xref target="RFC6086"/> allows Info Package specifications to
+          define SIP option-tags. This document therefore stipulates
+          that SIP entities that support trickle ICE and this
+          specification MUST place the 'trickle-ice' option-tag in a SIP
+          Supported header field.
+        </t>
+        <t>
+          When responding to, or generating a SIP OPTIONS request a SIP
+          entity MUST also include the 'trickle-ice' option-tag in a SIP
+          Supported header field.
+        </t>
+      </section>
+      <section title="Info Message Body Parts">
+        <t>
+          Entities implementing this specification MUST include SDP
+          encoded ICE candidates in all SIP INFO requests. The MIME type
+          for the payload MUST be of type 'application/sdp' as defined
+          in <xref target="info-sdp"/> and
+          <xref target="I-D.ietf-mmusic-trickle-ice"/>.
+        </t>
+      </section>
+    </section>
+    <section title='Security Considerations'>
+      <t>
+        [TODO]
+      </t>
+    </section>
+    <section title='Acknowledgements'>
+      <t>
+        The authors would like to thank Thomas Stack for suggesting
+        the INFO acknowledgements used in the specification as a way of
+        avoiding making PRACKs mandatory, Paul Kyzivat and Jonathan
+        Lennox for making various suggestions for improvements and
+        optimisations.
+      </t>
+    </section>
+  </middle>
+  <back>
+    <references title='Normative References'>
+      <?rfc include="reference.RFC.2119"?>
+      <?rfc include="reference.RFC.3261"?>
+      <?rfc include="reference.RFC.3262"?>
+      <?rfc include="reference.RFC.3264"?>
+      <?rfc include="reference.RFC.4566"?>
+      <?rfc include="reference.RFC.5245"?>
+      <?rfc include="reference.RFC.6086"?>
+      <?rfc include="reference.RFC.6120"?>
+      <?rfc include="reference.I-D.ietf-mmusic-trickle-ice"?>
+      <?rfc include="reference.I-D.ivov-dispatch-sdpfrag"?>
+    </references>
+    <references title='Informative References'>
+      <?rfc include="reference.RFC.3388"?>
+      <?rfc include="reference.RFC.3840"?>
+      <?rfc include="reference.RFC.5627"?>
+      <?rfc include="reference.RFC.7081"?>
+    </references>
+    <section title='Open issues'>
+      <t>
+        At the time of writing of this document the authors are aware of
+        no specific outstanding issues regarding the design of trickle
+        ICE for SIP and are mainly soliciting comments on the
+        readability and completeness of the specification.
+      </t>
+    </section>
+  </back>
+</rfc>
