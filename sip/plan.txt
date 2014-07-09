@@ -38,25 +38,25 @@ V		. Presence (I would just put a placeholder here, with an open Q for the WG)
 V	4.5. Half Trickle
 V	4.6. offer answer
 
-    5. Examples
-	5.5 Half Trickle example
-	5.6 Full Trickle example
-	5.7 prack example
-	5.8 acknoledging (pr-hack)
+V   5. Examples
+V	5.5 Half Trickle example
+V 	5.6 Full Trickle example
+V	5.7 prack example
+V	5.8 acknoledging (pr-hack)
 
 
-   6.  Info Package 
-	6.1.  Overall Description 
-	6.2.  Applicability
-	6.3.  INFO Package Name
-	6.4.  INFO Package Parameters 
-	6.5.  SIP Option-Tags 
-	6.6.  INFO Message Body Parts 
+V  6.  Info Package 
+V	6.1.  Overall Description 
+V	6.2.  Applicability
+V	6.3.  INFO Package Name
+V	6.4.  INFO Package Parameters 
+V	6.5.  SIP Option-Tags 
+V	6.6.  INFO Message Body Parts 
 
 	
-   7. IANA Considerations
+V  7. IANA Considerations
  
-   8.  Security Considerations
+V  8.  Security Considerations
 	. [TODO] PLEASE HELP!
 
 
