@@ -416,7 +416,7 @@
         <t>
           <list style="symbols">
             <t>
-              Trickle ICE support in the peer agent MUST be confirmed.
+              ICE support in the peer agent MUST be confirmed.
             </t>
             <t>
               The SIP dialog at both sides MUST be at least in the early
@@ -621,7 +621,7 @@
           Since neither the "a=candidate" nor the "a=end-of-candidates"
           lines contain information that would allow correlating them to
           a specific "m=" line, this is handled through the use of MID
-          <xref target="RFC5588"/>. Agents MUST include the
+          <xref target="RFC3388"/>. Agents MUST include the
           corresponding "a=mid" line for every "m=" line whose candidate
           list they intend to update. Such "a=mid" lines MUST
           immediately precede the list of candidates for that specific
@@ -631,8 +631,7 @@
           identified by that MID. "a=end-of-candidates" lines preceding
           any "a=mid" lines indicate end of all trickling from that
           agent (as opposed to end of trickling for a specific "m="
-          line, which would be indicated by a media level
-          "a=end-of-candidates" line).
+          line.
         </t>
         <t>
           The use of "a=mid" lines allows for a structure similar to
@@ -641,17 +640,6 @@
           current case lines preceding any "a=mid" lines are considered
           to be session-level. Lines appearing in between or after
           "a=mid" lines will be interpreted as media-level.
-        </t>
-        <t>
-          <list>
-            <t>
-              Note that while this specification uses the a=mid:
-              attribute from <xref target="RFC5588"/>, it does not
-              define any grouping semantics. Consequently, using the
-              a=group: attribute from that same specification is neither
-              needed nor used in trickle ICE for SIP.
-            </t>
-          </list>
         </t>
         <t>
           All INFO requests MUST carry the "ice-pwd" and "ice-ufrag"
@@ -714,29 +702,6 @@
 ]]>
             </artwork>
           </figure>
-        </t>
-      </section>
-      <section title="Initiating trickle ICE without an SDP Answer"
-               anchor="head-start">
-        <t>
-          The possibility to convey arbitrary SDP fragments in SIP
-          message bodies <xref target="I-D.ivov-dispatch-sdpfrag"/>
-          allows ICE agents to initiate trickling without actually
-          sending an answer. Trickle ICE answerers MAY therefore
-          respond to INVITEs with provisional responses that only
-          contain the information necessary for ICE processing to begin.
-        </t>
-        <t>
-          Agents that choose to do so, need to send in these responses
-          all ICE-related session level information that would have
-          otherwise been present in an SDP answer. At the very least
-          these responses MUST include the "ice-options" attribute
-          for "trickle" and all other ICE options they support.
-        </t>
-        <t>
-          The "ice-ufrag" and "ice-pwd" options MUST also be present in
-          all 183 responses and they MAY appear as either session or
-          media level attributes.
         </t>
       </section>
     </section>
@@ -1004,8 +969,8 @@
         The authors would like to thank Thomas Stach for suggesting
         the INFO acknowledgements used in the specification as a way of
         avoiding making PRACKs mandatory, Paul Kyzivat and Jonathan
-        Lennox and Thomas Stach for making various other suggestions for
-        improvements and optimisations.
+        Lennox for making various suggestions for improvements and
+        optimisations.
       </t>
     </section>
   </middle>
@@ -1023,8 +988,8 @@
       <?rfc include="reference.I-D.ivov-dispatch-sdpfrag"?>
     </references>
     <references title='Informative References'>
+      <?rfc include="reference.RFC.3388"?>
       <?rfc include="reference.RFC.3840"?>
-      <?rfc include="reference.RFC.5588"?>
       <?rfc include="reference.RFC.5627"?>
       <?rfc include="reference.RFC.7081"?>
     </references>

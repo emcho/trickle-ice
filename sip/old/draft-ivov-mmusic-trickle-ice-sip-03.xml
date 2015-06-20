@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ivov-mmusic-trickle-ice-sip-02'>
+     docName='draft-ivov-mmusic-trickle-ice-sip-03'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -995,20 +995,10 @@
     </references>
     <section title='Open issues'>
       <t>
-        At the time of writing of this document the authors have no
-        clear view on how and if the following list of issues should
-        be address here:
-        <list style='numbers'>
-          <t>
-            Should we allow for full trickle if support can be verified
-            automatically and confirmed for a gruu with
-            <xref target="RFC3840"/>.
-          </t>
-          <t>
-            Can we pick between MID and stream indices for stream
-            identification.
-          </t>
-        </list>
+        At the time of writing of this document the authors are aware of
+        no specific outstanding issues regarding the design of trickle
+        ICE for SIP and are mainly soliciting comments on the
+        readability and completeness of the specification.
       </t>
     </section>
   </back>

@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-mmusic-trickle-ice-01'>
+     docName='draft-ietf-mmusic-trickle-ice-02'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
@@ -150,7 +150,7 @@
       </t>
       <t>
         Trickle ICE does however reuse and build upon the SDP syntax
-        defined by vanilla ICE.
+        defined by <xref target="RFC5245"/>.
       </t>
     </section>
     <section title="Terminology">
@@ -169,7 +169,9 @@
         <list style="hanging">
           <t hangText="Vanilla ICE:">
             The Interactive Connectivity Establishment protocol as
-            defined in <xref target="RFC5245"/>.
+            defined in <xref target="RFC5245"/>. Through the rest of the
+            text, the terms vanilla ICE and "RFC5245" are used
+            interchangeably.
           </t>
           <t hangText="Candidate Harvester:">
             A module used by an ICE agent to obtain local candidates.
@@ -360,15 +362,18 @@
           trickle ice, so the answerer is able to respond with an
           incomplete set of candidates and continue trickling the rest.
           Half trickle offers will typically contain an
-          end-of-candidates indication.
+          end-of-candidates indication, although this is not mandatory
+          as, in case trickle support is confirmed, the offerer may
+          choose to trickle additional candidates (e.g., additional
+          relay candidates) before it declares end of trickling.
         </t>
         <t>
-          The mechanism can be used in cases where there is no way for
-          an agent to verify in advance whether a remote party supports
-          trickle ice. Because it contains a full set of candidates, its
-          first offer can thus be handled by a regular vanilla ICE
-          agent, while still allowing a trickle one to use the
-          optimisation defined in this specification. This prevents
+          The half trickle mechanism can be used in cases where there is
+          no way for an agent to verify in advance whether a remote
+          party supports trickle ice. Because it contains a full set of
+          candidates, its first offer can thus be handled by a regular
+          vanilla ICE agent, while still allowing a trickle one to use
+          the optimisation defined in this specification. This prevents
           negotiation from failing in the former case while still giving
           roughly half the trickle ICE benefits in the latter (hence the
           name of the mechanism).
