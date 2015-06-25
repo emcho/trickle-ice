@@ -637,8 +637,14 @@
             </figure>
           </t>
         <t>
-        When sending the Answer
-
+        When sending the Answer the agent MUST repeat all previously sent candidates, if any, and
+        MAY include all newly gathered candidates since the last INFO request was sent.
+        If that answer was sent in a unreliable provisional response, the Answerers MUST repeat
+        exactly the same Answer in the 200 OK response in order to fulfill
+        the corresponding requirements in
+        <xref target="RFC3264"/>.
+        In other words, an Offerer needs to be prepared to receive less candidates
+        in that repeated Answer than previously exchanged via trickling.
         </t>
 
         </section>
@@ -756,22 +762,49 @@
           </figure>
         </t>
         <t>
-          The use of SIP INFO requests happens within the context of an
-          Info Package specifically defined for the purpose
-          (<xref target="info-package"/>).
-        </t>
-        <t>
-          Such INFO requests MUST be sent within the existing SIP
-          dialog. The MIME type for their payload MUST be set to
+          The use of SIP INFO requests happens within the context of the 
+          Info Package as defined <xref target="info-package"/>.
+          The MIME type for their payload MUST be set to
           'application/sdpfrag' as defined in
-          <xref target="I-D.ivov-dispatch-sdpfrag"/>.
+          <xref target="sdpfrag_def"/>.
         </t>
         <t>
           Since neither the "a=candidate" nor the "a=end-of-candidates"
           attributes contain information that would allow correlating them to
           a specific "m=" line, this is handled through the use of
-          identification tags as defined in
-          <xref target="RFC5888"/>. Agents MUST include an
+          pseudo "m=" lines and 
+          identification tags in "a=mid:" attributes as defined in
+          <xref target="RFC5888"/>. 
+                    Pseudo "m=" lines follow the SDP syntax for "m=" lines as defined in
+          <xref target="I-D.ietf-mmusic-rfc4566bis"/>, but provide no semantics other than
+          indicating to which "m=" line a candidate belongs.
+          Consequently, the receiving agent MUST ignore the remaining content of the pseudo m-line.
+        </t>
+        <t>
+          When sending the INFO request, the agent MAY include the same content into the pseudo m-line
+          as for the corresponding Offer or Answer, if already known to the agent.
+          However, since Trckle-ICE might be decoupled from the Offer/Answer negotiation this content might
+          be unknown to the agent.
+          In this case, the agent SHOULD include the following default values.
+        </t>
+        <t>
+          <list style="symbols">
+            <t>
+              The media is set to 'audio'.
+            </t>
+            <t>
+              The port value is set to '9'.
+            </t>
+            <t>
+              The proto value is set to 'RTP/AVP'.
+            </t>
+            <t>
+              The fmt SHOULD appear only once and is set to '0'
+            </t>
+          </list>
+        </t>
+        <t>
+        Agents MUST include  a pseudo "m=" line and an
           identification tag in a "a=mid:" attribute for every "m=" line
           whose candidate list they intend to update.
           Such "a=mid:" attributes MUST
@@ -1133,7 +1166,49 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
         for the m-line that carries the selected Offerer BUNDLE address.
         </t>
          </section>
-
+    <section title="Content Type 'application/sdpfrag'" anchor="sdpfrag_def">
+      <section title="Overall Description">
+        <t>
+          A valid application/sdpfrag part could be obtained by
+          starting with some valid SDP session description
+          <xref target="I-D.ietf-mmusic-rfc4566bis"/>
+          and deleting any number of lines.
+        </t>
+        <t>
+          The exact content of an 'application/sdpfrag' body MUST be specified
+          the using protocol. This document specifies the content for usage
+          with Trickle ICE.
+        </t>
+      </section>
+      <section title="Grammar">
+        <t>
+          This section provides an Augmented BNF grammar for SDP.
+          ABNF is defined in <xref target="RFC5234"/>.
+        </t>
+        <t>
+          The ABNF of an 'application/sdpfrag' body is based on
+          <xref target="I-D.ietf-mmusic-rfc4566bis"/> with the following modification
+        </t>
+        <t>
+           <figure><artwork align="left">
+   ; SDPfrag Syntax
+          sdp-frag = *1proto-version
+                     *1origin-field
+                     *1session-name-field
+                     *1information-field
+                     *1uri-field
+                     *1email-fields
+                     *1phone-fields
+                     *1connection-field
+                     *1bandwidth-fields
+                     *1time-fields
+                     *1key-field
+                     *1attribute-fields
+                     *1media-descriptions
+           </artwork></figure>
+        </t>
+      </section>
+    </section>
     <section title="Info Package" anchor="info-package">
       <section title="Overall Description">
         <t>
@@ -1315,11 +1390,13 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
       <?rfc include="reference.RFC.3262"?>
       <?rfc include="reference.RFC.3264"?>
       <?rfc include="reference.RFC.4566"?>
+      <?rfc include="reference.RFC.5234"?>     
       <?rfc include="reference.RFC.5245"?>
       <?rfc include="reference.RFC.5888"?>
       <?rfc include="reference.RFC.6086"?>
       <?rfc include="reference.I-D.ietf-mmusic-trickle-ice"?>
       <?rfc include="reference.I-D.ivov-dispatch-sdpfrag"?>
+     <?rfc include="reference.I-D.ietf-mmusic-rfc4566bis"?>
     </references>
     <references title='Informative References'>
       <?rfc include="reference.RFC.3840"?>
