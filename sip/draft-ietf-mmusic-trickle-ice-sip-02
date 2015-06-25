@@ -1351,8 +1351,7 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
         The Security Considerations of
         <xref target="RFC5245"/>,
         <xref target="RFC6086"/>,
-        <xref target="I-D.ietf-mmusic-trickle-ice"/> and
-        <xref target="I-D.ivov-dispatch-sdpfrag"/> apply.
+        <xref target="I-D.ietf-mmusic-trickle-ice"/> apply.
         This document clarifies how the above specifications are used together for trickling
         candidates and does not create addtitional security risks.
       </t>
@@ -1361,7 +1360,8 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
       <t>
         The authors would like to thank Paul Kyzivat and Jonathan
         Lennox and Martin Thomson for making various suggestions for
-        improvements and optimisations.
+        improvements and optimisations. Adam Roach was co-author of 
+        <xref target="I-D.ivov-dispatch-sdpfrag"/> which was merged into this document.
       </t>
     </section>
         <section title='Change Log'>
@@ -1377,7 +1377,9 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
         <t> RTCP and BUNDLE  Consideration added</t>
         <t> 3PCC Consideration added</t>
         <t> Clarified that 18x w/o answer is sufficient to create a dialog that allows for trickling to start </t>
-        <t> Added remaining Info Package definition sections as outlined in section 10 of   <xref target="RFC6086"/>. </t>
+        <t> Added remaining Info Package definition sections as outlined in section 10 of   <xref target="RFC6086"/></t>
+         <t> Added definition of application/sdpfrag making draft-ivov-mmusic-sdpfrag obsolete</t>
+         <t> Added pseudo m-lines as additional separator in sdpfrag bodies for Trickle ICE </t>
       </list>
 
       </t>
@@ -1395,7 +1397,6 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
       <?rfc include="reference.RFC.5888"?>
       <?rfc include="reference.RFC.6086"?>
       <?rfc include="reference.I-D.ietf-mmusic-trickle-ice"?>
-      <?rfc include="reference.I-D.ivov-dispatch-sdpfrag"?>
      <?rfc include="reference.I-D.ietf-mmusic-rfc4566bis"?>
     </references>
     <references title='Informative References'>
@@ -1405,6 +1406,7 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
       <?rfc include="reference.RFC.6120"?>
       <?rfc include="reference.RFC.7081"?>
       <?rfc include="reference.I-D.ietf-mmusic-sdp-bundle-negotiation"?>
+      <?rfc include="reference.I-D.ivov-dispatch-sdpfrag"?>
     </references>
   </back>
 </rfc>
