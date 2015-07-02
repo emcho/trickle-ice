@@ -33,16 +33,16 @@
     </author>
     <author fullname="Thomas Stach" initials="T."
             surname="Stach">
-      <organization>Unify</organization>
+      <organization>Unaffiliated</organization>
       <address>
         <postal>
-          <street>Dietrichgasse 27-29</street>
-          <city>Vienna</city>
+		  <street></street>
+		  <city>Vienna</city>
           <region></region>
-          <code>1030</code>
+          <code>1130</code>
           <country>Austria</country>
         </postal>
-        <email>thomas.stach@unify.com</email>
+        <email>thomass.stach@gmail.com</email>
       </address>
     </author>
     <author initials='E.' surname='Marocco' fullname='Enrico Marocco'>
@@ -165,10 +165,10 @@
         candidates through in INFO requests and within the same dialog.
       </t>
       <t>
-        Similarly, once it has sent an Answer (though not earlier)
-        an Answerer can continue "trickling" ICE candidates using INFO
-        messages within the dialog established by its 18x provisional
-        response. <xref target="fig-intro-example"/> shows such a sample
+        Similarly, an Answerer can start or continue "trickling" 
+		ICE candidates using INFO messages within 
+		the dialog established by its 18x provisional response. 
+		<xref target="fig-intro-example"/> shows such a sample
         exchange:
       </t>
       <t>
@@ -406,7 +406,7 @@
           </t>
           <t>
             Trickle ICE agents MAY exchange additional ICE candidates
-            before the answerer has sent the Answer provided that
+            before the Answerer has sent the Answer provided that
             an invite dialog usage is established at both Trickle ICE agents.
             Note that in case of forking multiple early dialogs will exist.
           </t>
@@ -488,15 +488,15 @@
             The situation is a bit more delicate for agents that have
             received an Offer in an INVITE request and have sent an Answer
             in an unreliable provisional response because, once the
-            response has been sent, there is no way for the Answerer to
+            response has been sent, the Answerer does no 
             know when or if it has been received
             (<xref target="answerer-cant-trickle"/>).
           </t>
           <t>
             <figure title="A SIP UA that sent an Answer in an unreliable
-                           provisional response cannot know exactly when
-                           it is received and when the dialog at the
-                           side of the receiver has entered the early
+                           provisional response does not know if
+                           it was received and if the dialog at the
+                           side of the Offerer has entered the early
                            state"
                   anchor="answerer-cant-trickle">
               <artwork><![CDATA[
@@ -541,15 +541,15 @@
             in case candidate discovery has ended in the mean time.
           </t>
           <t>
-            As soon as Answerers have received such INFO requests, they
-            would have an indication that a dialog is well established
-            at both ends and they MAY begin trickling
+            As soon as an Answerer has received such an INFO request, 
+			the Answerer has an indication that a dialog is well established
+            at both ends and  MAY begin trickling
             (<xref target="answerer-can-now-trickle"/>).
           </t>
           <t>
-            <figure title="A SIP UA that has Answer-ed in an unreliable
-                           provisional response cannot know exactly when
-                           it is received and when the dialog at the
+            <figure title="A SIP UA that received an INFO request 
+						   after sending an unreliable
+                           provisional response knows that the dialog at the
                            side of the receiver has entered the early
                            state" anchor="answerer-can-now-trickle">
               <artwork><![CDATA[
@@ -589,7 +589,7 @@
                  anchor="head-start">
           <t>
             The possibility to convey arbitrary SDP fragments in SIPfrag
-            message bodies <xref target="I-D.ivov-dispatch-sdpfrag"/>
+            message bodies <xref target="I-D.ivov-mmusic-sdpfrag"/>
             allows ICE agents to initiate trickling without actually
             sending an Answer. Trickle ICE Agents MAY therefore
             respond to INVITEs with provisional responses without an Answer
@@ -778,14 +778,15 @@
                     Pseudo "m=" lines follow the SDP syntax for "m=" lines as defined in
           <xref target="I-D.ietf-mmusic-rfc4566bis"/>, but provide no semantics other than
           indicating to which "m=" line a candidate belongs.
-          Consequently, the receiving agent MUST ignore the remaining content of the pseudo m-line.
+          Consequently, the receiving agent MUST ignore the remaining content of the pseudo m-line. 
+		  This guarantees that the  'application/sdpfrag' bodies do not interfere with the Offer/Answer 
+		  procedures as specified in <xref target="RFC3264"/>.
         </t>
         <t>
-          When sending the INFO request, the agent MAY include the same content into the pseudo m-line
-          as for the corresponding Offer or Answer, if already known to the agent.
-          However, since Trckle-ICE might be decoupled from the Offer/Answer negotiation this content might
-          be unknown to the agent.
-          In this case, the agent SHOULD include the following default values.
+          When sending the INFO request, the agent MAY, if already known to the agent, include the same content into the pseudo m-line
+          as for the corresponding Offer or Answer.
+          However, since Trickle-ICE might be decoupled from the Offer/Answer negotiation this content might
+          be unknown to the agent. In this case, the agent MUST include the following default values.
         </t>
         <t>
           <list style="symbols">
@@ -890,11 +891,14 @@
 
       a=ice-pwd:asd88fgpdd777uzjYhagZg
       a=ice-ufrag:8hhY
-      a=mid:1
+      m=audio 9 RTP/AVP 0 
+	  a=mid:1
       a=candidate:1 1 UDP 1658497328 192.168.100.33 5000 typ host
       a=candidate:2 1 UDP 1658497328 96.1.2.3 5000 typ srflx
               raddr 10.0.1.1 rport 8998
-      a=mid:2
+	  a=end-of-candidates
+      m=audio 9 RTP/AVP 0 
+	  a=mid:2
       a=candidate:2 1 UDP 1658497328 96.1.2.3 5002 typ srflx
               raddr 10.0.1.1 rport 9000
       a=end-of-candidates
@@ -1093,7 +1097,7 @@
         </t>
       </section>
     </section>
-    <section title="Considerations for RTCP and RTCP multiplexing" anchor="rtcp-cons">
+    <section title="Considerations for RTP and RTCP multiplexing" anchor="rtcp-cons">
         <t>
            <figure><artwork align="left">
 [OPEN ISSUE: These considerations are of general relevance
@@ -1108,11 +1112,11 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
         guaranteed to be suitable for all sorts of deployments.
         </t>
         <t>
-        Handling of RTCP and RCTP multiplexing <xref target="RFC5761"/> is already considered
+        Handling of RTP and RCTP multiplexing <xref target="RFC5761"/> is already considered
         in sections 4.1.1.1, 4.3, and 5.7.1
         of <xref target="RFC5245"/>, respectively.
         These considerations are still valid for Trickle ICE, however,
-        trickling provides more flexibility when candidates are exchanged,
+        trickling provides more flexibility for the sequence of candidate exchange,
         e.g. in case of RTCP multiplexing.
         </t>
         <t>
@@ -1121,11 +1125,21 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
         this flexibility allows a Full Trickle Offerer
         to initially send only RTP candidates (component 1)
         if it assumes that RTCP multiplexing is supported by the Answerer.
-        Full Trickle Offerer would need to start gathering and trickling
+        A Full Trickle Offerer would need to start gathering and trickling
         RTCP candidates (component 2)
         only after having received an indication in the answer that
         the answerer unexpectedly does not support RTCP multiplexing.
         </t>
+        <t>
+        A Trickle answerer MAY include an "a=rtcp-mux" attribute 
+		<xref target="RFC5761"/> in the application/sdp-frag body 
+		if it supports and uses RTP and RCTP multiplexing.
+		Receipt of this attribute at the Offerer in an INFO request prior to the Answer 
+		indicates that the Answerer supports and uses RTP and RCTP multiplexing. 
+		The Offerer can use this information e.g. for stopping gathering of RTCP candidates 
+		and/or for freeing corresponding resources. 
+		</t>
+		
         </section>
     <section title="Considerations for Media Multiplexing" anchor="bundle-cons">
         <t>
@@ -1147,24 +1161,40 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
            in section 11 of
            <xref target="I-D.ietf-mmusic-sdp-bundle-negotiation"/>.
            These considerations are still valid for Trickle ICE, however,
-           trickling provides more flexibility when candidates are exchanged.
+           trickling provides more flexibility for the sequence of candidate exchange,
+		   especially in Full Trickle mode.
         </t>
         <t>
         Except for bundle-only m-lines, a Half Trickle Offerer would have to
         send an offer with candidates for all bundled m-lines.
-        The additional flexibility allows a Full Trickle Offerer
+        The additional flexibility, however, allows a Full Trickle Offerer
         to initially send only candidates for the m-line with the
         suggested offerer BUNDLE address.
         </t>
         <t>
-        On receipt of the answer, the Full Trickle Offerer will detect
+        Latest on receipt of the answer, the Offerer will detect
         if BUNDLE is supported and if the suggested offerer BUNDLE address was selected.
-        If BUNDLE is not supported, the Full Trickle Offerer needs to gather and trickle for the
-        remaining m-lines as necessary.
+		In this case the Offerer does need to trickle further candidates for the remaining m-lines in a bundle.
+        However, if BUNDLE is not supported, the Full Trickle Offerer needs to gather and trickle candidates 
+		for the remaining m-lines as necessary.
         If the answerer selects a Offerer BUNDLE address different from suggested Offerer BUNDLE address,
         the  Full Trickle Offerer needs to gather and trickle candidates
         for the m-line that carries the selected Offerer BUNDLE address.
         </t>
+        <t>
+        A Trickle answerer MAY include an "a=group: BUNDLE" attribute
+		<xref target="I-D.ietf-mmusic-sdp-bundle-negotiation"/> in the application/sdp-frag body 
+		if it supports and uses bundling. 
+		When doing so, the Answerer MUST include all identification-tags in the same order that is used or will be used in the Answer.		
+		</t>
+        <t>
+        Receipt of this attribute at the Offerer in an INFO request prior to the Answer indicates that the Answerer 
+		supports and uses bundling. 
+		The Offerer can use this information e.g. for stopping the gathering of candidates 
+		for the remaining m-lines in a bundle and/or for freeing corresponding resources. 
+		</t>
+		<t>
+		</t>
          </section>
     <section title="Content Type 'application/sdpfrag'" anchor="sdpfrag_def">
       <section title="Overall Description">
@@ -1308,7 +1338,78 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
       <t>
       [RFC EDITOR NOTE: Please replace RFCXXXX with the RFC number of this document.]
       </t>
-      <section title="SIP Info Package 'trickle-ice' " anchor="package-reg">
+      <section title="application/sdpfrag MIME Type" anchor="sdpfrag-reg">
+       <t>        
+      <list style="none">
+        <t> Type name: application</t>
+        <t> Subtype name: sdpfrag</t>
+        <t> Required parameters: None.</t>
+        <t> Optional parameters: None. </t>
+		<t> Encoding considerations:</t>
+		<t><list style="none">
+			<t> SDP files are primarily UTF-8 format text.  The "a=charset:"
+			attribute may be used to signal the presence of other
+			character sets in certain parts of an SDP file (see
+			<xref target="I-D.ietf-mmusic-rfc4566bis"/>).  
+			Arbitrary binary content cannot be directly represented in SDP.
+			</t>
+		</list></t>
+        <t> Security considerations: </t>
+        <t><list style="none">
+			<t> 
+			See <xref target="I-D.ietf-mmusic-rfc4566bis"/>) and RFCXXXX
+			</t>
+		</list></t>
+	    <t> Interoperability considerations:</t>
+        <t><list style="none">
+			<t> 
+			See RFCXXXX
+			</t>
+		</list></t>
+	    <t> Published specification:</t>
+        <t><list style="none">
+			<t> 
+			See RFCXXXX
+			</t>
+	    </list></t>
+
+		<t> Applications which use this media type:</t>
+        <t><list style="none">
+			<t> 
+			Voice over IP, video teleconferencing, streaming media, instant
+         messaging, Trickle-ICE among others.  
+			</t>
+		</list></t>
+		 <t> Additional information:</t>
+		 <t> Magic number(s):   none</t>
+		 <t>File extension(s): none</t>
+		 <t>Macintosh File Type Code(s): none</t>
+        <t> Person and email address to contact for further information:</t>
+        <t><list style="none">
+			<t> 
+			IETF MMUSIC working group mmusic@ietf.org
+			</t>
+		</list></t>
+        <t> Intended usage: </t>
+        <t><list style="none">
+			<t> 
+			Trickle-ICE for SIP as specified in RFCXXXX. 
+			Further usages need a specification on 
+			the exact content of an 'application/sdpfrag' body
+			in the using protocol.
+			</t>
+		</list></t>
+        <t> Author/Change controller:</t>
+        <t><list style="none">
+			<t> 
+			IETF MMUSIC working group mmusic@ietf.org
+			</t>
+		</list></t>
+	  </list>
+	  </t>
+	  
+              </section>
+			  <section title="SIP Info Package 'trickle-ice' " anchor="package-reg">
               <t>
               This document defines a new SIP Info Package named 'trickle-ice'
               and updates the Info Packages Registry with the following entry.
@@ -1326,7 +1427,7 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
               </artwork></figure>
               </t>
               </section>
-                    <section title="SIP Option Tag 'trickle-ice'" anchor="optag-reg">
+              <section title="SIP Option Tag 'trickle-ice'" anchor="optag-reg">
               <t>
               This specification registers a new SIP option tag 'trickle-ice'
               as per the guidelines in Section 27.1 of <xref target="RFC3261"/>
@@ -1361,7 +1462,7 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
         The authors would like to thank Paul Kyzivat and Jonathan
         Lennox and Martin Thomson for making various suggestions for
         improvements and optimisations. Adam Roach was co-author of 
-        <xref target="I-D.ivov-dispatch-sdpfrag"/> which was merged into this document.
+        <xref target="I-D.ivov-mmusic-sdpfrag"/> which was merged into this document.
       </t>
     </section>
         <section title='Change Log'>
@@ -1374,12 +1475,13 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
         <t> Editorial Clean up</t>
         <t> IANA Consideration added</t>
         <t> Security  Consideration added</t>
-        <t> RTCP and BUNDLE  Consideration added</t>
-        <t> 3PCC Consideration added</t>
+        <t> RTCP and BUNDLE  Consideration added with rules for including "a=rtcp-mux" and ""a=group: BUNDLLE" attributes </t>
+		<t> 3PCC Consideration added</t>
         <t> Clarified that 18x w/o answer is sufficient to create a dialog that allows for trickling to start </t>
         <t> Added remaining Info Package definition sections as outlined in section 10 of   <xref target="RFC6086"/></t>
-         <t> Added definition of application/sdpfrag making draft-ivov-mmusic-sdpfrag obsolete</t>
-         <t> Added pseudo m-lines as additional separator in sdpfrag bodies for Trickle ICE </t>
+        <t> Added definition of application/sdpfrag making draft-ivov-mmusic-sdpfrag obsolete</t>
+        <t> Added pseudo m-lines as additional separator in sdpfrag bodies for Trickle ICE </t>
+		<t> Added ABNF for sdp-frag bodies </t>		
       </list>
 
       </t>
@@ -1397,7 +1499,7 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
       <?rfc include="reference.RFC.5888"?>
       <?rfc include="reference.RFC.6086"?>
       <?rfc include="reference.I-D.ietf-mmusic-trickle-ice"?>
-     <?rfc include="reference.I-D.ietf-mmusic-rfc4566bis"?>
+      <?rfc include="reference.I-D.ietf-mmusic-rfc4566bis"?>
     </references>
     <references title='Informative References'>
       <?rfc include="reference.RFC.3840"?>
@@ -1406,7 +1508,7 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
       <?rfc include="reference.RFC.6120"?>
       <?rfc include="reference.RFC.7081"?>
       <?rfc include="reference.I-D.ietf-mmusic-sdp-bundle-negotiation"?>
-      <?rfc include="reference.I-D.ivov-dispatch-sdpfrag"?>
+      <?rfc include="reference.I-D.ivov-mmusic-sdpfrag"?>
     </references>
   </back>
 </rfc>
