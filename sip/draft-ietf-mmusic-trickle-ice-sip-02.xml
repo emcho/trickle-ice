@@ -1016,7 +1016,7 @@
             XMPP together which also provides a way for dual stack
             SIP+XMPP endpoints to make use of such features and verify
             Trickle ICE support for a specific SIP endpoint through
-            XMPP. [TODO expand on a specific way to do this]
+            XMPP. [TODO expand on a specific way to do this or declare as out of scope]
           </t>
         </section>
         <section title='Fallback to Half Trickle'
@@ -1550,7 +1550,7 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
       <?rfc include="reference.RFC.5245"?>
       <?rfc include="reference.RFC.5888"?>
       <?rfc include="reference.RFC.6086"?>
-      <?rfc include="reference.RFC.7405"?>
+	  <?rfc include="reference.RFC.7405"?>
       <?rfc include="reference.I-D.ietf-mmusic-trickle-ice"?>
       <?rfc include="reference.I-D.ietf-mmusic-rfc4566bis"?>
     </references>
