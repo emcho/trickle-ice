@@ -892,13 +892,13 @@
       a=ice-pwd:asd88fgpdd777uzjYhagZg
       a=ice-ufrag:8hhY
       m=audio 9 RTP/AVP 0 
-	  a=mid:1
+      a=mid:1
       a=candidate:1 1 UDP 1658497328 192.168.100.33 5000 typ host
       a=candidate:2 1 UDP 1658497328 96.1.2.3 5000 typ srflx
               raddr 10.0.1.1 rport 8998
-	  a=end-of-candidates
+      a=end-of-candidates
       m=audio 9 RTP/AVP 0 
-	  a=mid:2
+      a=mid:2
       a=candidate:2 1 UDP 1658497328 96.1.2.3 5002 typ srflx
               raddr 10.0.1.1 rport 9000
       a=end-of-candidates
@@ -1210,7 +1210,7 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
           with Trickle ICE.
         </t>
       </section>
-      <section title="Grammar">
+      <section title="Grammar" anchor="sdpfrag_grammar">
         <t>
           This section provides an Augmented BNF grammar for SDP.
           ABNF is defined in <xref target="RFC5234"/>.
@@ -1308,7 +1308,59 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
           in <xref target="info-sdp"/> and
           <xref target="I-D.ietf-mmusic-trickle-ice"/>.
         </t>
-      </section>
+        <t>
+			The Trickle-ICE Info Package uses only a subset of the possible SDP Fragments 
+			that are allowed based on the grammar defined in <xref target="sdpfrag_grammar"/>.
+			The package uses only media descriptions and certain attributes 
+			that are needed or useful for trickling candidates.  
+			This subset adheres to the following grammar.
+		</t>
+        <t>
+           <figure><artwork align="left">
+   ;  Syntax
+      trickle-ice-sdpfrag =   session-level-fields 
+                              pseudo-media-descriptions
+      session-level-fields = [bundle-group-attribute CRLF]
+                             [ice-lite-attribute CRLF]
+                              ice-pwd-attribute CRLF          
+                              ice-ufrag-attribute CRLF
+                             [ice-options-attribute CRLF]	
+							 [end-of-candidates-attribute CRLF]	
+                              extension-attribute-fields ; for future extensions
+      ice-lite-attribute     = %s"a=" ice-lite 
+      ice-pwd-attribute      = %s"a=" ice-pwd-att 
+      ice-ufrag-attribute    = %s"a=" ice-ufrag-att 
+      ice-options-attribute  =	%s"a="  ice-options 
+      bundle-group-attribute = "a=group:" bundle-semantics  
+                                *(SP identification-tag) 
+      bundle-semantics = "BUNDLE"
+	  end-of-candidates-attribute  = %s"a=" end-of-candidates-att
+      extension-attribute-fields   = attribute-fields  
+
+      pseudo-media-descriptions    =  *( media-field  
+                                         trickle-ice-attribute-fields 
+                                        [extension-attribute-fields] ) ; for future extensions
+      trickle-ice-attribute-fields =    mid-attribute CRLF 
+                                       ["a=rtcp-mux" CRLF]
+                                      *(candidate-attributes CRLF) 
+                                       [remote-candidate-attribute CRLF]
+                                       [end-of-candidates-attribute CRLF]
+	  remote-candidate-attribute   = %s"a=" remote-candidate-att
+	  candidate-attributes         = %s"a=" candidate-attribute 
+           </artwork></figure>
+		</t>
+        <t>
+		with ice-lite, ice-pwd-att, remote-candidate-att, ice-ufrag-att, ice-options, candidate-attribute remote-candidate-att 
+		from <xref target="RFC5245"/>, identification-tag, mid-attribute ; from <xref target="RFC5888"/>, 
+		media-field, attribute-fields from <xref target="I-D.ietf-mmusic-rfc4566bis"/> and 
+		end-of-candidates-att from <xref target="I-D.ietf-mmusic-trickle-ice"/>. 
+		The indicator for case-sensitivity %s is defined in <xref target="RFC7405"/>.
+        </t>
+      <t>
+      [NOTE: end-of-candidates-att currently lacks a formal definition in <xref target="I-D.ietf-mmusic-trickle-ice"/>]
+      </t>
+		
+	  </section>
       <section title="Info Package Usage Restrictions">
         <t>
            This document does not define any Info Package Usage Restrictions.
@@ -1481,7 +1533,7 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
         <t> Added remaining Info Package definition sections as outlined in section 10 of   <xref target="RFC6086"/></t>
         <t> Added definition of application/sdpfrag making draft-ivov-mmusic-sdpfrag obsolete</t>
         <t> Added pseudo m-lines as additional separator in sdpfrag bodies for Trickle ICE </t>
-		<t> Added ABNF for sdp-frag bodies </t>		
+		<t> Added ABNF for sdp-frag bodies and Trickle-ICE package </t>		
       </list>
 
       </t>
@@ -1498,6 +1550,7 @@ and might be better suited for draft-ietf-mmusic-trickle-ice.]
       <?rfc include="reference.RFC.5245"?>
       <?rfc include="reference.RFC.5888"?>
       <?rfc include="reference.RFC.6086"?>
+      <?rfc include="reference.RFC.7405"?>
       <?rfc include="reference.I-D.ietf-mmusic-trickle-ice"?>
       <?rfc include="reference.I-D.ietf-mmusic-rfc4566bis"?>
     </references>
