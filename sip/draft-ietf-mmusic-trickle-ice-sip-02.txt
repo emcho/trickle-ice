@@ -5,12 +5,12 @@
 Network Working Group                                            E. Ivov
 Internet-Draft                                                     Jitsi
 Intended status: Standards Track                                T. Stach
-Expires: January 3, 2016                                    Unaffiliated
+Expires: January 4, 2016                                    Unaffiliated
                                                               E. Marocco
                                                           Telecom Italia
                                                              C. Holmberg
                                                                 Ericsson
-                                                            July 2, 2015
+                                                            July 3, 2015
 
 
        A Session Initiation Protocol (SIP) usage for Trickle ICE
@@ -45,7 +45,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on January 3, 2016.
+   This Internet-Draft will expire on January 4, 2016.
 
 
 
@@ -53,7 +53,7 @@ Status of This Memo
 
 
 
-Ivov, et al.             Expires January 3, 2016                [Page 1]
+Ivov, et al.             Expires January 4, 2016                [Page 1]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -109,26 +109,26 @@ Table of Contents
 
 
 
-Ivov, et al.             Expires January 3, 2016                [Page 2]
+Ivov, et al.             Expires January 4, 2016                [Page 2]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
      9.6.  Info Message Body Parts . . . . . . . . . . . . . . . . .  25
-     9.7.  Info Package Usage Restrictions . . . . . . . . . . . . .  25
-     9.8.  Rate of INFO Requests . . . . . . . . . . . . . . . . . .  25
-     9.9.  Info Package Security Considerations  . . . . . . . . . .  26
-   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  26
-     10.1.  application/sdpfrag MIME Type  . . . . . . . . . . . . .  26
-     10.2.  SIP Info Package 'trickle-ice' . . . . . . . . . . . . .  27
-     10.3.  SIP Option Tag 'trickle-ice' . . . . . . . . . . . . . .  28
-   11. Security Considerations . . . . . . . . . . . . . . . . . . .  28
-   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  28
-   13. Change Log  . . . . . . . . . . . . . . . . . . . . . . . . .  28
-   14. References  . . . . . . . . . . . . . . . . . . . . . . . . .  29
-     14.1.  Normative References . . . . . . . . . . . . . . . . . .  29
-     14.2.  Informative References . . . . . . . . . . . . . . . . .  30
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  31
+     9.7.  Info Package Usage Restrictions . . . . . . . . . . . . .  26
+     9.8.  Rate of INFO Requests . . . . . . . . . . . . . . . . . .  27
+     9.9.  Info Package Security Considerations  . . . . . . . . . .  27
+   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  27
+     10.1.  application/sdpfrag MIME Type  . . . . . . . . . . . . .  27
+     10.2.  SIP Info Package 'trickle-ice' . . . . . . . . . . . . .  28
+     10.3.  SIP Option Tag 'trickle-ice' . . . . . . . . . . . . . .  29
+   11. Security Considerations . . . . . . . . . . . . . . . . . . .  29
+   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  29
+   13. Change Log  . . . . . . . . . . . . . . . . . . . . . . . . .  29
+   14. References  . . . . . . . . . . . . . . . . . . . . . . . . .  30
+     14.1.  Normative References . . . . . . . . . . . . . . . . . .  30
+     14.2.  Informative References . . . . . . . . . . . . . . . . .  31
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  32
 
 1.  Introduction
 
@@ -165,7 +165,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016                [Page 3]
+Ivov, et al.             Expires January 4, 2016                [Page 3]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -221,7 +221,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016                [Page 4]
+Ivov, et al.             Expires January 4, 2016                [Page 4]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -277,7 +277,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016                [Page 5]
+Ivov, et al.             Expires January 4, 2016                [Page 5]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -333,7 +333,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016                [Page 6]
+Ivov, et al.             Expires January 4, 2016                [Page 6]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -389,7 +389,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016                [Page 7]
+Ivov, et al.             Expires January 4, 2016                [Page 7]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -445,7 +445,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016                [Page 8]
+Ivov, et al.             Expires January 4, 2016                [Page 8]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -501,7 +501,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016                [Page 9]
+Ivov, et al.             Expires January 4, 2016                [Page 9]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -557,7 +557,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016               [Page 10]
+Ivov, et al.             Expires January 4, 2016               [Page 10]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -613,7 +613,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016               [Page 11]
+Ivov, et al.             Expires January 4, 2016               [Page 11]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -669,7 +669,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016               [Page 12]
+Ivov, et al.             Expires January 4, 2016               [Page 12]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -725,7 +725,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016               [Page 13]
+Ivov, et al.             Expires January 4, 2016               [Page 13]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -781,7 +781,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016               [Page 14]
+Ivov, et al.             Expires January 4, 2016               [Page 14]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -837,7 +837,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016               [Page 15]
+Ivov, et al.             Expires January 4, 2016               [Page 15]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -893,7 +893,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016               [Page 16]
+Ivov, et al.             Expires January 4, 2016               [Page 16]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -949,7 +949,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016               [Page 17]
+Ivov, et al.             Expires January 4, 2016               [Page 17]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -964,13 +964,13 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
          a=ice-pwd:asd88fgpdd777uzjYhagZg
          a=ice-ufrag:8hhY
          m=audio 9 RTP/AVP 0
-             a=mid:1
+         a=mid:1
          a=candidate:1 1 UDP 1658497328 192.168.100.33 5000 typ host
          a=candidate:2 1 UDP 1658497328 96.1.2.3 5000 typ srflx
                  raddr 10.0.1.1 rport 8998
-             a=end-of-candidates
+         a=end-of-candidates
          m=audio 9 RTP/AVP 0
-             a=mid:2
+         a=mid:2
          a=candidate:2 1 UDP 1658497328 96.1.2.3 5002 typ srflx
                  raddr 10.0.1.1 rport 9000
          a=end-of-candidates
@@ -1005,7 +1005,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016               [Page 18]
+Ivov, et al.             Expires January 4, 2016               [Page 18]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -1061,7 +1061,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016               [Page 19]
+Ivov, et al.             Expires January 4, 2016               [Page 19]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -1078,7 +1078,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
    using SIP and XMPP together which also provides a way for dual stack
    SIP+XMPP endpoints to make use of such features and verify Trickle
    ICE support for a specific SIP endpoint through XMPP.  [TODO expand
-   on a specific way to do this]
+   on a specific way to do this or declare as out of scope]
 
 5.4.  Fallback to Half Trickle
 
@@ -1117,7 +1117,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016               [Page 20]
+Ivov, et al.             Expires January 4, 2016               [Page 20]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -1173,7 +1173,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016               [Page 21]
+Ivov, et al.             Expires January 4, 2016               [Page 21]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -1229,7 +1229,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016               [Page 22]
+Ivov, et al.             Expires January 4, 2016               [Page 22]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -1285,7 +1285,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016               [Page 23]
+Ivov, et al.             Expires January 4, 2016               [Page 23]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -1341,7 +1341,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
-Ivov, et al.             Expires January 3, 2016               [Page 24]
+Ivov, et al.             Expires January 4, 2016               [Page 24]
 
 Internet-Draft             Trickle ICE for SIP                 July 2015
 
@@ -1378,9 +1378,85 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
    MUST be of type 'application/sdpfrag' as defined in Section 4.2 and
    [I-D.ietf-mmusic-trickle-ice].
 
+   The Trickle-ICE Info Package uses only a subset of the possible SDP
+   Fragments that are allowed based on the grammar defined in
+   Section 8.2.  The package uses only media descriptions and certain
+   attributes that are needed or useful for trickling candidates.  This
+   subset adheres to the following grammar.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Ivov, et al.             Expires January 4, 2016               [Page 25]
+
+Internet-Draft             Trickle ICE for SIP                 July 2015
+
+
+   ;  Syntax
+      trickle-ice-sdpfrag =   session-level-fields
+                              pseudo-media-descriptions
+      session-level-fields = [bundle-group-attribute CRLF]
+                             [ice-lite-attribute CRLF]
+                              ice-pwd-attribute CRLF
+                              ice-ufrag-attribute CRLF
+                             [ice-options-attribute CRLF]
+                                                         [end-of-candidates-attribute CRLF]
+                              extension-attribute-fields ; for future extensions
+      ice-lite-attribute     = %s"a=" ice-lite
+      ice-pwd-attribute      = %s"a=" ice-pwd-att
+      ice-ufrag-attribute    = %s"a=" ice-ufrag-att
+      ice-options-attribute  =  %s"a="  ice-options
+      bundle-group-attribute = "a=group:" bundle-semantics
+                                *(SP identification-tag)
+      bundle-semantics = "BUNDLE"
+          end-of-candidates-attribute  = %s"a=" end-of-candidates-att
+      extension-attribute-fields   = attribute-fields
+
+      pseudo-media-descriptions    =  *( media-field
+                                         trickle-ice-attribute-fields
+                                        [extension-attribute-fields] ) ; for future extensions
+      trickle-ice-attribute-fields =    mid-attribute CRLF
+                                       ["a=rtcp-mux" CRLF]
+                                      *(candidate-attributes CRLF)
+                                       [remote-candidate-attribute CRLF]
+                                       [end-of-candidates-attribute CRLF]
+          remote-candidate-attribute   = %s"a=" remote-candidate-att
+          candidate-attributes         = %s"a=" candidate-attribute
+
+   with ice-lite, ice-pwd-att, remote-candidate-att, ice-ufrag-att, ice-
+   options, candidate-attribute remote-candidate-att from [RFC5245],
+   identification-tag, mid-attribute ; from [RFC5888], media-field,
+   attribute-fields from [I-D.ietf-mmusic-rfc4566bis] and end-of-
+   candidates-att from [I-D.ietf-mmusic-trickle-ice].  The indicator for
+   case-sensitivity %s is defined in [RFC7405].
+
+   [NOTE: end-of-candidates-att currently lacks a formal definition in
+   [I-D.ietf-mmusic-trickle-ice]]
+
 9.7.  Info Package Usage Restrictions
 
    This document does not define any Info Package Usage Restrictions.
+
+
+
+
+
+
+
+Ivov, et al.             Expires January 4, 2016               [Page 26]
+
+Internet-Draft             Trickle ICE for SIP                 July 2015
+
 
 9.8.  Rate of INFO Requests
 
@@ -1392,15 +1468,6 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
    INFO request.
 
    [OPEN ISSUE: What rate will give a good trade-off? 100ms, 200ms?]
-
-
-
-
-
-Ivov, et al.             Expires January 3, 2016               [Page 25]
-
-Internet-Draft             Trickle ICE for SIP                 July 2015
-
 
 9.9.  Info Package Security Considerations
 
@@ -1441,6 +1508,12 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 
+
+Ivov, et al.             Expires January 4, 2016               [Page 27]
+
+Internet-Draft             Trickle ICE for SIP                 July 2015
+
+
          See RFCXXXX
 
       Published specification:
@@ -1451,11 +1524,6 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
       Applications which use this media type:
 
-
-
-Ivov, et al.             Expires January 3, 2016               [Page 26]
-
-Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
          Voice over IP, video teleconferencing, streaming media, instant
@@ -1495,23 +1563,19 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
    updates the Info Packages Registry with the following entry.
 
 
+
+
+Ivov, et al.             Expires January 4, 2016               [Page 28]
+
+Internet-Draft             Trickle ICE for SIP                 July 2015
+
+
        +-------------+-----------+
        | Name        | Reference |
        +-------------+-----------+
        | trickle-ice | [RFCXXXX] |
        |             |           |
        +-------------+-----------+
-
-
-
-
-
-
-
-
-Ivov, et al.             Expires January 3, 2016               [Page 27]
-
-Internet-Draft             Trickle ICE for SIP                 July 2015
 
 
 10.3.  SIP Option Tag 'trickle-ice'
@@ -1554,21 +1618,20 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
 
    o  IANA Consideration added
 
+
+
+
+Ivov, et al.             Expires January 4, 2016               [Page 29]
+
+Internet-Draft             Trickle ICE for SIP                 July 2015
+
+
    o  Security Consideration added
 
    o  RTCP and BUNDLE Consideration added with rules for including
       "a=rtcp-mux" and ""a=group: BUNDLLE" attributes
 
    o  3PCC Consideration added
-
-
-
-
-
-Ivov, et al.             Expires January 3, 2016               [Page 28]
-
-Internet-Draft             Trickle ICE for SIP                 July 2015
-
 
    o  Clarified that 18x w/o answer is sufficient to create a dialog
       that allows for trickling to start
@@ -1582,7 +1645,7 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
    o  Added pseudo m-lines as additional separator in sdpfrag bodies for
       Trickle ICE
 
-   o  Added ABNF for sdp-frag bodies
+   o  Added ABNF for sdp-frag bodies and Trickle-ICE package
 
 14.  References
 
@@ -1611,20 +1674,20 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
               Provisional Responses in Session Initiation Protocol
               (SIP)", RFC 3262, June 2002.
 
+
+
+
+Ivov, et al.             Expires January 4, 2016               [Page 30]
+
+Internet-Draft             Trickle ICE for SIP                 July 2015
+
+
    [RFC3264]  Rosenberg, J. and H. Schulzrinne, "An Offer/Answer Model
               with Session Description Protocol (SDP)", RFC 3264, June
               2002.
 
    [RFC4566]  Handley, M., Jacobson, V., and C. Perkins, "SDP: Session
               Description Protocol", RFC 4566, July 2006.
-
-
-
-
-Ivov, et al.             Expires January 3, 2016               [Page 29]
-
-Internet-Draft             Trickle ICE for SIP                 July 2015
-
 
    [RFC5234]  Crocker, D. and P. Overell, "Augmented BNF for Syntax
               Specifications: ABNF", STD 68, RFC 5234, January 2008.
@@ -1640,6 +1703,9 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
    [RFC6086]  Holmberg, C., Burger, E., and H. Kaplan, "Session
               Initiation Protocol (SIP) INFO Method and Package
               Framework", RFC 6086, January 2011.
+
+   [RFC7405]  Kyzivat, P., "Case-Sensitive String Support in ABNF", RFC
+              7405, December 2014.
 
 14.2.  Informative References
 
@@ -1665,6 +1731,13 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
    [RFC5761]  Perkins, C. and M. Westerlund, "Multiplexing RTP Data and
               Control Packets on a Single Port", RFC 5761, April 2010.
 
+
+
+Ivov, et al.             Expires January 4, 2016               [Page 31]
+
+Internet-Draft             Trickle ICE for SIP                 July 2015
+
+
    [RFC6120]  Saint-Andre, P., "Extensible Messaging and Presence
               Protocol (XMPP): Core", RFC 6120, March 2011.
 
@@ -1672,15 +1745,6 @@ Internet-Draft             Trickle ICE for SIP                 July 2015
               Combined Use of the Session Initiation Protocol (SIP) and
               the Extensible Messaging and Presence Protocol (XMPP)",
               RFC 7081, November 2013.
-
-
-
-
-
-Ivov, et al.             Expires January 3, 2016               [Page 30]
-
-Internet-Draft             Trickle ICE for SIP                 July 2015
-
 
 Authors' Addresses
 
@@ -1725,12 +1789,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-Ivov, et al.             Expires January 3, 2016               [Page 31]
+Ivov, et al.             Expires January 4, 2016               [Page 32]
