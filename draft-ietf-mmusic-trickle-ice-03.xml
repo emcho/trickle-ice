@@ -481,27 +481,12 @@
           cases the agent would still need to place an address in the
           "c=" line(s). If the use of a host address there is
           undesirable (e.g. for privacy reasons), the agent MAY set the
-          connection address to IP6 ::. In this case it MUST also
+          connection address to IP4 0.0.0.0. In this case it MUST also
           set the port number to 9 (Discard). There is no need to
-          include a fictitious candidate for the IP6 :: address when
+          include a fictitious candidate for the IP4 0.0.0.0 address when
           doing so.
         </t>
-        <t>
-          It is worth noting that the use of IP6 :: has been selected
-          over IP4 0.0.0.0, even though <xref target="RFC3264"/> already
-          gives the latter semantics appropriate for such use. The
-          reason for this choice is the historic use of 0.0.0.0 as a
-          means of putting a stream on hold <xref target="RFC2543"/> and
-          the ambiguity that this may cause with legacy libraries and
-          applications.
-        </t>
-        <t>
-          It is also worth mentioning that use of IP6 :: here does not
-          constitute any kind of indication as to the actual use of
-          IPv6 candidates in a session and it can very well appear in
-          a negotiation that only involves IPv4 candidates.
-        </t>
-      </section>
+       </section>
     </section>
     <section title='Receiving the Initial Offer' >
       <t>
@@ -518,7 +503,7 @@
         vanilla ICE as well even if the support verification procedure
         in <xref target="RFC5245"/> indicates otherwise. Specifically,
         such verification would indicate lack of support when the offer
-        contains no candidates. The IP6 :: address present in the c=
+        contains no candidates. The IP4 0.0.0.0 address present in the c=
         line in that case would not "appear in a candidate attribute".
         Obviously, a fallback to <xref target="RFC3264"/> is not
         required when this happens.
@@ -1067,7 +1052,7 @@
       </t>
       <t>
         When performing full trickle, a full ICE implementation could
-        send an offer or an answer with no candidates and an IP6 ::
+        send an offer or an answer with no candidates and an IP4 0.0.0.0
         connection line address. After receiving an answer that
         identifies the remote agent as an ICE lite implementation, the
         offerer may very well choose to not send any additional
@@ -1296,6 +1281,13 @@
         Note to the RFC-Editor: please remove this section prior to
         publication as an RFC.
       </t>
+      <section title="Changes from draft-mmusic-01">
+        <t>
+          <list style='symbols'>
+            <t>Returned to use of IP4 0.0.0.0 as dummy per WG consensus.</t>
+          </list>
+        </t>
+      </section>
       <section title='Changes From draft-ivov-01 and draft-mmusic-00'>
         <t>
           <list style='symbols'>
