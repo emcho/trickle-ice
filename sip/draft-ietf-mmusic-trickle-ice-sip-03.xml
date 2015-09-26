@@ -1590,7 +1590,7 @@
         The authors would like to thank 
         Paul Kyzivat, 
         Jonathan Lennox,
-        Simon Perrault
+        Simon Perreault
         and 
 		Martin Thomson 
         for reviewing and/or making various suggestions for
@@ -1625,6 +1625,7 @@
         <t> RTCP and BUNDLE  Consideration enhanced with some examples </t>
         <t> draft-ietf-mmusic-sdp-bundle-negotiation and RFC5761 changed to normative reference </t>
         <t> Removed reference to 4566bis </t>
+        <t> Addressed review comment from Simon Perreault </t>
       </list>
 
       </t>
