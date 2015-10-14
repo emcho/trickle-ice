@@ -60,6 +60,13 @@
         <email>justin@uberti.name</email>
       </address>
     </author>
+    <author initials="P." surname="Saint-Andre" fullname="Peter Saint-Andre">
+      <organization>&amp;yet</organization>
+      <address>
+        <email>peter@andyet.com</email>
+        <uri>https://andyet.com/</uri>
+      </address>
+    </author>
     <date />
     <abstract>
       <t>
