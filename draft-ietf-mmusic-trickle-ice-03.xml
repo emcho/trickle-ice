@@ -72,7 +72,7 @@
         for ICE processing to complete.
       </t>
       <t>
-        The above mechanism is also referred to as "trickle ICE".
+        This mechanism is called "trickle ICE".
       </t>
     </abstract>
   </front>
@@ -80,7 +80,7 @@
     <section title='Introduction'>
       <t>
         The Interactive Connectivity Establishment (ICE) protocol
-        <xref target="RFC5245"/> describes mechanisms for gathering,
+        <xref target="RFC5245"/> describes mechanisms for gathering
         candidates, prioritizing them, choosing default ones, exchanging
         them with the remote party, pairing them and ordering them into
         check lists. Once all of the above have been completed, and only
@@ -92,7 +92,7 @@
         While the above sequence has the advantage of being relatively
         straightforward to implement and debug once deployed, it may
         also prove to be rather lengthy. Gathering candidates or
-        candidate harvesting would often involve things like querying
+        candidate gathering would often involve things like querying
         <xref target="RFC5389">STUN</xref> servers, discovering UPnP
         devices, and allocating relayed candidates at
         <xref target="RFC5766">TURN</xref> servers. All of these can
@@ -122,7 +122,7 @@
         where connectivity is confirmed for the first exchanged
         candidates (e.g. where the host candidates for one of the agents
         are directly reachable from the second agent). Even when this is
-        not the case, running candidate harvesting for both agents and
+        not the case, running candidate gathering for both agents and
         connectivity checks all in parallel allows to considerably
         reduce ICE processing times.
       </t>
@@ -175,7 +175,7 @@
           </t>
           <t hangText="Candidate Harvester:">
             A module used by an ICE agent to obtain local candidates.
-            Candidate harvesters use different mechanisms for
+            Candidate gatherers use different mechanisms for
             discovering local candidates. Some of them would typically
             make use of protocols such as STUN or TURN. Others may also
             employ techniques that are not referenced within
@@ -187,7 +187,7 @@
             Candidates that a trickle ICE agent is sending subsequently
             to but within the context defined by an offer or an answer.
             Trickled candidates can be sent in parallel with candidate
-            harvesting and connectivity checks.
+            gathering and connectivity checks.
           </t>
           <t hangText="Trickling/Trickle (v.):">
             The act of sending trickled candidates.
@@ -310,9 +310,10 @@
     </section>
     <section title='Determining Support for Trickle ICE' anchor="disco">
       <t>
-        According to <xref target="RFC5245"/> every time an agent
-        supporting trickle ICE generates an offer or an answer, it MUST
-        include the "trickle" token in the ice-options attribute.
+        According to <xref target="RFC5245"/>, supported features are to
+        be advertised in the ice-options attribute.  Therefore an agent 
+        supporting trickle ICE MUST include a token of "trickle" in the 
+        ice-options attribute every time it generates an offer or an answer. 
         Syntax for this token is defined in <xref target="sdp.offer"/>.
       </t>
       <t>
@@ -392,7 +393,7 @@
           starts gathering candidates upon user interface cues that a
           call is pending, such as activity on a keypad or the phone
           going off hook. This would mean a part or all candidate
-          harvesting could have completed before the agent actually
+          gathering could have completed before the agent actually
           needs to send the offer. Given that the answerer will be able
           to trickle candidates, both agents will be able to start
           connectivity checks and complete ICE processing earlier than
@@ -429,10 +430,10 @@
         agent is planning on using in the following session.
       </t>
       <t>
-        For optimal performance, it is RECOMMENDED that an initial offer
-        contains host candidates only. This would allow both agents to
-        start gathering server reflexive, relayed and other non-host
-        candidates simultaneously, and it would also enable them to
+        For optimal performance, it is RECOMMENDED that the candidates in
+        an initial offer (if any) be host candidates only. This would allow 
+        both agents to start gathering server reflexive, relayed and other 
+        non-host candidates simultaneously, and it would also enable them to
         begin connectivity checks.
       </t>
       <t>
@@ -601,8 +602,8 @@
       <t>
         For the most part, trickle ICE agents perform connectivity
         checks following vanilla ICE procedures. Of course, the
-        asynchronous nature of candidate harvesting in trickle ICE would
-        impose a number of changes described here.
+        asynchronous nature of gathering and communicating candidates 
+        in trickle ICE would impose a number of changes described here.
       </t>
       <section title="Check List and Timer State Updates"
                anchor="state-updates">
@@ -627,7 +628,7 @@
         </t>
         <t>
           With trickle ICE, the above situation would often occur when
-          candidate harvesting and trickling are still in progress and
+          candidate gathering and trickling are still in progress and
           it is perfectly possible that future checks will succeed. For
           this reason trickle ICE agents add the following conditions to
           the above list:
@@ -635,7 +636,7 @@
         <t>
           <list style="symbols">
             <t>
-              all candidate harvesters have completed and the agent
+              all candidate gatherers have completed and the agent
               is not expecting to discover any new local candidates;
             </t>
             <t>
@@ -664,7 +665,7 @@
       <t>
         After an offer or an answer have been sent, agents will most
         likely continue discovering new local candidates as STUN, TURN
-        and other non-host candidate harvesting mechanisms begin to
+        and other non-host candidate gathering mechanisms begin to
         yield results. Whenever an agent discovers such a new candidate
         it will compute its priority, type, foundation and component id
         according to normal vanilla ICE procedures.
@@ -859,7 +860,7 @@
       <section title='Announcing End of Candidates'
              anchor="end-of-candidates">
       <t>
-        Once all candidate harvesters for a specific media stream
+        Once all candidate gatherers for a specific media stream
         complete, or expire, the agents will generate an
         "end-of-candidates" indication for that stream and send it to
         the remote agent via the signalling channel. Such indications
@@ -872,16 +873,20 @@
 ]]>
           </artwork>
         </figure>
-        The end-of-candidates indications can be sent as part of an
-        offer, which would typically be the case with half trickle
-        initial offers, they can accompany the last candidate an agent
-        can send for a stream, and they can also be sent alone (e.g.
-        after STUN Binding requests or TURN Allocate requests to a
-        server timeout and the agent has no other active harvesters).
+        The end-of-candidates indications can be sent in the following
+        ways:
+        <list style='symbols'>
+          <t>As part of an offer (which would typically be the case with 
+             half trickle initial offers)</t>
+          <t>Along with the last candidate an agent can send for a stream</t>
+          <t>As a standalone notification (e.g., after STUN Binding requests 
+             or TURN Allocate requests to a server timeout and the agent has 
+             no other active gatherers)</t>
+        </list>
       </t>
       <t>
         Controlled trickle ICE agents SHOULD always send
-        end-of-candidates indications once harvesting for a media stream
+        end-of-candidates indications once gathering for a media stream
         has completed unless ICE processing terminates before they've
         had a chance to do so. Sending the indication is necessary in
         order to avoid ambiguities and speed up ICE conclusion. This is
@@ -914,8 +919,8 @@
       </t>
       <t>
         An agent MAY also choose to generate an end-of-candidates
-        event before candidate harvesting has actually completed, if the
-        agent determines that harvesting has continued for more than an
+        event before candidate gathering has actually completed, if the
+        agent determines that gathering has continued for more than an
         acceptable period of time. However, an agent MUST NOT send any
         more candidates after it has send an end-of-candidates
         notification.
@@ -934,17 +939,17 @@
       <t>
         Once an agent sends the end-of-candidates event, it will
         update the state of the corresponding check list as explained
-        in section <xref target="state-updates"/>. Past that point
-        agents MUST NOT send any new candidates. Once an agent has
-        received an end-of-candidates indication, it MUST also ignore
-        any newly received candidates for that media stream. Adding new
-        candidates to the negotiation is hence only possible through an
-        ICE restart.
+        in <xref target="state-updates"/>. Past that point
+        agents MUST NOT send any new candidates within this ICE session. 
+        Once an agent has received an end-of-candidates indication, it 
+        MUST also ignore any newly received candidates for that media 
+        stream, and adding new candidates to the negotiation is only 
+        possible through an ICE restart.
       </t>
       <t>
-        It is important to note that This specification does not
+        This specification does not
         override vanilla ICE semantics for concluding ICE processing.
-        This means that even if end-of-candidates indications are sent
+        Therefore even if end-of-candidates indications are sent
         agents will still have to go through pair nomination. Also, if
         pairs have been nominated for components and media streams, ICE
         processing will still conclude even if end-of-candidate
@@ -968,7 +973,7 @@
         <xref target="cand-pairing"/>.
       </t>
       <t>
-        Once the remote agent has completed candidate harvesting, it
+        Once the remote agent has completed candidate gathering, it
         will send an end-of-candidates event. Upon receiving such an
         event, the local agent MUST update check list states as per
         <xref target="state-updates"/>. This may lead to some check
