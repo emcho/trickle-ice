@@ -4,7 +4,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
 
 <rfc category='std' ipr='trust200902'
-     docName='draft-ietf-mmusic-trickle-ice-02'>
+     docName='draft-ietf-ice-trickle-00'>
 
 <?rfc toc='yes' ?>
 <?rfc symrefs='yes' ?>
