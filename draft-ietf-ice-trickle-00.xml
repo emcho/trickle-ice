@@ -76,10 +76,8 @@
         exchanging complete lists. With such incremental provisioning,
         ICE agents can begin connectivity checks while they are still
         gathering candidates and considerably shorten the time necessary
-        for ICE processing to complete.
-      </t>
-      <t>
-        This mechanism is called "trickle ICE".
+        for ICE processing to complete. This mechanism is called "trickle 
+        ICE".
       </t>
     </abstract>
   </front>
@@ -612,31 +610,46 @@
         asynchronous nature of gathering and communicating candidates 
         in trickle ICE would impose a number of changes described here.
       </t>
+      <section title="Scheduling Checks" anchor="scheduling-checks">
+        <t>
+          The ICE specification <xref target='RFC5245'/>, Section 5.8, 
+          requires that agents terminate the timer for a triggered 
+          check in relation to an active check list once the agent
+          has exhausted all frozen pairs in check list.  This will
+          not work with trickle ICE, because more pairs will be
+          added to the check list incrementally.
+        </t>
+        <t>
+          Therefore, a trickle ICE agent SHOULD NOT terminate the timer
+          until the state of the check list is completed or failed as 
+          specified herein (see <xref target='end-of-candidates'/>).
+        </t>
+      </section>
       <section title="Check List and Timer State Updates"
                anchor="state-updates">
         <t>
-          The vanilla ICE specification requires that agents update
-          check lists and timer states upon completing a connectivity
-          check transaction. During such an update vanilla ICE agents
-          would set the state of a check list to Failed if the following
-          two conditions are satisfied:
+          The ICE specification <xref target='RFC5245'/>, Section 7.1.3.3, 
+          requires that agents update check lists and timer states upon 
+          completing a connectivity check transaction. During such an 
+          update vanilla ICE agents would set the state of a check list 
+          to Failed if both of the following two conditions are satisfied:
         </t>
         <t>
           <list style="symbols">
             <t>
               all of the pairs in the check list are either in the
-              Failed or Succeeded state;
+              Failed or Succeeded state; and
             </t>
             <t>
-              if at least one of the components of the media stream
-              has no pairs in its valid list.
+              there is not a pair in the valid list for each component 
+              of the media stream.
             </t>
           </list>
         </t>
         <t>
           With trickle ICE, the above situation would often occur when
-          candidate gathering and trickling are still in progress and
-          it is perfectly possible that future checks will succeed. For
+          candidate gathering and trickling are still in progress, even
+          though it is quite possible that future checks will succeed. For
           this reason trickle ICE agents add the following conditions to
           the above list:
         </t>
@@ -783,7 +796,7 @@
                  anchor="cand-pairing">
         <t>
           Forming candidate pairs will work the way it is described by
-          the vanilla ICE specification. Actually adding the new pair to
+          the ICE specification <xref target='RFC5245'/>. Actually adding the new pair to
           a check list however, will happen according to the rules
           described below.
         </t>
