@@ -151,9 +151,9 @@
         This specification does not define usage of trickle ICE with any
         specific signalling protocol, contrary to
         <xref target="RFC5245"/> which contains a usage for ICE with
-        SIP. Such usages would have to be specified in separate
+        SIP <xref target='RFC3261'/>. Such usages would have to be specified in separate
         documents such as for example
-        <xref target="I-D.ivov-mmusic-trickle-ice-sip"/>.
+        <xref target="I-D.ietf-mmusic-trickle-ice-sip"/>.
       </t>
       <t>
         Trickle ICE does however reuse and build upon the SDP syntax
@@ -339,8 +339,8 @@
           <t>
             Provide a way for agents to verify support of trickle ICE
             prior to initiating a session. XMPP's
-            <xref target="XEP-0030"> Service discovery</xref> is an
-            example for one such mechanism;
+            <xref target="XEP-0030">Service Discovery</xref> is an
+            example of one such mechanism;
           </t>
           <t>
             Make support for trickle ICE mandatory so that support could
@@ -450,11 +450,11 @@
         host addresses (e.g. relayed candidates).
       </t>
       <t>
-        Prior to actually sending an initial offer, agents MAY verify if
-        the remote party supports trickle ICE, where such mechanisms
-        actually exist. If absence of such support is confirmed agents
-        MUST fall back to using vanilla ICE or abandon the entire
-        session.
+        Prior to sending an initial offer, agents using signaling protocols
+        that support capabilities discovery MAY attempt to verify whether or 
+        not the remote party supports trickle ICE. If an agent determines 
+        that the remote party does not support trickle ICE, it MUST fall back 
+        to using vanilla ICE or abandon the entire session.
       </t>
       <t>
         All trickle ICE offers and answers MUST indicate support of this
@@ -1173,12 +1173,11 @@
       <?rfc include="reference.RFC.2543"?>
       <?rfc include="reference.RFC.3261"?>
       <?rfc include="reference.RFC.3388"?>
-      <?rfc include="reference.RFC.3840"?>
       <?rfc include="reference.RFC.4787"?>
       <?rfc include="reference.RFC.5389"?>
       <?rfc include="reference.RFC.5766"?>
       <?rfc include="reference.I-D.keranen-mmusic-ice-address-selection"?>
-      <?rfc include="reference.I-D.ivov-mmusic-trickle-ice-sip"?>
+      <?rfc include="reference.I-D.ietf-mmusic-trickle-ice-sip"?>
       <reference anchor="XEP-0176">
         <front>
           <title>XEP-0176: Jingle ICE-UDP Transport Method</title>
@@ -1228,28 +1227,6 @@
           <date month="June" year="2008" />
         </front>
         <seriesInfo name="XEP" value="XEP-0030" />
-      </reference>
-      <reference anchor="XEP-0115">
-        <front>
-          <title>XEP-0115: Entity Capabilities</title>
-          <author initials='J.' surname='Hildebrand'
-                  fullname='Joe Hildebrand'>
-            <organization abbrev='Cisco'>Cisco</organization>
-          </author>
-          <author initials='P.' surname='Saint-Andre'
-                  fullname='Peter Saint-Andre'>
-            <organization abbrev='Cisco'>Cisco</organization>
-          </author>
-          <author initials='R.' surname='Tronçon'
-                  fullname='Remko Tronçon'>
-            <organization abbrev='Synopsys'>Synopsys</organization>
-          </author>
-          <author initials='J.' surname='Konieczny'
-                  fullname='Jacek Konieczny'>
-          </author>
-          <date month="February" year="2008" />
-        </front>
-        <seriesInfo name="XEP" value="XEP-0115" />
       </reference>
       <reference anchor="XEP-0278">
         <front>
