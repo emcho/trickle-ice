@@ -117,7 +117,7 @@
         The purpose of this document is to define an alternative mode of
         operation for ICE implementations, also known as "trickle ICE",
         where candidates can be exchanged incrementally. This would
-        allow ICE agents to exchange host candidates as soon as a
+        allow ICE agents to exchange candidates as soon as a
         session has been initiated. Connectivity checks for a media
         stream would also start as soon as the first candidates for that
         stream have become available.
@@ -371,7 +371,7 @@
           end-of-candidates indication, although this is not mandatory
           as, in case trickle support is confirmed, the offerer may
           choose to trickle additional candidates (e.g., additional
-          relay candidates) before it declares end of trickling.
+          relayed candidates) before it declares end of trickling.
         </t>
         <t>
           The half trickle mechanism can be used in cases where there is
@@ -909,9 +909,8 @@
         end-of-candidates indications once gathering for a media stream
         has completed unless ICE processing terminates before they've
         had a chance to do so. Sending the indication is necessary in
-        order to avoid ambiguities and speed up ICE conclusion. This is
-        necessary in order to avoid ambiguities and speed up ICE
-        conclusion. Controlling agents on the other hand MAY sometimes
+        order to avoid ambiguities and speed up ICE conclusion.
+        Controlling agents on the other hand MAY sometimes
         conclude ICE processing prior to sending end-of-candidates
         notifications for all streams. This would typically be the case
         with aggressive nomination. Yet it is RECOMMENDED that
@@ -1166,10 +1165,11 @@
     </section>
     <section title='Acknowledgements'>
       <t>
-        The authors would like to thank Bernard Aboba, Christer
-        Holmberg, Dale R. Worley, Enrico Marocco, Flemming Andreasen,
-        Jonathan Lennox and Martin Thomson for their reviews and
-        suggestions on improving this document.
+        The authors would like to thank Bernard Aboba, 
+        Flemming Andreasen, Rajmohan Banavi, Christer Holmberg, 
+        Jonathan Lennox, Enrico Marocco, Pal Martinsen, 
+        Martin Thomson, Dale R. Worley, and Brandon Williams 
+        for their reviews and suggestions on improving this document.
       </t>
     </section>
   </middle>
