@@ -147,15 +147,19 @@
       </t>
       <t>
         This specification does not define usage of trickle ICE with any
-        specific signalling protocol, contrary to
+        specific signalling protocol, different from 
         <xref target="RFC5245"/> which contains a usage for ICE with
         SIP <xref target='RFC3261'/>. Such usages would have to be specified in separate
         documents such as for example
-        <xref target="I-D.ietf-mmusic-trickle-ice-sip"/>.
+        <xref target="I-D.ietf-mmusic-trickle-ice-sip"/>. However, 
+        trickle ICE does however reuse and build upon the SDP syntax
+        defined by <xref target="RFC5245"/>.
       </t>
       <t>
-        Trickle ICE does however reuse and build upon the SDP syntax
-        defined by <xref target="RFC5245"/>.
+        Although this document mostly describes trickle ICE in terms
+        of the offer/answer model <xref target='RFC3264'/>, trickle
+        ICE (and ICE itself) can be used by application protocols that 
+        do not follow the offer/answer model.
       </t>
     </section>
     <section title="Terminology">
@@ -214,103 +218,6 @@
             opposition to the half trickle mode of operation.
           </t>
         </list>
-      </t>
-    </section>
-    <section title='Motivation for Extending ICE'
-             anchor='motivation'>
-      <t>
-        The ICE protocol was designed to be flexible enough to
-        would work in and adapt to as many network environments as
-        possible. Despite that flexibility, ICE as specified in
-        <xref target="RFC5245"/> does not by itself support trickle 
-        ICE.
-      </t>
-      <t>
-        <xref target="RFC5245"/> describes the conditions required to
-        update check lists and timer states while an ICE agent is in the
-        Running state. These conditions are verified upon transaction
-        completion and one of them stipulates that:
-      </t>
-      <t>
-        <list style='empty'>
-          <t>
-            If there is not a pair in the valid list for each component
-            of the media stream, the state of the check list is set to
-            Failed.
-          </t>
-        </list>
-      </t>
-      <t>
-        This could be a problem and cause ICE processing to fail
-        prematurely in a number of scenarios. Consider the following
-        case:
-      </t>
-      <t>
-        <list style='numbers'>
-          <t>
-            Alice and Bob are both located in different networks with
-            Network Address Translation (NAT). Alice and Bob themselves
-            have different address but both networks use the same
-            <xref target="RFC1918"/> block.
-          </t>
-          <t>
-            Alice sends Bob the candidate 10.0.0.10 which also happens
-            to correspond to an existing host on Bob's network.
-          </t>
-          <t>
-            Bob creates a check list consisting solely of 10.0.0.10 and
-            starts checks.
-          </t>
-          <t>
-            These checks reach the host at 10.0.0.10 in Bob's network,
-            which responds with an ICMP "port unreachable" error and per
-            <xref target="RFC5245"/> Bob marks the transaction as
-            Failed.
-          </t>
-        </list>
-        At this point the check list only contains Failed candidates and
-        the valid list is empty. This causes the media stream and
-        potentially all ICE processing to Fail.
-      </t>
-      <t>
-        A similar race condition would occur if the initial offer from
-        Alice only contains candidates that can be determined as
-        unreachable (per
-        <xref target="I-D.keranen-mmusic-ice-address-selection"/>) from
-        any of the candidates that Bob has gathered. This would be the
-        case if Bob's candidates only contain IPv4 addresses and the
-        first candidate that he receives from Alice is an IPv6 one.
-      </t>
-      <t>
-        Another potential problem could arise when a non-trickle
-        ICE implementation sends an offer to a trickle one. Consider the
-        following case:
-        <list style='numbers'>
-          <t>
-            Alice's client has a non-trickle ICE implementation
-          </t>
-          <t>
-            Bob's client has support for trickle ICE.
-          </t>
-          <t>
-            Alice and Bob are behind NATs with address-dependent
-            filtering <xref target="RFC4787"/>.
-          </t>
-          <t>
-            Bob has two STUN servers but one of them is currently
-            unreachable
-          </t>
-        </list>
-      </t>
-      <t>
-        After Bob's agent receives Alice's offer it would immediately
-        start connectivity checks. It would also start gathering
-        candidates, which would take long because of the unreachable
-        STUN server. By the time Bob's answer is ready and sent to
-        Alice, Bob's connectivity checks may well have failed: until
-        Alice gets Bob's answer, she won't be able to start connectivity
-        checks and punch holes in her NAT. The NAT would hence be
-        filtering Bob's checks as originating from an unknown endpoint.
       </t>
     </section>
     <section title='Determining Support for Trickle ICE' anchor="disco">
@@ -1260,7 +1167,7 @@
         <seriesInfo name="XEP" value="XEP-0278" />
       </reference>
     </references>
-    <section title='Open issues'>
+    <section title='Open Issues'>
       <t>
         At the time of writing of this document the authors have no
         clear view on how and if the following list of issues should
@@ -1288,24 +1195,183 @@
           </figure>
         </t>
       </section>
-      <section title='Starting checks'>
+      <section title='Starting Checks'>
         <t>
-          Normally Vanilla ICE implementations would first activate a
+          Normally vanilla ICE implementations would first activate a
           check list, validate at least one pair in every component
           and only then unfreeze all other checklists. With trickle ICE
-          this would be suboptimal since, candidates can arrive randomly
+          this would be suboptimal since candidates can arrive randomly
           and we would be wasting time waiting for a checklist to fill
           (almost as if we were doing vanilla ICE). We need to decide if
           unfreezing everything solely based on foundation is good
           enough.
         </t>
       </section>
+      <section title='Checklist States'>
+        <t>
+          It's been proposed that we add a waiting-for-candidates
+          state (e.g., if the checklist is empty and no candidate
+          pairs have been sent or received yet).
+        </t>
+      </section>
+      <section title='Relationship to Continuous Nomination and
+                      Passive Nomination'>
+        <t>
+          Does it make sense to tie trickle ICE more explicitly
+          the continuous nomination and passive nomination specs?
+          In particular, is address mobility a goal for the trickle
+          ICE specification?
+        </t>
+      </section>
+      <section title='ICE Restarts'>
+        <t>
+          We need to describe how trickle ICE interacts with ICE 
+          restarts. Specifically, is it sufficient to modify the
+          ufrag and pwd without starting a full offer/answer
+          exchange, if the signaling protocol being used does 
+          not require it or if the restarting entity does not 
+          include a media description?
+        </t>
+      </section>
+      <section title='Candidate Redundancy and Priority'>
+        <t>
+          We need to clarify the relationship between RFC 5245
+          and trickle ICE with respect to candidate redundancy
+          and priority.
+        </t>
+      </section>
+      <section title='Make Trickle ICE SDP-Agnostic'>
+        <t>
+          Would it make sense to remove the tie to SDP in the
+          spec? This is similar to what's being done with the 
+          ICEbis spec, so consistency might be desirable.
+        </t>
+      </section>
+    </section>
+    <section title='Interaction with ICE'
+             anchor='interaction'>
+      <t>
+        The ICE protocol was designed to be flexible enough to
+        would work in and adapt to as many network environments as
+        possible. Despite that flexibility, ICE as specified in
+        <xref target="RFC5245"/> does not by itself support trickle 
+        ICE. This section describes how trickling of candidates 
+        interacts with ICE.
+      </t>
+      <t>
+        <xref target="RFC5245"/> describes the conditions required to
+        update check lists and timer states while an ICE agent is in the
+        Running state. These conditions are verified upon transaction
+        completion and one of them stipulates that:
+      </t>
+      <t>
+        <list style='empty'>
+          <t>
+            If there is not a pair in the valid list for each component
+            of the media stream, the state of the check list is set to
+            Failed.
+          </t>
+        </list>
+      </t>
+      <t>
+        This could be a problem and cause ICE processing to fail
+        prematurely in a number of scenarios. Consider the following
+        case:
+      </t>
+      <t>
+        <list style='numbers'>
+          <t>
+            Alice and Bob are both located in different networks with
+            Network Address Translation (NAT). Alice and Bob themselves
+            have different address but both networks use the same
+            <xref target="RFC1918"/> block.
+          </t>
+          <t>
+            Alice sends Bob the candidate 10.0.0.10 which also happens
+            to correspond to an existing host on Bob's network.
+          </t>
+          <t>
+            Bob creates a check list consisting solely of 10.0.0.10 and
+            starts checks.
+          </t>
+          <t>
+            These checks reach the host at 10.0.0.10 in Bob's network,
+            which responds with an ICMP "port unreachable" error and per
+            <xref target="RFC5245"/> Bob marks the transaction as
+            Failed.
+          </t>
+        </list>
+        At this point the check list only contains Failed candidates and
+        the valid list is empty. This causes the media stream and
+        potentially all ICE processing to Fail.
+      </t>
+      <t>
+        A similar race condition would occur if the initial offer from
+        Alice only contains candidates that can be determined as
+        unreachable (per
+        <xref target="I-D.keranen-mmusic-ice-address-selection"/>) from
+        any of the candidates that Bob has gathered. This would be the
+        case if Bob's candidates only contain IPv4 addresses and the
+        first candidate that he receives from Alice is an IPv6 one.
+      </t>
+      <t>
+        Another potential problem could arise when a non-trickle
+        ICE implementation sends an offer to a trickle one. Consider the
+        following case:
+        <list style='numbers'>
+          <t>
+            Alice's client has a non-trickle ICE implementation
+          </t>
+          <t>
+            Bob's client has support for trickle ICE.
+          </t>
+          <t>
+            Alice and Bob are behind NATs with address-dependent
+            filtering <xref target="RFC4787"/>.
+          </t>
+          <t>
+            Bob has two STUN servers but one of them is currently
+            unreachable
+          </t>
+        </list>
+      </t>
+      <t>
+        After Bob's agent receives Alice's offer it would immediately
+        start connectivity checks. It would also start gathering
+        candidates, which would take long because of the unreachable
+        STUN server. By the time Bob's answer is ready and sent to
+        Alice, Bob's connectivity checks may well have failed: until
+        Alice gets Bob's answer, she won't be able to start connectivity
+        checks and punch holes in her NAT. The NAT would hence be
+        filtering Bob's checks as originating from an unknown endpoint.
+      </t>
     </section>
     <section title='Changes From Earlier Versions'>
       <t>
         Note to the RFC-Editor: please remove this section prior to
         publication as an RFC.
       </t>
+      <section title='Changes From draft-mmusic-trickle-ice-02'>
+        <t>
+          <list style='symbols'>
+            <t>
+              Addressed feedback from Rajmohan Banavi and Brandon Williams.
+            </t>
+            <t>
+              Clarified text about determining support and about how to 
+              proceed if it can be determined that the answering agent
+              does not support trickle ICE.
+            </t>
+            <t>
+              Clarified text about check list and timer updates.
+            </t>
+            <t>
+              Clarified when it is appropriate to use half trickle or
+              to send no candidates in an offer or answer.
+            </t>
+          </list>
+        </t>
+      </section>
       <section title='Changes From draft-ivov-01 and draft-mmusic-00'>
         <t>
           <list style='symbols'>
