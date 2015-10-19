@@ -1346,12 +1346,12 @@
         filtering Bob's checks as originating from an unknown endpoint.
       </t>
     </section>
-    <section title='Changes From Earlier Versions'>
+    <section title='Changes from Earlier Versions'>
       <t>
         Note to the RFC-Editor: please remove this section prior to
         publication as an RFC.
       </t>
-      <section title='Changes From draft-mmusic-trickle-ice-02'>
+      <section title='Changes from draft-mmusic-trickle-ice-02'>
         <t>
           <list style='symbols'>
             <t>
@@ -1369,10 +1369,13 @@
               Clarified when it is appropriate to use half trickle or
               to send no candidates in an offer or answer.
             </t>
+            <t>
+              Updated the list of open issues.
+            </t>
           </list>
         </t>
       </section>
-      <section title='Changes From draft-ivov-01 and draft-mmusic-00'>
+      <section title='Changes from draft-ivov-01 and draft-mmusic-00'>
         <t>
           <list style='symbols'>
             <t>
@@ -1399,7 +1402,7 @@
           </list>
         </t>
       </section>
-      <section title='Changes From draft-ivov-00'>
+      <section title='Changes from draft-ivov-00'>
         <t>
           <list style='symbols'>
             <t>
@@ -1453,7 +1456,7 @@
           </list>
         </t>
       </section>
-      <section title='Changes From draft-rescorla-01'>
+      <section title='Changes from draft-rescorla-01'>
         <t>
           <list style='symbols'>
             <t>
@@ -1498,7 +1501,7 @@
           </list>
         </t>
       </section>
-      <section title='Changes From draft-rescorla-00'>
+      <section title='Changes from draft-rescorla-00'>
         <t>
           <list style='symbols'>
             <t>
