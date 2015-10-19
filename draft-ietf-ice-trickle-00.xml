@@ -97,7 +97,7 @@
         While the above sequence has the advantage of being relatively
         straightforward to implement and debug once deployed, it may
         also prove to be rather lengthy. Gathering candidates or
-        candidate gathering would often involve things like querying
+        candidate gathering often involves things like querying
         <xref target="RFC5389">STUN</xref> servers, discovering UPnP
         devices, and allocating relayed candidates at
         <xref target="RFC5766">TURN</xref> servers. All of these can
@@ -110,7 +110,7 @@
         ready to begin streaming media.
       </t>
       <t>
-        All of the above could lead to relatively lengthy session
+        All of the above can lead to relatively lengthy session
         establishment times and degraded user experience.
       </t>
       <t>
@@ -139,10 +139,10 @@
       </t>
       <t>
         In addition to the basics of trickle ICE, this document also
-        describes how support for trickle ICE needs to be discovered,
+        describes how to discover support for trickle ICE,
         how regular ICE processing needs to be modified when
         building and updating check lists, and how trickle ICE
-        implementations should interoperate with agents that only
+        implementations interoperate with agents that only
         implement <xref target="RFC5245"/> processing.
       </t>
       <t>
@@ -207,7 +207,7 @@
             connectivity checks in a non-blocking way, thus roughly
             offering "half" the advantages of trickle ICE. The mechanism
             is mostly meant for use in cases where support for trickle
-            ICE cannot be confirmed prior to sending a first offer.
+            ICE cannot be confirmed prior to sending a initial offer.
           </t>
           <t hangText="Full Trickle:">
             Regular mode of operation for trickle ICE agents, used in
@@ -216,14 +216,14 @@
         </list>
       </t>
     </section>
-    <section title='Incompatibility with Standard ICE'
-             anchor='incompat'>
+    <section title='Motivation for Extending ICE'
+             anchor='motivation'>
       <t>
-        The ICE protocol was designed to be fairly flexible so that it
+        The ICE protocol was designed to be flexible enough to
         would work in and adapt to as many network environments as
-        possible. It is hence important to point out at least some of
-        the reasons why, despite its flexibility, the specification in
-        <xref target="RFC5245"/> would not support trickle ICE.
+        possible. Despite that flexibility, ICE as specified in
+        <xref target="RFC5245"/> does not by itself support trickle 
+        ICE.
       </t>
       <t>
         <xref target="RFC5245"/> describes the conditions required to
@@ -246,7 +246,7 @@
         case:
       </t>
       <t>
-        <list style='symbols'>
+        <list style='numbers'>
           <t>
             Alice and Bob are both located in different networks with
             Network Address Translation (NAT). Alice and Bob themselves
@@ -285,7 +285,7 @@
         Another potential problem could arise when a non-trickle
         ICE implementation sends an offer to a trickle one. Consider the
         following case:
-        <list style='symbols'>
+        <list style='numbers'>
           <t>
             Alice's client has a non-trickle ICE implementation
           </t>
@@ -322,23 +322,19 @@
         Syntax for this token is defined in <xref target="sdp.offer"/>.
       </t>
       <t>
-        Additionally, in order to avoid interoperability problems such
-        as those described in <xref target="incompat"/>, it is important
-        that trickle ICE negotiation is only attempted in cases where
-        the remote party actually supports this specification. Agents
-        that receive offers or answers can verify support by examining
-        them for the "trickle" ice-options token. However, agents
-        that are about to send a first offer, have no immediate way of
-        doing this. This means that usages of trickle for specific
-        protocols would need to either:
+        Agents that receive offers or answers can verify support by 
+        examining them for the "trickle" ice-options token. However, 
+        agents that are about to send an initial offer have no way of
+        doing this. Thus usages of trickle for specific protocols need 
+        to either:
       </t>
       <t>
         <list style='symbols'>
           <t>
             Provide a way for agents to verify support of trickle ICE
-            prior to initiating a session. XMPP's
+            prior to initiating a session (XMPP's
             <xref target="XEP-0030">Service Discovery</xref> is an
-            example of one such mechanism;
+            example of one such mechanism); or
           </t>
           <t>
             Make support for trickle ICE mandatory so that support could
@@ -353,69 +349,23 @@
         <xref target="half-trickle"/>.
       </t>
       <t>
+        Prior to sending an initial offer, agents using signaling protocols
+        that support capabilities discovery MAY attempt to verify whether or 
+        not the remote party supports trickle ICE. If an agent determines 
+        that the remote party does not support trickle ICE, it MUST fall back 
+        to using vanilla ICE or abandon the entire session.
+      </t>
+      <t>
+        All trickle ICE offers and answers MUST indicate support of this
+        specification, as explained in <xref target="sdp.offer"/>.
+      </t>
+      <t>
         Note that out-of-band discovery semantics and half trickle are
         only necessary prior to session initiation, or in other words,
         when sending the initial offer. Once a session is established
         and trickle ICE support is confirmed for both parties, either
         agent can use full trickle for subsequent offers.
       </t>
-      <section title='Unilateral Use of Trickle ICE (Half Trickle)'
-               anchor="half-trickle">
-        <t>
-          The idea of using half trickle is about having the caller
-          send a regular, vanilla ICE offer, with a complete set of
-          candidates. This offer still indicates support for
-          trickle ice, so the answerer is able to respond with an
-          incomplete set of candidates and continue trickling the rest.
-          Half trickle offers will typically contain an
-          end-of-candidates indication, although this is not mandatory
-          as, in case trickle support is confirmed, the offerer may
-          choose to trickle additional candidates (e.g., additional
-          relayed candidates) before it declares end of trickling.
-        </t>
-        <t>
-          The half trickle mechanism can be used in cases where there is
-          no way for an agent to verify in advance whether a remote
-          party supports trickle ice. Because it contains a full set of
-          candidates, its first offer can thus be handled by a regular
-          vanilla ICE agent, while still allowing a trickle one to use
-          the optimisation defined in this specification. This prevents
-          negotiation from failing in the former case while still giving
-          roughly half the trickle ICE benefits in the latter (hence the
-          name of the mechanism).
-        </t>
-        <t>
-          Use of half trickle is only necessary during an initial
-          offer/answer exchange. Once both parties have received a
-          session description from their peer, they can each reliably
-          determine trickle ICE support and use it for all subsequent
-          offer/answer exchanges.
-        </t>
-        <t>
-          It is worth pointing out that using half trickle may actually
-          bring more than just half the improvement in terms of user
-          experience. This can happen in cases where an agent
-          starts gathering candidates upon user interface cues that a
-          call is pending, such as activity on a keypad or the phone
-          going off hook. This would mean a part or all candidate
-          gathering could have completed before the agent actually
-          needs to send the offer. Given that the answerer will be able
-          to trickle candidates, both agents will be able to start
-          connectivity checks and complete ICE processing earlier than
-          with vanilla ICE and potentially even as early as with full
-          trickle.
-        </t>
-        <t>
-          However, such anticipation is not not always possible. For
-          example, a multipurpose user agent or a WebRTC web page where
-          communication is a non-central feature (e.g. calling a support
-          line in case of a problem with the main features) would not
-          necessarily have a way of distinguishing between call
-          intentions and other user activity. Still, even in these
-          cases, using half trickle would be an improvement over vanilla
-          ICE as it would optimize performance for answerers.
-        </t>
-      </section>
     </section>
     <section title='Sending the Initial Offer' anchor="initial-offer">
       <t>
@@ -448,19 +398,8 @@
         host addresses (e.g. relayed candidates).
       </t>
       <t>
-        Prior to sending an initial offer, agents using signaling protocols
-        that support capabilities discovery MAY attempt to verify whether or 
-        not the remote party supports trickle ICE. If an agent determines 
-        that the remote party does not support trickle ICE, it MUST fall back 
-        to using vanilla ICE or abandon the entire session.
-      </t>
-      <t>
-        All trickle ICE offers and answers MUST indicate support of this
-        specification, as explained in <xref target="sdp.offer"/>.
-      </t>
-      <t>
-        Calculating priorities and foundations, as well as determining
-        redundancy of candidates work the same way they do with vanilla
+        Methods for calculating priorities and foundations, as well as 
+        determining redundancy of candidates, work just as with vanilla
         ICE.
       </t>
       <section title='Encoding the SDP' anchor="sdp.offer">
@@ -481,12 +420,15 @@
           </figure>
         </t>
         <t>
-          As mentioned earlier in this section, Offers and Answers can
+          As mentioned earlier in this section, offers and answers can
           contain any set of candidates, which means that a trickle ICE
-          session description MAY contain no candidates at all. In such
+          session description MAY contain no candidates at all. Doing so
+          enables the offerer to receive the answerer's initial candidate 
+          list sooner, and also enables the answerer to begin candidate 
+          gathering more quickly.  In such
           cases the agent would still need to place an address in the
           "c=" line(s). If the use of a host address there is
-          undesirable (e.g. for privacy reasons), the agent MAY set the
+          undesirable (e.g., for privacy reasons), the agent MAY set the
           connection address to 0.0.0.0. In this case it MUST also
           set the port number to 9 (Discard). There is no need to
           include a fictitious candidate for the 0.0.0.0 address when
@@ -522,12 +464,14 @@
         It is worth pointing out that in case support for trickle ICE is
         confirmed, an agent will automatically assume support for
         vanilla ICE as well even if the support verification procedure
-        in <xref target="RFC5245"/> indicates otherwise. Specifically,
-        such verification would indicate lack of support when the offer
-        contains no candidates. The IP6 :: address present in the c=
-        line in that case would not "appear in a candidate attribute".
-        Obviously, a fallback to <xref target="RFC3264"/> is not
-        required when this happens.
+        in <xref target="RFC5245"/> indicates otherwise. Specifically, 
+        the rules from RFC 5245 would imply that ICE itself is not 
+        supported if the initial offer includes no candidates in the 
+        offer; however, such a conclusion is not warranted if the answerer
+        can confirm that the offerer supports trickle ICE. In this case, 
+        the IP6 :: address present in the "c=" line would not "appear in 
+        a candidate attribute". Fallback to <xref target="RFC3264"/> is not
+        necessary in this scenario.
       </t>
       <t>
         If, the offer does indicate support for trickle ICE, the agent
@@ -540,8 +484,12 @@
         <t>
           An agent can respond to an initial offer at any point while
           gathering candidates. The answer can again contain any set of
-          candidates including none or all of them. Unless it is
-          protecting host addresses for privacy reasons, the agent would
+          candidates, including all candidates or no candidates. (The
+          benefit of including no candidates is to send the answer as 
+          quickly as possible, so that both parties can consider the 
+          overall session to be under active negotiation as soon as 
+          possible.) Unless the answering agent is
+          protecting host addresses for privacy reasons, it would
           typically construct this initial answer including only them,
           thus allowing the remote party to also start forming
           checklists and performing connectivity checks.
@@ -551,20 +499,20 @@
           by <xref target="disco"/>.
         </t>
       </section>
-      <section title="Forming check lists and beginning connectivity
-                      checks" anchor="check.lists">
+      <section title="Forming Check Lists and Beginning Connectivity
+                      Checks" anchor="check.lists">
         <t>
           After exchanging offer and answer, and as soon as they have
           obtained local and remote candidates, agents will begin
           forming candidate pairs, computing their priorities and
           creating check lists according to the vanilla ICE procedures
           described in <xref target="RFC5245"/>. Obviously in order for
-          candidate pairing to be possible, it would be necessary that
-          both the offer and the answer contained candidates. If this
-          was not the case agents will still create the check lists (so
+          candidate pairing to be possible, candidates would need to be
+          provided in both the offer and the answer. If not, then the
+          agents will still create the check lists (so
           that their Active/Frozen state could be monitored and updated)
-          but they will only populate them once they actually have the
-          candidate pairs.
+          but they will only populate the check lists once they actually 
+          have the candidate pairs.
         </t>
         <t>
           Initially, all check lists will have their Active/Frozen state
@@ -791,8 +739,8 @@
         pairing the new local candidates with them and adding the pairs
         to the existing check lists according to their priority.
       </t>
-      <section title='Pairing newly learned candidates and updating
-                      check lists'
+      <section title='Pairing Newly Learned Candidates and Updating
+                      Check Lists'
                  anchor="cand-pairing">
         <t>
           Forming candidate pairs will work the way it is described by
@@ -999,7 +947,7 @@
         lists being marked as Failed.
       </t>
     </section>
-    <section title='Receiving an End Of Candidates Notification'
+    <section title='Receiving an End-Of-Candidates Notification'
              anchor="end-of-candidates.recv">
       <t>
         When an agent receives an end-of-candidates notification
@@ -1126,6 +1074,66 @@
         In addition to reducing signaling traffic this approach also
         removes the need to discover STUN bindings, or to make TURN or
         UPnP allocations which may considerably lighten ICE processing.
+      </t>
+    </section>
+    <section title='Unilateral Use of Trickle ICE (Half Trickle)'
+             anchor="half-trickle">
+      <t>
+        In half trickle mode, the offerer sends a regular, vanilla ICE 
+        offer, with a complete set of candidates. This ensures that the
+        offer can be processed by a vanilla ICE answerer and is mostly
+        meant for use in cases where support for trickle ICE cannot be 
+        confirmed prior to sending a initial offer.  The initial offer 
+        indicates support for trickle ICE, so that the answerer can
+        respond with an incomplete set of candidates and continue 
+        trickling the rest.  Half trickle offers typically contain an
+        end-of-candidates indication, although this is not mandatory
+        because if trickle support is confirmed then the offerer can
+        choose to trickle additional candidates before it declares end 
+        of trickling.
+      </t>
+      <t>
+        The half trickle mechanism can be used in cases where there is
+        no way for an agent to verify in advance whether a remote
+        party supports trickle ICE. Because it contains a full set of
+        candidates, its initial offer can thus be handled by a regular
+        vanilla ICE agent, while still allowing a trickle one to use
+        the optimisation defined in this specification. This prevents
+        negotiation from failing in the former case while still giving
+        roughly half the trickle ICE benefits in the latter (hence the
+        name of the mechanism).
+      </t>
+      <t>
+        Use of half trickle is only necessary during an initial
+        offer/answer exchange. Once both parties have received a
+        session description from their peer, they can each reliably
+        determine trickle ICE support and use it for all subsequent
+        offer/answer exchanges.
+      </t>
+      <t>
+        In some instances, using half trickle might bring more than 
+        just half the improvement in terms of user experience. This 
+        can happen when an agent starts gathering candidates upon user 
+        interface cues that the user will soon be initiating an offer, 
+        such as activity on a keypad or the phone going off hook. This 
+        would mean that some or all of the candidate
+        gathering could be completed before the agent actually
+        needs to send the offer. Because that the answerer will be able
+        to trickle candidates, both agents will be able to start
+        connectivity checks and complete ICE processing earlier than
+        with vanilla ICE and potentially even as early as with full
+        trickle.
+      </t>
+      <t>
+        However, such anticipation is not not always possible. For
+        example, a multipurpose user agent or a WebRTC web page where
+        communication is a non-central feature (e.g., calling a support
+        line in case of a problem with the main features) would not
+        necessarily have a way of distinguishing between call
+        intentions and other user activity. In such cases, using full
+        trickle is most likely to result in an ideal user experience.
+        Even so, using half trickle would be an improvement over vanilla
+        ICE because it would improve the experience for answerers.
       </t>
     </section>
     <section title='Example Flow'>
@@ -1366,7 +1374,7 @@
             <t>
               Closed the Open Issue about use about what to do with
               cands received after end-of-cands. Solution: ignore, do
-              an ice restart if you want to add something.
+              an ICE restart if you want to add something.
             </t>
             <t>
               Added more terminology, including trickling, trickled
