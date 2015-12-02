@@ -358,18 +358,21 @@
         <t>
           After exchanging the offer and answer, and as soon as they have
           obtained local and remote candidates, agents begin
-          forming candidate pairs, computing their priorities, and
+          forming candidate pairs, computing candidate pair priorities
+          and ordering candidate pairs, pruning duplicate pairs, and
           creating check lists according to the Vanilla ICE procedures
-          described in <xref target="rfc5245bis"/>. According to those
-          procedures, in order for
-          candidate pairing to be possible the candidates would need to be
-          provided in both the offer and the answer. Under Trickle ICE,
-          check lists can be empty under candidate pairs are sent or received. 
-          Therefore Trickle ICE agents 
+          described in <xref target="rfc5245bis"/>. 
+        </t>
+        <t>
+          According to those procedures, in order for candidate pairing 
+          to be possible and for duplicate candidates to be pruned, the 
+          candidates would need to be provided in both the offer and the 
+          answer. Under Trickle ICE, check lists can be empty until 
+          candidate pairs are sent or received. Therefore Trickle ICE agents 
           handle check lists and candidate pairing in a slightly different
-          way: the agents still create the check lists,
-          but they only populate the check lists after they actually 
-          have the candidate pairs.
+          way: the agents still create the check lists, but they only 
+          populate the check lists after they actually have the candidate 
+          pairs.
         </t>
         <t>
           <list style='empty'>
@@ -392,6 +395,12 @@
           using application). However, if this check list is still empty,
           an agent delays further processing until the check list is
           non-empty.
+        </t>
+        <t>
+          With regard to pruning of duplicate candidate pairs, a Trickle ICE
+          agent SHOULD follow a policy of "first one wins" and not re-apply 
+          the pruning procedure if a higher-priority candidate pair is 
+          received from the remote agent.
         </t>
         <t>
           Respecting the order in which check lists have been reported to an
@@ -979,7 +988,6 @@
     <references title='Informative References'>
       <?rfc include="reference.RFC.1918"?>
       <?rfc include="reference.RFC.3261"?>
-      <?rfc include="reference.RFC.3388"?>
       <?rfc include="reference.RFC.4787"?>
       <?rfc include="reference.RFC.5389"?>
       <?rfc include="reference.RFC.5766"?>
