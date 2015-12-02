@@ -691,7 +691,7 @@
         processing. On the other hand, a 
         controlling agent MAY 
         conclude ICE processing prior to sending end-of-candidates
-        notifications for all streams. This would typically be the case
+        indications for all streams. This would typically be the case
         with aggressive nomination. However, it is RECOMMENDED that
         controlling agents do send such indications whenever possible
         for the sake of consistency and to keep middle boxes and
@@ -718,7 +718,7 @@
       </t>
       <t>
         An agent MAY also choose to generate an end-of-candidates
-        event before candidate gathering has actually completed, if the
+        indication before candidate gathering has actually completed, if the
         agent determines that gathering has continued for more than an
         acceptable period of time. However, an agent MUST NOT send any
         more candidates after it has send an end-of-candidates
